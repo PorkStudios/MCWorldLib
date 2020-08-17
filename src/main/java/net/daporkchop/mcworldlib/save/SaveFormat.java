@@ -18,28 +18,41 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.save;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
+ * A save format for opening {@link Save}s.
+ * <p>
+ * All implementations are expected to be completely stateless.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public interface SaveFormat {
+    /**
+     * Open the {@link Save} at the given path.
+     *
+     * @param root    a {@link File} indicating the root directory
+     * @param options the {@link SaveOptions} to be used for opening the given save
+     * @return the opened {@link Save}
+     * @throws IllegalArgumentException if the save could not be opened
+     */
+    default Save open(@NonNull File root, @NonNull SaveOptions options) throws IOException {
+        Save save = this.tryOpen(root, options);
+        checkState(save != null, "Couldn't open save at \"%s\" (options: %s)", root, options);
+        return save;
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * Attempts to open the {@link Save} at the given path.
+     *
+     * @param root    a {@link File} indicating the root directory
+     * @param options the {@link SaveOptions} to be used for opening the given save
+     * @return the opened {@link Save}, or {@code null} if it could not be opened
+     */
+    Save tryOpen(@NonNull File root, @NonNull SaveOptions options) throws IOException;
 }

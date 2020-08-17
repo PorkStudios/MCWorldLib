@@ -18,28 +18,31 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.anvil.decoder.chunk;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.format.java.decoder.JavaChunkDecoder;
+import net.daporkchop.mcworldlib.format.vanilla.VanillaChunk;
+import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.world.Chunk;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
+ * Codec for serialization of chunks in the pre-flattening format used by Minecraft versions 1.12.2 and older.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public class LegacyChunkDecoder implements JavaChunkDecoder {
+    public static final JavaVersion VERSION = JavaVersion.fromName("1.12.2");
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public Chunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
+        CompoundTag level = tag.getCompound("Level");
+        int x = level.getInt("xPos");
+        int z = level.getInt("zPos");
+
+        return new VanillaChunk(version, x, z);
     }
 }

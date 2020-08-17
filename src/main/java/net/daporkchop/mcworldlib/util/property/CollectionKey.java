@@ -18,28 +18,22 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.property;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import java.util.Collection;
 
 /**
+ * A {@link PropertyKey} which stores a {@link Collection}. All empty values are considered unset and removed.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public final class CollectionKey<C extends Collection> extends PropertyKey<C> {
+    public CollectionKey(String name, C defaultValue) {
+        super(name, defaultValue);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public boolean isSet(C value) {
+        return value != null && !value.isEmpty();
     }
 }

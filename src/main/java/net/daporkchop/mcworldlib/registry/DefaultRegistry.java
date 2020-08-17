@@ -18,28 +18,39 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.registry;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
+ * A default implementation of {@link AbstractRegistry}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public class DefaultRegistry extends AbstractRegistry {
+    public static Builder builder(@NonNull Identifier id) {
+        return new Builder(id);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    protected DefaultRegistry(@NonNull Builder builder) {
+        super(builder, true, true);
+    }
+
+    public static class Builder extends AbstractRegistry.Builder {
+        public Builder(Identifier id) {
+            super(id);
+        }
+
+        @Override
+        public Builder register(@NonNull Identifier identifier, int id) {
+            super.register(identifier, id);
+            return this;
+        }
+
+        @Override
+        public Registry build() {
+            return new DefaultRegistry(this);
+        }
     }
 }

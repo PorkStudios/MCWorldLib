@@ -18,28 +18,27 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.common;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.world.Dimension;
 
 /**
+ * Simple, read-only implementation of {@link Dimension}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+@AllArgsConstructor
+@Getter
+@Accessors(fluent = true)
+public final class DefaultDimension implements Dimension {
+    @NonNull
+    protected final Identifier id;
+    protected final int legacyId;
+    protected final boolean hasSkyLight;
+    protected final boolean hasPrecipitation;
 }

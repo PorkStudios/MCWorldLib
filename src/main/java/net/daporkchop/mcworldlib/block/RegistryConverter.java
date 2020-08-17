@@ -18,28 +18,30 @@
  *
  */
 
-package minecraft.java;
-
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+package net.daporkchop.mcworldlib.block;
 
 /**
+ * Bi-directional lookup for converting block runtime IDs between a given block registry and the global block registry.
+ * <p>
+ * Note that the conversion operation may be lossy. Generally, a lookup for an unknown ID or an ID with no decent equivalent in the other version
+ * will return {@code 0} (air).
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface RegistryConverter {
+    /**
+     * Converts the given ID to the global block registry.
+     *
+     * @param id the ID to convert
+     * @return the converted ID
+     */
+    int toGlobal(int id);
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * Converts the given ID from the global block registry.
+     *
+     * @param id the ID to convert
+     * @return the converted ID
+     */
+    int fromGlobal(int id);
 }

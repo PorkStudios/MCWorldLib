@@ -18,28 +18,19 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.vanilla;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.format.common.AbstractWorld;
+import net.daporkchop.mcworldlib.save.Save;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
+ * Base implementation of {@link net.daporkchop.mcworldlib.world.World} for vanilla chunks with exactly 16 sections.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+public abstract class VanillaWorld<S extends Save> extends AbstractWorld<S> {
+    public VanillaWorld(S parent, Identifier id) {
+        super(parent, id);
     }
 }

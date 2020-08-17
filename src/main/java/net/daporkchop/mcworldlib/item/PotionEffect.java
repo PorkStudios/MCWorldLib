@@ -18,28 +18,59 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.item;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
+ * Representation of a potion effect.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@RequiredArgsConstructor
+@ToString
+@Getter
+@Setter
+@Accessors(fluent = true, chain = true)
+public class PotionEffect {
+    /**
+     * The ID of the potion effect.
+     */
+    @NonNull
+    protected Identifier id;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * The amplifier of the effect.
+     * <p>
+     * Values less than {@code 1} are treated as {@code 1}.
+     */
+    protected int amplifier = 1;
+
+    /**
+     * The duration of the effect in ticks.
+     * <p>
+     * Values less than {@code 1} are treated as {@code 1}.
+     */
+    protected int duration = 1;
+
+    /**
+     * Whether or not this potion effect was produced by a beacon.
+     */
+    protected boolean ambient = false;
+
+    /**
+     * Whether or not this potion effect should show particles while active.
+     */
+    protected boolean showParticles = true;
+
+    /**
+     * Whether or not the potion effect's icon should be shown on-screen.
+     */
+    protected boolean showIcon = true;
 }

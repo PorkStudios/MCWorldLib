@@ -18,28 +18,31 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.property;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
 
 /**
+ * A {@link PropertyKey} which stores a {@code boolean}. Default values are considered unset and removed.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public final class BooleanKey extends PropertyKey<Boolean> {
+    public BooleanKey(String name) {
+        super(name, Boolean.FALSE);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    public BooleanKey(String name, Boolean defaultValue) {
+        super(name, defaultValue);
+    }
+
+    @Override
+    public boolean isSet(Boolean value) {
+        return value != null && value != this.defaultValue;
+    }
+
+    @Override
+    public void append(@NonNull StringBuilder builder, @NonNull Boolean value) {
+        builder.append(this.name).append('=').append(value.booleanValue()).append(',').append(' ');
     }
 }

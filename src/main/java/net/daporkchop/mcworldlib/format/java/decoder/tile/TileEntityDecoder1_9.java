@@ -18,28 +18,26 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.java.decoder.tile;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public class TileEntityDecoder1_9 extends TileEntityDecoder1_8 {
+    public TileEntityDecoder1_9() {
+        this(new TileEntityDecoder1_8());
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    protected TileEntityDecoder1_9(@NonNull TileEntityDecoder1_8 parent) {
+        super(parent);
+    }
+
+    @Override
+    protected Identifier getId(@NonNull CompoundTag root) {
+        return Identifier.fromString(root.getString("id"));
     }
 }

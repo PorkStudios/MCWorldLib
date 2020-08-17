@@ -18,28 +18,40 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.palette;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
+import java.util.function.IntBinaryOperator;
 
 /**
+ * Trivial implementation of {@link Palette} which always returns the input value.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class IdentityPalette implements Palette {
+    public static final IdentityPalette INSTANCE = new IdentityPalette();
+
+    @Override
+    public boolean contains(int value) {
+        return value >= 0;
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public int get(int value) {
+        return value >= 0 ? value : -1;
+    }
+
+    @Override
+    public int getReverse(int id) {
+        return id >= 0 ? id : -1;
+    }
+
+    @Override
+    public Palette setResizeCallback(@NonNull IntBinaryOperator resizeCallback) {
+        return this; //no-op
     }
 }

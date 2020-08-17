@@ -18,28 +18,41 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.lib.common.misc.Versioned;
+import net.daporkchop.lib.math.access.IntHolderXZ;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 /**
+ * Representation of a Minecraft chunk, consisting of {@link Section}s identified by their integer Y coordinate.
+ * <p>
+ * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
+ * itself is loaded.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface Chunk extends IntHolderXZ, RefCounted, Versioned<MinecraftVersion> {
+    /**
+     * @return this chunk's X coordinate
+     */
+    @Override
+    int x();
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * @return this chunk's Z coordinate
+     */
+    @Override
+    int z();
+
+    @Override
+    int refCnt();
+
+    @Override
+    Chunk retain() throws AlreadyReleasedException;
+
+    @Override
+    boolean release() throws AlreadyReleasedException;
 }

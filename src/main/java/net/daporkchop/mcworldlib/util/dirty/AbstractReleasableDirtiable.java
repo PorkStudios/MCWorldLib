@@ -18,28 +18,33 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.dirty;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.lib.unsafe.PUnsafe;
+import net.daporkchop.lib.unsafe.util.AbstractReleasable;
 
 /**
+ * Abstract implementation of {@link Dirtiable} which also extends {@link AbstractReleasable}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public abstract class AbstractReleasableDirtiable extends AbstractReleasable implements Dirtiable {
+    protected static final long DIRTY_OFFSET = PUnsafe.pork_getOffset(AbstractReleasableDirtiable.class, "dirty");
+
+    protected volatile int dirty = 0;
+
+    @Override
+    public boolean dirty() {
+        return this.dirty != 0;
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public void markDirty() {
+        this.dirty = 1;
+    }
+
+    @Override
+    public boolean clearDirty() {
+        return PUnsafe.compareAndSwapInt(this, DIRTY_OFFSET, 1, 0);
     }
 }

@@ -18,28 +18,47 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.common.storage;
 
+import net.daporkchop.lib.common.misc.Cloneable;
+import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.mcworldlib.block.BlockAccess;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
+ * A 16³ array of block states.
+ * <p>
+ * All IDs used by all methods use the local block registry.
+ *
  * @author DaPorkchop_
+ * @see BlockRegistry
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public interface BlockStorage extends BlockAccess, Cloneable<BlockStorage>, RefCounted {
+    /**
+     * The number of blocks in a single block storage.
+     */
+    int NUM_BLOCKS = 16 * 16 * 16;
+
+    static void checkCoords(int x, int y, int z) {
+        checkIndex(x >= 0 && x < 16, "x");
+        checkIndex(y >= 0 && y < 16, "y");
+        checkIndex(z >= 0 && z < 16, "z");
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * @return the {@link BlockRegistry} that this {@link BlockStorage} uses
+     */
+    BlockRegistry localRegistry();
+
+    @Override
+    int refCnt();
+
+    @Override
+    BlockStorage retain() throws AlreadyReleasedException;
+
+    @Override
+    boolean release() throws AlreadyReleasedException;
 }

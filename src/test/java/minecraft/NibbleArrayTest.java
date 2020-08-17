@@ -21,9 +21,9 @@
 package minecraft;
 
 import lombok.NonNull;
-import net.daporkchop.lib.minecraft.format.common.nibble.DirectNibbleArray;
-import net.daporkchop.lib.minecraft.format.common.nibble.HeapNibbleArray;
-import net.daporkchop.lib.minecraft.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.nibble.DirectNibbleArray;
+import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import org.junit.Test;
 
 import static net.daporkchop.lib.common.util.PValidation.*;

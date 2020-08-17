@@ -18,28 +18,28 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.java.decoder;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
+ * A function for decoding an item stack from NBT data.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+@FunctionalInterface
+public interface JavaItemDecoder {
+    /**
+     * Decodes an item stack.
+     *
+     * @param tag     the {@link CompoundTag} containing the item data
+     * @param version the version of the item data
+     * @param world   the {@link World} that the item is in
+     * @return the decoded item stack
+     */
+    ItemStack decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world);
 }

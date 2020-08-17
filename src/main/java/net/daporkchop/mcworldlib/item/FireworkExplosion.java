@@ -18,28 +18,60 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.item;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+import java.awt.Color;
+import java.util.List;
 
 /**
+ * Representation of a firework explosion.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@ToString
+@Getter
+@Setter
+@Accessors(fluent = true, chain = true)
+public class FireworkExplosion {
+    /**
+     * Whether or not this firework explosion has the "flicker" effect.
+     */
+    protected boolean flicker = false;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * Whether or not this firework explosion has the "trail" effect.
+     */
+    protected boolean trail = false;
+
+    /**
+     * The type of firework explosion effect to use.
+     */
+    protected int type = 0;
+
+    /**
+     * The primary colors of this firework explosion.
+     * <p>
+     * {@code null} values will be treated as unset.
+     * <p>
+     * {@code null} elements will be ignored.
+     * <p>
+     * Every color's alpha channel will be ignored.
+     */
+    protected List<Color> colors = null;
+
+    /**
+     * The fade colors of this firework explosion.
+     * <p>
+     * {@code null} values will be treated as unset.
+     * <p>
+     * {@code null} elements will be ignored.
+     * <p>
+     * Every color's alpha channel will be ignored.
+     */
+    protected List<Color> fadeColors = null;
 }

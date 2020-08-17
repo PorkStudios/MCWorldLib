@@ -18,28 +18,34 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.vanilla;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.experimental.UtilityClass;
+import net.daporkchop.mcworldlib.save.SaveOptions;
+
+import java.util.concurrent.TimeUnit;
 
 /**
+ * {@link SaveOptions} keys used by vanilla-style save formats.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@UtilityClass
+public class VanillaSaveOptions {
+    /**
+     * The maximum number chunks whose data may be cached in memory at once.
+     * <p>
+     * May not be negative.
+     */
+    public static final SaveOptions.Key<Integer> CHUNK_CACHE_SIZE = SaveOptions.key("vanilla_chunk_cache_size", 1024);
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * The maximum time (in milliseconds) that chunk data may remain cached in memory before eviction.
+     * <p>
+     * This does not guarantee that chunks cached longer than this duration will be immediately evicted. Generally, whenever the cache fills up, all chunks
+     * older than this duration will be evicted, and if no chunks match, the oldest ones will be evicted regardless of this value.
+     * <p>
+     * May not be negative.
+     */
+    public static final SaveOptions.Key<Long> MAX_CHUNK_CACHE_TIME = SaveOptions.key("vanilla_chunk_cache_time", TimeUnit.MINUTES.toMillis(15L));
 }

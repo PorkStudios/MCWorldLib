@@ -18,28 +18,31 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.property;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
 
 /**
+ * A {@link PropertyKey} which stores a positive {@code int}. All non-positive values are considered unset and removed, defaulting to {@code 0}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public final class PositiveIntKey extends PropertyKey<Integer> {
+    public PositiveIntKey(String name) {
+        super(name, 0);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    public PositiveIntKey(String name, Integer defaultValue) {
+        super(name, defaultValue);
+    }
+
+    @Override
+    public boolean isSet(Integer value) {
+        return value != null && value > 0;
+    }
+
+    @Override
+    public void append(@NonNull StringBuilder builder, @NonNull Integer value) {
+        builder.append(this.name).append('=').append(value.intValue()).append(',').append(' ');
     }
 }

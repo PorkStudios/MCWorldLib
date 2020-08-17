@@ -18,28 +18,32 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.anvil.region;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.Accessors;
+import net.daporkchop.lib.unsafe.util.AbstractReleasable;
 
 /**
+ * Representation of the raw chunk data that was read from a {@link RegionFile}.
+ * <p>
+ * Note: releasing a raw chunk will also release the data buffer.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@AllArgsConstructor
+@Getter
+@Accessors(fluent = true)
+public final class RawChunk extends AbstractReleasable {
+    protected final long timestamp;
+    @NonNull
+    protected final ByteBuf data;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    protected void doRelease() {
+        this.data.release();
     }
 }

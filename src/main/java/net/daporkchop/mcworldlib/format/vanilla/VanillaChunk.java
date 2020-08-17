@@ -18,28 +18,23 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.vanilla;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.format.common.AbstractChunk;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 /**
+ * Base implementation of {@link net.daporkchop.mcworldlib.world.Chunk} for vanilla chunks with exactly 16 sections.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public class VanillaChunk extends AbstractChunk {
+    public VanillaChunk(MinecraftVersion version, int x, int z) {
+        super(version, x, z);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    protected void doRelease() {
+        //literally just do nothing lol
     }
 }

@@ -18,28 +18,39 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
+ * A description of a Minecraft dimension. A dimension describes various things about worlds using them, such as whether or not they have sky light or
+ * rainfall. Having dimensions be separate from the IDs used to identify individual {@link World}s in a {@link net.daporkchop.mcworldlib.save.Save}
+ * allows us to support complex modded or server configuration, which might have e.g. multiple nether worlds.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface Dimension {
+    Identifier ID_OVERWORLD = Identifier.fromString("minecraft:overworld");
+    Identifier ID_NETHER = Identifier.fromString("minecraft:nether");
+    Identifier ID_END = Identifier.fromString("minecraft:the_end");
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * @return this dimension's ID, such as {@code "minecraft:overworld"} or {@code "minecraft:the_end"}
+     */
+    Identifier id();
+
+    /**
+     * @return this dimension's legacy or internal ID
+     */
+    int legacyId();
+
+    /**
+     * @return whether or not this dimension has sky light
+     */
+    boolean hasSkyLight();
+
+    /**
+     * @return whether or not this dimension has rain-/snowfall
+     */
+    boolean hasPrecipitation();
 }

@@ -18,28 +18,47 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.item.inventory;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.item.ItemStack;
+import net.daporkchop.lib.primitive.lambda.IntObjConsumer;
 
 /**
+ * Base representation of an inventory.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface Inventory {
+    /**
+     * @return the number of non-empty slots in this inventory
+     */
+    int count();
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * Gets the {@link ItemStack} at the given slot index.
+     *
+     * @param slot the slot index
+     * @return the {@link ItemStack} at the given slot index
+     * @throws IndexOutOfBoundsException if the given slot index is out of bounds
+     */
+    ItemStack get(int slot);
+
+    /**
+     * Sets the {@link ItemStack} at the given slot index.
+     *
+     * @param slot  the slot index
+     * @param stack the new {@link ItemStack}
+     * @return this inventory
+     */
+    Inventory set(int slot, ItemStack stack);
+
+    /**
+     * Executes the given function for every non-empty slot in this inventory.
+     * <p>
+     * The first parameter is the slot index, the second one is the item at the slot.
+     *
+     * @param action the function to run
+     */
+    void forEach(@NonNull IntObjConsumer<ItemStack> action);
 }

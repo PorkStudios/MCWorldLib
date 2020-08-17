@@ -18,28 +18,33 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.item.inventory;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+import net.daporkchop.lib.common.pool.handle.Handle;
+import net.daporkchop.lib.common.util.PorkUtil;
+import net.daporkchop.mcworldlib.item.ItemStack;
 
 /**
+ * Base implementation of {@link Inventory}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public abstract class BaseInventory implements Inventory {
+    @Override
+    public String toString() {
+        try (Handle<StringBuilder> handle = PorkUtil.STRINGBUILDER_POOL.get()) {
+            StringBuilder builder = handle.get();
+            builder.setLength(0);
+            this.doToString(builder.append('['));
+            if (builder.length() > 2) {
+                builder.setLength(builder.length() - 2);
+            }
+            return builder.append(']').toString();
+        }
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    protected void doToString(@NonNull StringBuilder builder) {
+        this.forEach((index, stack) -> builder.append(index).append('=').append(stack).append(',').append(' '));
     }
 }

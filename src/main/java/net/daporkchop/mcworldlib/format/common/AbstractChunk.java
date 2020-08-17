@@ -18,28 +18,37 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.common;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
+import net.daporkchop.mcworldlib.world.Chunk;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 /**
+ * Base implementation of {@link Chunk}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+@RequiredArgsConstructor
+@Getter
+@Accessors(fluent = true)
+public abstract class AbstractChunk extends AbstractRefCounted implements Chunk {
+    @NonNull
+    protected final MinecraftVersion version;
+    protected final int x;
+    protected final int z;
+
+    @Override
+    public Chunk retain() throws AlreadyReleasedException {
+        super.retain();
+        return this;
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    @Override
+    protected abstract void doRelease();
 }

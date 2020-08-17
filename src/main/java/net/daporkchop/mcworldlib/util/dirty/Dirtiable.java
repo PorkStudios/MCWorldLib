@@ -18,28 +18,28 @@
  *
  */
 
-package minecraft.java;
-
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+package net.daporkchop.mcworldlib.util.dirty;
 
 /**
+ * A type with a "dirty" flag which indicates whether or not it has changed since last being written to disk.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface Dirtiable {
+    /**
+     * @return whether or not this instance is dirty
+     */
+    boolean dirty();
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * Sets the dirty flag to {@code true}.
+     */
+    void markDirty();
+
+    /**
+     * Atomically resets the dirty flag to {@code false}.
+     *
+     * @return the previous state of the dirty flag.
+     */
+    boolean clearDirty();
 }

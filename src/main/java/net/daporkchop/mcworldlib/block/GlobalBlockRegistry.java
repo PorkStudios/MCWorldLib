@@ -18,28 +18,16 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.block;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import lombok.experimental.UtilityClass;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
 
 /**
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+@UtilityClass
+class GlobalBlockRegistry {
+    public static final BlockRegistry GLOBAL_REGISTRY = JavaBlockRegistry.forVersion(JavaVersion.latest());
 }

@@ -18,28 +18,26 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util.property;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
 
 /**
+ * A type which stores multiple {@link PropertyKey}s mapped to values.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public interface Properties<I extends Properties<I>> {
+    /**
+     * @return whether or not this instance is empty (contains no explicitly set values)
+     */
+    boolean isEmpty();
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    boolean has(@NonNull PropertyKey<?> key);
+
+    <T> T get(@NonNull PropertyKey<T> key);
+
+    I remove(@NonNull PropertyKey<?> key);
+
+    <T> I put(@NonNull PropertyKey<T> key, T value);
 }

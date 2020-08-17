@@ -18,28 +18,49 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.item;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 
 /**
+ * Representation of a map decoration.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@RequiredArgsConstructor
+@ToString
+@Getter
+@Setter
+@Accessors(fluent = true, chain = true)
+public class MapDecoration {
+    /**
+     * An arbitrary string used to identify this decoration.
+     */
+    @NonNull
+    protected String id;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    /**
+     * The ID of the map icon to display.
+     */
+    protected byte type;
+
+    /**
+     * The decoration's X position.
+     */
+    protected double x;
+
+    /**
+     * The decoration's Z position.
+     */
+    protected double z;
+
+    /**
+     * The decoration's rotation, in degrees (clockwise).
+     */
+    protected double rotation;
 }

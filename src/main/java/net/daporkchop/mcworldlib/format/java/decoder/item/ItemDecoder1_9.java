@@ -18,28 +18,39 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.java.decoder.item;
 
+import lombok.NonNull;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
+import net.daporkchop.mcworldlib.item.ItemMeta;
+import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
+
+import static net.daporkchop.mcworldlib.item.ItemMeta.*;
 
 /**
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+public class ItemDecoder1_9 extends ItemDecoder1_8 {
+    public ItemDecoder1_9() {
+        this(new ItemDecoder1_8());
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    public ItemDecoder1_9(@NonNull ItemDecoder1_8 parent) {
+        super(parent);
+    }
+
+    @Override
+    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
+        int damage = root.getShort("Damage", (short) 0);
+
+        BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
+        if (blockRegistry.containsBlockId(stack.id())) {
+            cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
+        } else {
+            cache.meta.put(DAMAGE, damage);
+        }
     }
 }

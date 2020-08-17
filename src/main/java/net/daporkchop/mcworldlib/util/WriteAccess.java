@@ -18,28 +18,23 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.util;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.save.Save;
 
 /**
+ * The different write access levels that can be used for opening a {@link Save}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+//does this really need to be an enum? i doubt there'll ever be need for other modes
+public enum WriteAccess {
+    /**
+     * Opens the save in read-write mode. If either read or write access could not be acquired, an exception will be thrown.
+     */
+    WRITE_REQUIRED,
+    /**
+     * Opens the save in read-only mode. If read access could not be acquired, an exception will be thrown.
+     */
+    READ_ONLY;
 }

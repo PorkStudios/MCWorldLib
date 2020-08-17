@@ -18,28 +18,28 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.anvil;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.experimental.UtilityClass;
+import net.daporkchop.mcworldlib.format.java.JavaFixers;
+import net.daporkchop.mcworldlib.format.java.JavaSaveOptions;
+import net.daporkchop.mcworldlib.format.vanilla.VanillaSaveOptions;
+import net.daporkchop.mcworldlib.save.SaveOptions;
 
 /**
+ * {@link SaveOptions} keys used by the Anvil save format.
+ *
  * @author DaPorkchop_
+ * @see JavaSaveOptions
+ * @see VanillaSaveOptions
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+@UtilityClass
+public class AnvilSaveOptions {
+    public static final SaveOptions.Key<Integer> REGION_CACHE_SIZE = JavaSaveOptions.REGION_CACHE_SIZE;
+    public static final SaveOptions.Key<Boolean> MMAP_REGIONS = JavaSaveOptions.MMAP_REGIONS;
+    public static final SaveOptions.Key<Boolean> PREFETCH_REGIONS = JavaSaveOptions.PREFETCH_REGIONS;
+    public static final SaveOptions.Key<JavaFixers> FIXERS = JavaSaveOptions.FIXERS;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+    public static final SaveOptions.Key<Integer> CHUNK_CACHE_SIZE = VanillaSaveOptions.CHUNK_CACHE_SIZE;
+    public static final SaveOptions.Key<Long> MAX_CHUNK_CACHE_TIME = VanillaSaveOptions.MAX_CHUNK_CACHE_TIME;
 }

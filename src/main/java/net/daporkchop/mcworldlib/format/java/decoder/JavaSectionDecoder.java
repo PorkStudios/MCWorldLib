@@ -18,28 +18,30 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.format.java.decoder;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
+import lombok.NonNull;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
+ * A function for decoding a section from NBT data.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
-
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
-    }
+@FunctionalInterface
+public interface JavaSectionDecoder {
+    /**
+     * Decodes a section.
+     *
+     * @param tag     the {@link CompoundTag} containing the section data
+     * @param version the version of the section data
+     * @param world   the {@link World} that the section is in
+     * @param x       the X coordinate of the section
+     * @param z       the Z coordinate of the section
+     * @return the decoded section
+     */
+    Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z);
 }

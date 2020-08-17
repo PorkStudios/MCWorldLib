@@ -18,28 +18,30 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.block.common;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
 
 /**
+ * Implementation of {@link RegistryConverter} used by the global block registry when converting to itself.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+@Getter
+@Accessors(fluent = true)
+public class GlobalRegistryConverter implements RegistryConverter {
+    protected final BlockRegistry local = BlockRegistry.global();
+
+    @Override
+    public int toGlobal(int id) {
+        return id;
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public int fromGlobal(int id) {
+        return id;
     }
 }

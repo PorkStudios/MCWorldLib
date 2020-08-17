@@ -18,28 +18,34 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.block.common;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
+import net.daporkchop.lib.primitive.map.IntIntMap;
 
 /**
+ * Default implementation of {@link RegistryConverter}.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class DefaultRegistryConverter implements RegistryConverter {
+    @NonNull
+    protected final IntIntMap toGlobal;
+    @NonNull
+    protected final IntIntMap fromGlobal;
+
+    @Override
+    public int toGlobal(int id) {
+        return this.toGlobal.getOrDefault(id, 0);
     }
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public int fromGlobal(int id) {
+        return this.fromGlobal.getOrDefault(id, 0);
     }
 }

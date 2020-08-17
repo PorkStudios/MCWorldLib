@@ -18,28 +18,25 @@
  *
  */
 
-package minecraft.java;
+package net.daporkchop.mcworldlib.version;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import org.junit.Test;
+import net.daporkchop.lib.common.misc.string.PUnsafeStrings;
 
 /**
+ * The different editions of Minecraft.
+ *
  * @author DaPorkchop_
  */
-public class JavaRegistryLoadTest {
-    @Test
-    public void testRegistries1_15_2() {
-        Registries registry = JavaRegistries.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.println(registry.size());
-    }
+public enum MinecraftEdition {
+    JAVA,
+    BEDROCK,
+    CLASSIC,
+    UNKNOWN;
 
-    @Test
-    public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+    @Override
+    public String toString() {
+        String name = this.name();
+        PUnsafeStrings.titleFormat(name);
+        return name;
     }
 }
