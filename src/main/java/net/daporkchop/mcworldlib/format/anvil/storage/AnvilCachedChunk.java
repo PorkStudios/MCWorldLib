@@ -33,6 +33,8 @@ import net.daporkchop.mcworldlib.world.Section;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
+import static net.daporkchop.lib.common.util.PValidation.*;
+
 /**
  * In-memory representation of a chunk cached by {@link AnvilWorldStorage}.
  * <p>

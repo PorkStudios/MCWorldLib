@@ -25,6 +25,8 @@ import lombok.NonNull;
 import java.io.File;
 import java.io.IOException;
 
+import static net.daporkchop.lib.common.util.PValidation.*;
+
 /**
  * A save format for opening {@link Save}s.
  * <p>
