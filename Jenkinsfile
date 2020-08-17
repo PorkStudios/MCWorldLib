@@ -49,7 +49,7 @@ pipeline {
     stages {
         stage("Build") {
             steps {
-                sh "./gradlew build -x test -x publish"
+                sh "./gradlew build --refresh-dependencies -x test -x publish"
             }
         }
         stage("Test") {
