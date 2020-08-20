@@ -18,30 +18,12 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.common;
-
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.RegistryConverter;
+package net.daporkchop.mcworldlib.block.registry;
 
 /**
- * Implementation of {@link RegistryConverter} used by the global block registry when converting to itself.
+ * The global block registry.
  *
  * @author DaPorkchop_
  */
-@Getter
-@Accessors(fluent = true)
-public class GlobalRegistryConverter implements RegistryConverter {
-    protected final BlockRegistry local = BlockRegistry.global();
-
-    @Override
-    public int toGlobal(int id) {
-        return id;
-    }
-
-    @Override
-    public int fromGlobal(int id) {
-        return id;
-    }
+public final class GlobalBlockRegistry implements BlockRegistry {
 }

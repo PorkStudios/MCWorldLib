@@ -18,49 +18,47 @@
  *
  */
 
-package net.daporkchop.mcworldlib.item;
+package net.daporkchop.mcworldlib.block.registry;
 
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.mcworldlib.block.BlockType;
+import net.daporkchop.mcworldlib.block.Trait;
+import net.daporkchop.mcworldlib.util.Identifier;
+
+import java.util.Map;
 
 /**
- * Representation of a map decoration.
+ * Serializes a global block state (block type and trait values) to a version-specific state.
  *
  * @author DaPorkchop_
  */
-@RequiredArgsConstructor
-@ToString
-@Getter
-@Setter
-@Accessors(chain = true)
-public class MapDecoration {
+@FunctionalInterface
+public interface StateSerializer {
     /**
-     * An arbitrary string used to identify this decoration.
+     * Serializes the given block state.
+     *
+     * @param typeIn   the {@link BlockType} of the state to serialize
+     * @param traitsIn the {@link Trait} values of the state to serialize
+     * @param out      a {@link CompoundTag} where the output traits should be written
+     * @return the {@link Identifier} of the output block, or {@code null} to ignore this state
      */
-    @NonNull
-    protected String id;
+    Identifier serialize(@NonNull BlockType typeIn, @NonNull Map<Trait<?>, ?> traitsIn, @NonNull Output out);
 
     /**
-     * The ID of the map icon to display.
+     * Helper callback to set the output values for a {@link StateSerializer}.
+     *
+     * @author DaPorkchop_
      */
-    protected byte type;
-
-    /**
-     * The decoration's X position.
-     */
-    protected double x;
-
-    /**
-     * The decoration's Z position.
-     */
-    protected double z;
-
-    /**
-     * The decoration's rotation, in degrees (clockwise).
-     */
-    protected double rotation;
+    @FunctionalInterface
+    interface Output {
+        /**
+         * Adds a given {@link Trait} with the given value.
+         *
+         * @param trait the {@link Trait} to add
+         * @param value the trait value
+         * @param <T>   the trait type
+         */
+        <T> void trait(@NonNull Trait<T> trait, @NonNull T value);
+    }
 }

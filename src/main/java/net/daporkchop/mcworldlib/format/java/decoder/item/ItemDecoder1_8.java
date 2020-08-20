@@ -21,7 +21,7 @@
 package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.mcworldlib.format.java.JavaSaveOptions;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaItemDecoder;
 import net.daporkchop.mcworldlib.item.FireworkExplosion;

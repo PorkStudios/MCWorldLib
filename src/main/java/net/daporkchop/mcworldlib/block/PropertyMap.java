@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.block;
 import lombok.NonNull;
 
 /**
- * A mapping of {@link Property} values to {@link BlockState}s.
+ * A mapping of {@link Trait} values to {@link BlockState}s.
  *
  * @author DaPorkchop_
  */
@@ -33,7 +33,7 @@ public interface PropertyMap<V> {
      *
      * @param value the value
      * @return the {@link BlockState} mapped to the given value
-     * @throws IllegalArgumentException if the given {@link Property} cannot store the given value
+     * @throws IllegalArgumentException if the given {@link Trait} cannot store the given value
      */
     BlockState getState(@NonNull V value);
 
@@ -54,7 +54,7 @@ public interface PropertyMap<V> {
          *
          * @param value the value
          * @return the {@link BlockState} mapped to the given value
-         * @throws IllegalArgumentException if the given {@link Property} cannot store the given value
+         * @throws IllegalArgumentException if the given {@link Trait} cannot store the given value
          */
         BlockState getState(int value);
     }
@@ -76,7 +76,7 @@ public interface PropertyMap<V> {
          *
          * @param value the value
          * @return the {@link BlockState} mapped to the given value
-         * @throws IllegalArgumentException if the given {@link Property} cannot store the given value
+         * @throws IllegalArgumentException if the given {@link Trait} cannot store the given value
          */
         BlockState getState(boolean value);
     }

@@ -42,7 +42,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public abstract class AbstractRegistry implements Registry {
     protected final ObjIntMap<Identifier> toIds;
     protected final Identifier[] fromIds;

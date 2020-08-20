@@ -20,7 +20,7 @@
 
 package minecraft.java;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;

@@ -18,57 +18,43 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common;
+package net.daporkchop.mcworldlib.block;
 
 import lombok.Getter;
 import lombok.NonNull;
-import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
+import net.daporkchop.lib.common.function.PFunctions;
+import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
-import net.daporkchop.mcworldlib.save.Save;
-import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.mcworldlib.world.WorldStorage;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
- * Base implementation of {@link World}.
- *
  * @author DaPorkchop_
  */
 @Getter
-public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements World {
-    protected final S parent;
-    protected final SaveOptions options;
-    protected final Identifier id;
+public class DefaultBlockType implements BlockType {
+    protected final BlockState defaultState;
 
-    public AbstractWorld(@NonNull S parent, @NonNull Identifier id) {
-        this.parent = parent;
-        this.options = parent.options();
-        this.id = id;
-    }
+    protected final Map<String, Trait<?>> traitsByName;
+    protected final Collection<Trait<?>> traits;
 
-    protected BlockRegistry blockRegistry;
-    protected WorldStorage storage;
-
-    /**
-     * Ensures that the implementation constructor has initialized all the required fields.
-     */
-    protected void validateState() {
-        checkState(this.blockRegistry != null, "blockRegistry must be set!");
-        checkState(this.storage != null, "storage must be set!");
+    public DefaultBlockType(@NonNull BlockRegistry registry, @NonNull Trait... traits)   {
+        this.traitsByName = Stream.of(PorkUtil.<Trait<?>[]>uncheckedCast(traits)).peek(Objects::requireNonNull).collect(Collectors.toMap(Trait::name, PFunctions.identity()));
+        this.traits = Collections.unmodifiableCollection(this.traitsByName.values());
     }
 
     @Override
-    public World retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
-
-    @Override
-    protected void doRelease() {
-        this.storage.release();
+    public <T> Trait<T> trait(@NonNull String name) {
+        Trait<T> trait = uncheckedCast(this.traitsByName.get(name));
+        checkArg(trait != null, "unknown trait: %s", name);
+        return trait;
     }
 }

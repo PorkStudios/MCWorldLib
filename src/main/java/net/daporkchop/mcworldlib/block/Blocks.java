@@ -18,31 +18,15 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.anvil.region;
+package net.daporkchop.mcworldlib.block;
 
-import io.netty.buffer.ByteBuf;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.experimental.Accessors;
-import net.daporkchop.lib.unsafe.util.AbstractReleasable;
+import lombok.experimental.UtilityClass;
 
 /**
- * Representation of the raw chunk data that was read from a {@link RegionFile}.
- * <p>
- * Note: releasing a raw chunk will also release the data buffer.
+ * Helper class, contains static fields for all global block types.
  *
  * @author DaPorkchop_
  */
-@AllArgsConstructor
-@Getter
-public final class RawChunk extends AbstractReleasable {
-    protected final long timestamp;
-    @NonNull
-    protected final ByteBuf data;
-
-    @Override
-    protected void doRelease() {
-        this.data.release();
-    }
+@UtilityClass
+public class Blocks {
 }

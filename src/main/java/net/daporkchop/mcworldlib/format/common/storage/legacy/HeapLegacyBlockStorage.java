@@ -26,7 +26,7 @@ import net.daporkchop.lib.common.pool.array.ArrayHandle;
 import net.daporkchop.lib.common.pool.handle.Handle;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 
 import java.util.Arrays;
 

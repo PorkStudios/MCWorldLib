@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
@@ -69,7 +69,7 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
             if (properties != null) {
                 //set properties
                 for (Map.Entry<String, Tag> entry : properties) {
-                    state = state.withProperty(entry.getKey(), ((StringTag) entry.getValue()).value());
+                    state = state.withTrait(entry.getKey(), ((StringTag) entry.getValue()).value());
                 }
             }
 

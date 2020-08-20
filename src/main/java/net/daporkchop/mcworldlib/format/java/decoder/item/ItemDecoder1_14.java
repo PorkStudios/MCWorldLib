@@ -45,7 +45,7 @@ public class ItemDecoder1_14 extends ItemDecoder1_13 {
         this.map.put("BlockStateTag", (AdvancedItemMetaDecoder) (meta, tag, stack, version, world) -> {
             BlockState state = world.parent().blockRegistryFor(version).getDefaultState(stack.id());
             for (Map.Entry<String, Tag> entry : tag.getCompound("BlockStateTag")) {
-                state = state.withProperty(entry.getKey(), ((StringTag) entry.getValue()).value());
+                state = state.withTrait(entry.getKey(), ((StringTag) entry.getValue()).value());
             }
             meta.put(BLOCK_STATE, state);
         });

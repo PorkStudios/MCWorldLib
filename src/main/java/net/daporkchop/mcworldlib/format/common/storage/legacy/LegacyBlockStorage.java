@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.common.storage.legacy;
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 

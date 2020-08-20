@@ -21,8 +21,7 @@
 package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.item.ItemMeta;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.World;

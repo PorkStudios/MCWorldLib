@@ -33,7 +33,6 @@ import lombok.experimental.Accessors;
  */
 @RequiredArgsConstructor
 @Getter
-@Accessors(fluent = true)
 public abstract class MinecraftVersion implements Comparable<MinecraftVersion> {
     @NonNull
     protected final MinecraftEdition edition;

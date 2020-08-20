@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  *
  * @author DaPorkchop_
  */
-public interface Property<V> extends Comparable<Property<?>> {
+public interface Trait<V> extends Comparable<Trait<?>> {
     /**
      * @return this property's name
      */
@@ -67,16 +67,16 @@ public interface Property<V> extends Comparable<Property<?>> {
     V decodeValue(@NonNull String encoded);
 
     @Override
-    default int compareTo(Property<?> o) {
+    default int compareTo(Trait<?> o) {
         return this.name().compareTo(o.name());
     }
 
     /**
-     * Extension of {@link Property} for {@code int} values.
+     * Extension of {@link Trait} for {@code int} values.
      *
      * @author DaPorkchop_
      */
-    interface Int extends Property<Integer> {
+    interface Int extends Trait<Integer> {
         @Override
         @Deprecated
         default Stream<Integer> values() {
@@ -90,10 +90,10 @@ public interface Property<V> extends Comparable<Property<?>> {
     }
 
     /**
-     * Extension of {@link Property} for {@code boolean} values.
+     * Extension of {@link Trait} for {@code boolean} values.
      *
      * @author DaPorkchop_
      */
-    interface Boolean extends Property<java.lang.Boolean> {
+    interface Boolean extends Trait<java.lang.Boolean> {
     }
 }

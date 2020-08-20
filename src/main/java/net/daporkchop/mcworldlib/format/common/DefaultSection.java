@@ -23,10 +23,8 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.mcworldlib.block.BlockAccess;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
@@ -48,7 +46,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.uncheckedCast;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public class DefaultSection extends AbstractRefCounted implements Section {
     @Getter(AccessLevel.NONE)
     protected final BlockStorage blocks;

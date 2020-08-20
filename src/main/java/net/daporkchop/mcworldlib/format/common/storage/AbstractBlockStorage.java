@@ -22,9 +22,8 @@ package net.daporkchop.mcworldlib.format.common.storage;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
@@ -34,7 +33,6 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
     @Getter
     protected final BlockRegistry blockRegistry;

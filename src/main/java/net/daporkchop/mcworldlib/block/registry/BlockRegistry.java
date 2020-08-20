@@ -18,9 +18,11 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package net.daporkchop.mcworldlib.block.registry;
 
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.block.BlockState;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
 
@@ -54,15 +56,9 @@ import java.util.function.ObjIntConsumer;
  *
  * @author DaPorkchop_
  */
+//TODO: a system for registry "contexts": allowing for modded block IDs to be registered
 public interface BlockRegistry {
     Identifier ID = Identifier.fromString("minecraft:block");
-
-    /**
-     * @return the {@link BlockRegistry} used globally for cross-version compatibility
-     */
-    static BlockRegistry global() {
-        return GlobalBlockRegistry.GLOBAL_REGISTRY;
-    }
 
     /**
      * @return the number of registered blocks
@@ -83,13 +79,6 @@ public interface BlockRegistry {
      * @return the {@link BlockState} used to represent air
      */
     BlockState air();
-
-    /**
-     * @return whether or not this is the global block registry
-     */
-    default boolean isGlobal()  {
-        return this == global();
-    }
 
     /**
      * @return a {@link RegistryConverter} for converting this registry's runtime IDs to the global block registry

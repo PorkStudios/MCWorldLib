@@ -34,7 +34,6 @@ import net.daporkchop.mcworldlib.world.Dimension;
  */
 @AllArgsConstructor
 @Getter
-@Accessors(fluent = true)
 public final class DefaultDimension implements Dimension {
     @NonNull
     protected final Identifier id;

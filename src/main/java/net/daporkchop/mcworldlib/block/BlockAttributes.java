@@ -20,14 +20,9 @@
 
 package net.daporkchop.mcworldlib.block;
 
-import lombok.experimental.UtilityClass;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-
 /**
  * @author DaPorkchop_
  */
-@UtilityClass
-class GlobalBlockRegistry {
-    public static final BlockRegistry GLOBAL_REGISTRY = JavaBlockRegistry.forVersion(JavaVersion.latest());
+//TODO: figure out what to do with this
+public class BlockAttributes {
 }

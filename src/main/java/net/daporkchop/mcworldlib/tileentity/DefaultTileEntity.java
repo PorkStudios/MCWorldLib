@@ -39,7 +39,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  * @author DaPorkchop_
  */
 @RequiredArgsConstructor
-@Accessors(fluent = true)
 public class DefaultTileEntity extends IdentityHashMap<PropertyKey<?>, Object> implements TileEntity {
     @Getter
     @NonNull

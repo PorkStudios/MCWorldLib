@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.common.storage;
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.mcworldlib.block.BlockAccess;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
