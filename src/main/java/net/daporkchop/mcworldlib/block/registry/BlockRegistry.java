@@ -29,6 +29,7 @@ import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.stream.Stream;
 
 /**
  * Extension of {@link Registry} for blocks.
@@ -61,11 +62,6 @@ public interface BlockRegistry {
     Identifier ID = Identifier.fromString("minecraft:block");
 
     /**
-     * @return the number of registered blocks
-     */
-    int blocks();
-
-    /**
      * @return the number of registered block states
      */
     int states();
@@ -81,111 +77,12 @@ public interface BlockRegistry {
     BlockState air();
 
     /**
-     * Checks whether or not the given block ID is registered.
-     *
-     * @param blockId the block ID to check for
-     * @return whether or not the given block ID is registered
-     */
-    boolean containsBlockId(@NonNull Identifier blockId);
-
-    /**
-     * Checks whether or not the given legacy ID is registered.
-     *
-     * @param legacyId the legacy ID to check for
-     * @return whether or not the given legacy ID is registered
-     */
-    boolean containsLegacyId(int legacyId);
-
-    /**
-     * Checks whether or not the given block state is registered.
-     *
-     * @param blockId the block ID of the block state to check for
-     * @param meta    the metadata of the block state to check for
-     * @return whether or not the given block state is registered
-     */
-    boolean containsState(@NonNull Identifier blockId, int meta);
-
-    /**
-     * Checks whether or not the given block state is registered.
-     *
-     * @param legacyId the legacy ID of the block state to check for
-     * @param meta     the metadata of the block state to check for
-     * @return whether or not the given block state is registered
-     */
-    boolean containsState(int legacyId, int meta);
-
-    /**
      * Checks whether or not the given block state is registered.
      *
      * @param runtimeId the runtime ID of the block state to check for
      * @return whether or not the given block state is registered
      */
     boolean containsState(int runtimeId);
-
-    /**
-     * Checks if the given block ID is registered and has an associated legacy ID_CHEST.
-     * <p>
-     * As some blocks do not have a legacy ID, this will not always return {@code true}, even if the block ID_CHEST is valid.
-     *
-     * @param blockId the block ID of the block
-     * @return whether or not the given block ID is registered and has an associated legacy ID_CHEST
-     */
-    boolean hasLegacyId(@NonNull Identifier blockId);
-
-    /**
-     * Gets the legacy ID belonging to the given block.
-     *
-     * @param blockId the block ID of the block
-     * @return the block's legacy ID
-     */
-    int getLegacyId(@NonNull Identifier blockId);
-
-    /**
-     * Gets the block ID belonging to the given block.
-     *
-     * @param legacyId the legacy ID of the block
-     * @return the block's ID
-     * @throws IllegalArgumentException if the given legacy ID is not registered
-     */
-    Identifier getBlockId(int legacyId);
-
-    /**
-     * Gets the {@link BlockState} for to the given block state.
-     *
-     * @param blockId the block ID of the block state to get
-     * @param meta    the metadata of the block state to get
-     * @return the {@link BlockState} for the given block state
-     * @throws IllegalArgumentException if the given block state is not registered
-     */
-    BlockState getState(@NonNull Identifier blockId, int meta);
-
-    /**
-     * Gets the {@link BlockState} for to the given block state.
-     *
-     * @param legacyId the legacy ID of the block state to get
-     * @param meta     the metadata of the block state to get
-     * @return the {@link BlockState} for the given block state
-     * @throws IllegalArgumentException if the given block state is not registered
-     */
-    BlockState getState(int legacyId, int meta);
-
-    /**
-     * Gets the default {@link BlockState} for to the given block ID.
-     *
-     * @param blockId the block ID of the block state to get
-     * @return the default {@link BlockState} for the given block ID
-     * @throws IllegalArgumentException if the given block ID is not registered
-     */
-    BlockState getDefaultState(@NonNull Identifier blockId);
-
-    /**
-     * Gets the default {@link BlockState} for to the given legacy block ID.
-     *
-     * @param legacyId the legacy ID of the block state to get
-     * @return the default {@link BlockState} for the given legacy block ID
-     * @throws IllegalArgumentException if the given legacy ID is not registered
-     */
-    BlockState getDefaultState(int legacyId);
 
     /**
      * Gets the {@link BlockState} for to the given block state.
@@ -195,39 +92,6 @@ public interface BlockRegistry {
      * @throws IllegalArgumentException if the given runtime ID is not registered
      */
     BlockState getState(int runtimeId);
-
-    /**
-     * Gets the runtime ID for the given block state.
-     *
-     * @param blockId the block ID of the block state to get
-     * @param meta    the metadata of the block state to get
-     * @return the runtime ID for the given block state
-     * @throws IllegalArgumentException if the given block state is not registered
-     */
-    int getRuntimeId(@NonNull Identifier blockId, int meta);
-
-    /**
-     * Gets the runtime ID for the given block state.
-     *
-     * @param legacyId the legacy ID of the block state to get
-     * @param meta     the metadata of the block state to get
-     * @return the runtime ID for the given block state
-     * @throws IllegalArgumentException if the given block state is not registered
-     */
-    int getRuntimeId(int legacyId, int meta);
-
-    void forEachBlockId(@NonNull Consumer<? super Identifier> action);
-
-    void forEachLegacyId(@NonNull IntConsumer action);
-
-    /**
-     * Performs the given action on each block in this registry.
-     * <p>
-     * The second parameter is the block's legacy ID. If the block does not have a legacy ID_CHEST, it will always be {@code -1}.
-     *
-     * @param action the action to perform
-     */
-    void forEachBlockId(@NonNull ObjIntConsumer<? super Identifier> action);
 
     void forEachState(@NonNull Consumer<? super BlockState> action);
 

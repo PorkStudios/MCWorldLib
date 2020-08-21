@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.registry.Registries;
@@ -58,7 +57,7 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
 
         this.version = this.extractVersion(levelData);
         this.registries = JavaRegistries.forVersion(this.version);
-        this.blockRegistry = JavaBlockRegistry.forVersion(this.version);
+        //TODO: this.blockRegistry = JavaBlockRegistry.forVersion(this.version);
 
         //find worlds
         this.openWorld(new DefaultDimension(Dimension.ID_OVERWORLD, 0, true, true));
@@ -103,6 +102,7 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
         if (this.version == java)   {
             return this.blockRegistry;
         }
-        return JavaBlockRegistry.forVersion(java);
+        //TODO: return JavaBlockRegistry.forVersion(java);
+        return null;
     }
 }

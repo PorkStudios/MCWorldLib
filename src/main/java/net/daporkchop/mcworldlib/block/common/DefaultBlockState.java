@@ -26,7 +26,9 @@ import lombok.RequiredArgsConstructor;
 import net.daporkchop.lib.primitive.map.ObjIntMap;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.BlockType;
-import net.daporkchop.mcworldlib.block.Trait;
+import net.daporkchop.mcworldlib.block.trait.BooleanTrait;
+import net.daporkchop.mcworldlib.block.trait.IntTrait;
+import net.daporkchop.mcworldlib.block.trait.Trait;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 import static net.daporkchop.lib.common.util.PorkUtil.*;
@@ -56,7 +58,7 @@ public class DefaultBlockState implements BlockState {
     }
 
     @Override
-    public BlockState withTrait(@NonNull Trait.Int trait, int value) {
+    public BlockState withTrait(@NonNull IntTrait trait, int value) {
         int traitIndex = this.traitIndices.getOrDefault(trait, -1);
         checkArg(traitIndex >= 0, "unknown trait: %s", trait);
         checkArg(trait.isValid(value), "invalid value for trait %s: %d", trait, value);
@@ -64,7 +66,7 @@ public class DefaultBlockState implements BlockState {
     }
 
     @Override
-    public BlockState withTrait(@NonNull Trait.Boolean trait, boolean value) {
+    public BlockState withTrait(@NonNull BooleanTrait trait, boolean value) {
         int traitIndex = this.traitIndices.getOrDefault(trait, -1);
         checkArg(traitIndex >= 0, "unknown trait: %s", trait);
         return this.otherStates[traitIndex][value ? 1 : 0];

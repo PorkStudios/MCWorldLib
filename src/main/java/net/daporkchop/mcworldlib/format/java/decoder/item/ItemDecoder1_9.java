@@ -46,10 +46,11 @@ public class ItemDecoder1_9 extends ItemDecoder1_8 {
         int damage = root.getShort("Damage", (short) 0);
 
         BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
-        if (blockRegistry.containsBlockId(stack.id())) {
+        //TODO:
+        /*if (blockRegistry.containsBlockId(stack.id())) {
             cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
         } else {
             cache.meta.put(DAMAGE, damage);
-        }
+        }*/
     }
 }

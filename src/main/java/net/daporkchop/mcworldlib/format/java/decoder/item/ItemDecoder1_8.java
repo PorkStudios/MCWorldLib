@@ -217,7 +217,8 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
         int damage = root.getShort("Damage", (short) 0);
 
         BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
-        if (blockRegistry.containsBlockId(stack.id())) {
+        //TODO:
+        /*if (blockRegistry.containsBlockId(stack.id())) {
             cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
         } else if (stack.id().toString() == "minecraft:potion") { //decode legacy potion damage
             String potionId = tag != null && tag.contains("CustomPotionEffects") ? "minecraft:water" : LegacyPotionConversion.IDS[damage & 0x7F];
@@ -229,7 +230,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
             cache.meta.put(MAP_ID, damage);
         } else {
             cache.meta.put(DAMAGE, damage);
-        }
+        }*/
     }
 
     protected void mainDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {

@@ -63,7 +63,8 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
     protected Palette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag, @NonNull BlockRegistry blockRegistry) {
         Palette palette = new ArrayPalette(bits);
         for (CompoundTag tag : paletteTag) {
-            BlockState state = blockRegistry.getDefaultState(Identifier.fromString(tag.getString("Name")));
+            //TODO: BlockState state = blockRegistry.getDefaultState(Identifier.fromString(tag.getString("Name")));
+            BlockState state = null;
 
             CompoundTag properties = tag.getCompound("Properties", null);
             if (properties != null) {

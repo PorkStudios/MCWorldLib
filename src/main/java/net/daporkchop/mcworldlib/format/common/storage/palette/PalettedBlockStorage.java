@@ -93,12 +93,14 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public int getBlockLegacyId(int x, int y, int z) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
+        //TODO: return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
+        return -1;
     }
 
     @Override
     public int getBlockMeta(int x, int y, int z) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
+        //TODO: return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
+        return -1;
     }
 
     @Override
@@ -112,7 +114,7 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public void setBlockMeta(int x, int y, int z, int meta) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
+        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
     }
 
     @Override

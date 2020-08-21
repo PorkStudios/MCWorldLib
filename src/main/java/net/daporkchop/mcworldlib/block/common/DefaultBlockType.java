@@ -28,7 +28,7 @@ import net.daporkchop.lib.primitive.map.open.ObjIntOpenHashMap;
 import net.daporkchop.lib.primitive.map.open.ObjObjOpenHashMap;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.BlockType;
-import net.daporkchop.mcworldlib.block.Trait;
+import net.daporkchop.mcworldlib.block.trait.Trait;
 import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.Arrays;
@@ -36,8 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.IntSupplier;
-import java.util.stream.Stream;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 import static net.daporkchop.lib.common.util.PorkUtil.*;
@@ -53,7 +53,7 @@ public class DefaultBlockType implements BlockType {
     protected final Identifier id;
     protected final BlockState defaultState;
 
-    public DefaultBlockType(@NonNull IntSupplier runtimeIdAllocator, @NonNull Identifier id, @NonNull Trait<?>... traits) {
+    public DefaultBlockType(@NonNull IntSupplier runtimeIdAllocator, @NonNull Consumer<BlockState> blockStateCallback, @NonNull Identifier id, @NonNull Trait<?>... traits) {
         for (Trait<?> trait : traits) {
             checkArg(this.traitsByName.put(Objects.requireNonNull(trait, "traits").name(), trait) == null, "duplicate trait: %s", trait);
         }
@@ -61,6 +61,7 @@ public class DefaultBlockType implements BlockType {
 
         if (traits.length == 0) {
             this.defaultState = new DefaultBlockState(this, runtimeIdAllocator.getAsInt(), new ObjIntOpenHashMap.Identity<>(), new BlockState[0][], new Object[0]);
+            blockStateCallback.accept(this.defaultState);
         } else {
             ObjIntMap<Trait<?>> traitIndices = new ObjIntOpenHashMap.Identity<>();
             for (int i = 0; i < traits.length; i++) {
@@ -71,15 +72,15 @@ public class DefaultBlockType implements BlockType {
             Object[][] tempStates = new Object[Arrays.stream(values).mapToInt(arr -> arr.length).reduce(1, (a, b) -> a * b)][values.length];
 
             int[] traitFactors = new int[values.length];
-            for (int i = values.length - 1, factor = 1; i >= 0; i--, factor *= values[i].length) {
+            for (int i = values.length - 1, factor = 1; i >= 0; factor *= values[i--].length) {
                 traitFactors[i] = factor;
             }
 
             //build trait values
-            for (int traitIndex = values.length - 1; traitIndex >= 0; traitIndex--)  {
+            for (int traitIndex = values.length - 1; traitIndex >= 0; traitIndex--) {
                 Object[] traitValues = values[traitIndex];
                 int factor = traitFactors[traitIndex];
-                for (int stateIndex = 0; stateIndex < tempStates.length;) {
+                for (int stateIndex = 0; stateIndex < tempStates.length; ) {
                     for (int valueIndex = 0; valueIndex < traitValues.length; valueIndex++) {
                         Object traitValue = traitValues[valueIndex];
                         for (int i = 0; i < factor; i++) {
@@ -111,12 +112,17 @@ public class DefaultBlockType implements BlockType {
                 }
             }
 
+            //compute default state
             int defaultStateIndex = 0;
             for (int traitIndex = 0; traitIndex < values.length; traitIndex++) {
                 Trait<?> trait = traits[traitIndex];
                 defaultStateIndex += traitFactors[traitIndex] * trait.valueIndex(uncheckedCast(trait.defaultValue()));
             }
             this.defaultState = states[defaultStateIndex];
+
+            for (BlockState state : states) {
+                blockStateCallback.accept(state);
+            }
         }
     }
 

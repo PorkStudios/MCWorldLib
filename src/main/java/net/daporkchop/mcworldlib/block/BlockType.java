@@ -21,6 +21,9 @@
 package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.block.trait.BooleanTrait;
+import net.daporkchop.mcworldlib.block.trait.IntTrait;
+import net.daporkchop.mcworldlib.block.trait.Trait;
 import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.Collection;
@@ -59,26 +62,26 @@ public interface BlockType {
     <T> Trait<T> trait(@NonNull String name);
 
     /**
-     * Gets the {@link Trait.Int} with the given name.
+     * Gets the {@link IntTrait} with the given name.
      *
      * @param name the name of the property to get
-     * @return the {@link Trait.Int} with the given name
+     * @return the {@link IntTrait} with the given name
      * @throws IllegalArgumentException if the block does not have any properties with the given name
-     * @throws ClassCastException       if the property is not a {@link Trait.Int}
+     * @throws ClassCastException       if the property is not a {@link IntTrait}
      */
-    default Trait.Int traitInt(@NonNull String name) {
+    default IntTrait traitInt(@NonNull String name) {
         return uncheckedCast(this.trait(name));
     }
 
     /**
-     * Gets the {@link Trait.Boolean} with the given name.
+     * Gets the {@link BooleanTrait} with the given name.
      *
      * @param name the name of the property to get
-     * @return the {@link Trait.Boolean} with the given name
+     * @return the {@link BooleanTrait} with the given name
      * @throws IllegalArgumentException if the block does not have any properties with the given name
-     * @throws ClassCastException       if the property is not a {@link Trait.Boolean}
+     * @throws ClassCastException       if the property is not a {@link BooleanTrait}
      */
-    default Trait.Boolean traitBoolean(@NonNull String name) {
+    default BooleanTrait traitBoolean(@NonNull String name) {
         return uncheckedCast(this.trait(name));
     }
 }

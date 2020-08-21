@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.block.registry;
 import lombok.NonNull;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.block.BlockType;
-import net.daporkchop.mcworldlib.block.Trait;
+import net.daporkchop.mcworldlib.block.trait.Trait;
 import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.Map;

@@ -18,29 +18,18 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package minecraft;
 
-import lombok.NonNull;
-import lombok.experimental.UtilityClass;
 import net.daporkchop.mcworldlib.block.registry.GlobalBlockRegistry;
-import net.daporkchop.mcworldlib.block.trait.Trait;
-import net.daporkchop.mcworldlib.block.trait.Traits;
+import org.junit.Test;
 
 /**
- * Helper class, contains static fields for all global block types.
- *
  * @author DaPorkchop_
  */
-@UtilityClass
-public class Blocks {
-    public final BlockType AIR = GlobalBlockRegistry.INSTANCE.air().type();
-
-    public final BlockType COARSE_DIRT = register("coarse_dirt");
-    public final BlockType DIRT = register("dirt");
-    public final BlockType GRASS = register("grass", Traits.SNOWY);
-    public final BlockType STONE = register("stone", Traits.STONE_TYPE);
-
-    private static BlockType register(@NonNull String id, @NonNull Trait<?>... traits) {
-        return GlobalBlockRegistry.INSTANCE.register(id, traits);
+public class GlobalRegistryLoadTest {
+    @Test
+    public void test() {
+        GlobalBlockRegistry registry = GlobalBlockRegistry.INSTANCE;
+        System.out.printf("types: %d, states: %d\n", registry.types(), registry.states());
     }
 }

@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package net.daporkchop.mcworldlib.block.trait;
 
 import lombok.NonNull;
 
@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author DaPorkchop_
  */
-public interface Trait<V> extends Comparable<Trait<?>> {
+public interface Trait<V> {
     /**
      * @return this property's name
      */
@@ -84,47 +84,4 @@ public interface Trait<V> extends Comparable<Trait<?>> {
      * @return the decoded value
      */
     V decodeValue(@NonNull String encoded);
-
-    @Override
-    default int compareTo(Trait<?> o) {
-        return this.name().compareTo(o.name());
-    }
-
-    /**
-     * Extension of {@link Trait} for {@link java.lang.Enum} values.
-     *
-     * @author DaPorkchop_
-     */
-    interface Enum<E extends java.lang.Enum<E>> extends Trait<E> {
-    }
-
-    /**
-     * Extension of {@link Trait} for {@code int} values.
-     *
-     * @author DaPorkchop_
-     */
-    interface Int extends Trait<Integer> {
-        /**
-         * Checks whether or not the given value is valid.
-         *
-         * @param value the value to check
-         * @return whether or not the given value is valid
-         */
-        boolean isValid(int value);
-    }
-
-    /**
-     * Extension of {@link Trait} for {@code boolean} values.
-     *
-     * @author DaPorkchop_
-     */
-    interface Boolean extends Trait<java.lang.Boolean> {
-        /**
-         * Checks whether or not the given value is valid.
-         *
-         * @param value the value to check
-         * @return whether or not the given value is valid
-         */
-        boolean isValid(boolean value);
-    }
 }

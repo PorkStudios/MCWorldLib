@@ -37,7 +37,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 /**
  * @author DaPorkchop_
  */
-public abstract class AbstractBlockRegistry implements BlockRegistry {
+public abstract class AbstractVersionBlockRegistry implements VersionBlockRegistry {
     protected final IntObjMap<BlockState> runtimeToState = new IntObjOpenHashMap<>();
     protected final ObjIntMap<Identifier> idToLegacy = new ObjIntOpenHashMap<>();
     protected final IntObjMap<Identifier> legacyToId = new IntObjOpenHashMap<>();

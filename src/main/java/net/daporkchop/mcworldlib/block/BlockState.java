@@ -22,6 +22,9 @@ package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.trait.BooleanTrait;
+import net.daporkchop.mcworldlib.block.trait.IntTrait;
+import net.daporkchop.mcworldlib.block.trait.Trait;
 import net.daporkchop.mcworldlib.util.Identifier;
 
 import static net.daporkchop.lib.common.util.PorkUtil.*;
@@ -52,31 +55,31 @@ public interface BlockState {
      * @return a {@link BlockState} with the given {@link Trait} set to the given value
      * @throws IllegalArgumentException if the given {@link Trait} was not registered for the block
      * @throws IllegalArgumentException if the given {@link Trait} cannot store the given value
-     * @see #withTrait(Trait.Int, int)
-     * @see #withTrait(Trait.Boolean, boolean)
+     * @see #withTrait(IntTrait, int)
+     * @see #withTrait(BooleanTrait, boolean)
      */
     <V> BlockState withTrait(@NonNull Trait<V> trait, @NonNull V value);
 
     /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link Trait.Int} set to the given value.
+     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link IntTrait} set to the given value.
      *
-     * @param trait the {@link Trait.Int} key to change
+     * @param trait the {@link IntTrait} key to change
      * @param value the new trait value
-     * @return a {@link BlockState} with the given {@link Trait.Int} set to the given value
-     * @throws IllegalArgumentException if the given {@link Trait.Int} was not registered for the block
-     * @throws IllegalArgumentException if the given {@link Trait.Int} cannot store the given value
+     * @return a {@link BlockState} with the given {@link IntTrait} set to the given value
+     * @throws IllegalArgumentException if the given {@link IntTrait} was not registered for the block
+     * @throws IllegalArgumentException if the given {@link IntTrait} cannot store the given value
      */
-    BlockState withTrait(@NonNull Trait.Int trait, int value);
+    BlockState withTrait(@NonNull IntTrait trait, int value);
 
     /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link Trait.Boolean} set to the given value.
+     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link BooleanTrait} set to the given value.
      *
-     * @param trait the {@link Trait.Boolean} key to change
+     * @param trait the {@link BooleanTrait} key to change
      * @param value the new trait value
-     * @return a {@link BlockState} with the given {@link Trait.Boolean} set to the given value
-     * @throws IllegalArgumentException if the given {@link Trait.Boolean} was not registered for the block
+     * @return a {@link BlockState} with the given {@link BooleanTrait} set to the given value
+     * @throws IllegalArgumentException if the given {@link BooleanTrait} was not registered for the block
      */
-    BlockState withTrait(@NonNull Trait.Boolean trait, boolean value);
+    BlockState withTrait(@NonNull BooleanTrait trait, boolean value);
 
     /**
      * Convenience method, gets a {@link BlockState} with the same block {@link Identifier} and the trait with the given name set to the given value.

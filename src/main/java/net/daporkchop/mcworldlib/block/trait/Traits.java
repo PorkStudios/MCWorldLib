@@ -18,29 +18,18 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package net.daporkchop.mcworldlib.block.trait;
 
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import net.daporkchop.mcworldlib.block.registry.GlobalBlockRegistry;
-import net.daporkchop.mcworldlib.block.trait.Trait;
-import net.daporkchop.mcworldlib.block.trait.Traits;
+import net.daporkchop.mcworldlib.block.trait.value.StoneType;
 
 /**
- * Helper class, contains static fields for all global block types.
+ * Helper class, contains static fields for all global block traits.
  *
  * @author DaPorkchop_
  */
 @UtilityClass
-public class Blocks {
-    public final BlockType AIR = GlobalBlockRegistry.INSTANCE.air().type();
-
-    public final BlockType COARSE_DIRT = register("coarse_dirt");
-    public final BlockType DIRT = register("dirt");
-    public final BlockType GRASS = register("grass", Traits.SNOWY);
-    public final BlockType STONE = register("stone", Traits.STONE_TYPE);
-
-    private static BlockType register(@NonNull String id, @NonNull Trait<?>... traits) {
-        return GlobalBlockRegistry.INSTANCE.register(id, traits);
-    }
+public class Traits {
+    public final BooleanTrait SNOWY = BooleanTrait.of("snowy");
+    public final EnumTrait<StoneType> STONE_TYPE = EnumTrait.of("stone_type", StoneType.class, StoneType.STONE);
 }

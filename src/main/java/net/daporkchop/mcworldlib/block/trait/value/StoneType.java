@@ -18,29 +18,17 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
-
-import lombok.NonNull;
-import lombok.experimental.UtilityClass;
-import net.daporkchop.mcworldlib.block.registry.GlobalBlockRegistry;
-import net.daporkchop.mcworldlib.block.trait.Trait;
-import net.daporkchop.mcworldlib.block.trait.Traits;
+package net.daporkchop.mcworldlib.block.trait.value;
 
 /**
- * Helper class, contains static fields for all global block types.
- *
  * @author DaPorkchop_
  */
-@UtilityClass
-public class Blocks {
-    public final BlockType AIR = GlobalBlockRegistry.INSTANCE.air().type();
-
-    public final BlockType COARSE_DIRT = register("coarse_dirt");
-    public final BlockType DIRT = register("dirt");
-    public final BlockType GRASS = register("grass", Traits.SNOWY);
-    public final BlockType STONE = register("stone", Traits.STONE_TYPE);
-
-    private static BlockType register(@NonNull String id, @NonNull Trait<?>... traits) {
-        return GlobalBlockRegistry.INSTANCE.register(id, traits);
-    }
+public enum StoneType {
+    ANDESITE,
+    ANDESITE_SMOOTH,
+    DIORITE,
+    DIORITE_SMOOTH,
+    GRANITE,
+    GRANITE_SMOOTH,
+    STONE;
 }
