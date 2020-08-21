@@ -20,6 +20,9 @@
 
 package net.daporkchop.mcworldlib.block;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Bi-directional lookup for converting block runtime IDs between a given block registry and the global block registry.
  * <p>

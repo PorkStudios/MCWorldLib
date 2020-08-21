@@ -21,6 +21,7 @@
 package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.Collection;
 
@@ -32,6 +33,11 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  * @author DaPorkchop_
  */
 public interface BlockType {
+    /**
+     * @return this block type's ID
+     */
+    Identifier id();
+
     /**
      * @return this block type's default state
      */

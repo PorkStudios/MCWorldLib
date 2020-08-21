@@ -21,6 +21,7 @@
 package net.daporkchop.mcworldlib.block.registry;
 
 import lombok.NonNull;
+import net.daporkchop.lib.primitive.lambda.ObjIntConsumer;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.registry.Registry;
@@ -28,7 +29,6 @@ import net.daporkchop.mcworldlib.util.Identifier;
 
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
-import java.util.function.ObjIntConsumer;
 
 /**
  * Extension of {@link Registry} for blocks.
@@ -79,11 +79,6 @@ public interface BlockRegistry {
      * @return the {@link BlockState} used to represent air
      */
     BlockState air();
-
-    /**
-     * @return a {@link RegistryConverter} for converting this registry's runtime IDs to the global block registry
-     */
-    RegistryConverter toGlobal();
 
     /**
      * Checks whether or not the given block ID is registered.

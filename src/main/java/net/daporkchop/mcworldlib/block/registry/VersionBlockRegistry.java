@@ -18,34 +18,35 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.common;
+package net.daporkchop.mcworldlib.block.registry;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.BlockType;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
-import net.daporkchop.lib.primitive.map.IntIntMap;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 /**
- * Default implementation of {@link RegistryConverter}.
+ * A {@link BlockRegistry} for a specific version of the game.
  *
  * @author DaPorkchop_
  */
-@RequiredArgsConstructor
-@Accessors(fluent = true)
-public class DefaultRegistryConverter implements RegistryConverter {
-    @NonNull
-    protected final IntIntMap toGlobal;
-    @NonNull
-    protected final IntIntMap fromGlobal;
+public interface VersionBlockRegistry extends BlockRegistry {
+    /**
+     * @return the version of the game that this registry is for
+     */
+    MinecraftVersion version();
 
-    @Override
-    public int toGlobal(int id) {
-        return this.toGlobal.getOrDefault(id, 0);
-    }
+    /**
+     * Registers a new block type.
+     *
+     * @param serializer the {@link StateSerializer} to use for serializing
+     * @param globalType the {@link BlockType} registered in the global block registry
+     * @return the block type as newly added to this registry
+     */
+    BlockType register(@NonNull StateSerializer serializer, @NonNull BlockType globalType);
 
-    @Override
-    public int fromGlobal(int id) {
-        return this.fromGlobal.getOrDefault(id, 0);
-    }
+    /**
+     * @return a {@link RegistryConverter} for converting this registry's runtime IDs to the global block registry
+     */
+    RegistryConverter toGlobal();
 }

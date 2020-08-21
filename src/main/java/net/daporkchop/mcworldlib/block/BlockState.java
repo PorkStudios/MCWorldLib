@@ -34,19 +34,9 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  */
 public interface BlockState {
     /**
-     * @return the block ID corresponding to this block state
+     * @return the block type
      */
-    Identifier blockId();
-
-    /**
-     * @return the block's legacy ID, or {@code -1} if none
-     */
-    int legacyId();
-
-    /**
-     * @return the block state's raw metadata value, or {@code -1} if none
-     */
-    int meta();
+    BlockType type();
 
     /**
      * @return the block state's runtime ID
@@ -111,9 +101,4 @@ public interface BlockState {
      * @throws IllegalArgumentException if the given {@link Trait} was not registered for the block
      */
     <T> T propertyValue(@NonNull Trait<T> trait);
-
-    /**
-     * @return the block type
-     */
-    BlockType type();
 }

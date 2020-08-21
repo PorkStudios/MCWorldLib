@@ -22,9 +22,7 @@ package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
 
-import java.util.function.Function;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * A key used to define an attribute of a block state.
@@ -38,17 +36,38 @@ public interface Trait<V> extends Comparable<Trait<?>> {
     String name();
 
     /**
-     * @return a stream over all valid values for this property
+     * @return a list of all valid values for this property
      */
-    Stream<V> values();
+    List<V> values();
 
     /**
-     * Creates a new {@link PropertyMap} populated with the return values of the given function.
-     *
-     * @param mappingFunction the function to use for computing the {@link BlockState}s for each value
-     * @return a new {@link PropertyMap} populated with the return values of the given function
+     * @return this trait's default value
      */
-    PropertyMap<V> propertyMap(@NonNull Function<V, BlockState> mappingFunction);
+    V defaultValue();
+
+    /**
+     * Checks whether or not the given value is valid.
+     *
+     * @param value the value to check
+     * @return whether or not the given value is valid
+     */
+    boolean isValid(@NonNull V value);
+
+    /**
+     * Gets the index of a value.
+     *
+     * @param value the value to get the index for
+     * @return the value's index
+     */
+    int valueIndex(@NonNull V value);
+
+    /**
+     * Gets a value from its index.
+     *
+     * @param index the index to get the value for
+     * @return the value at the given index
+     */
+    V valueFromIndex(int index);
 
     /**
      * Encodes a value to its {@link String} representation.
@@ -72,21 +91,26 @@ public interface Trait<V> extends Comparable<Trait<?>> {
     }
 
     /**
+     * Extension of {@link Trait} for {@link java.lang.Enum} values.
+     *
+     * @author DaPorkchop_
+     */
+    interface Enum<E extends java.lang.Enum<E>> extends Trait<E> {
+    }
+
+    /**
      * Extension of {@link Trait} for {@code int} values.
      *
      * @author DaPorkchop_
      */
     interface Int extends Trait<Integer> {
-        @Override
-        @Deprecated
-        default Stream<Integer> values() {
-            return this.intValues().boxed();
-        }
-
         /**
-         * @return a stream over all valid values for this property
+         * Checks whether or not the given value is valid.
+         *
+         * @param value the value to check
+         * @return whether or not the given value is valid
          */
-        IntStream intValues();
+        boolean isValid(int value);
     }
 
     /**
@@ -95,5 +119,12 @@ public interface Trait<V> extends Comparable<Trait<?>> {
      * @author DaPorkchop_
      */
     interface Boolean extends Trait<java.lang.Boolean> {
+        /**
+         * Checks whether or not the given value is valid.
+         *
+         * @param value the value to check
+         * @return whether or not the given value is valid
+         */
+        boolean isValid(boolean value);
     }
 }
