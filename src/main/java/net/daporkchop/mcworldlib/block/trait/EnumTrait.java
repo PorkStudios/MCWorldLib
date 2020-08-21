@@ -51,7 +51,7 @@ public final class EnumTrait<E extends Enum<E>> implements Trait<E> {
         return of(name, values[0], values);
     }
 
-    public static <E extends Enum<E>> EnumTrait<E> of(@NonNull String name, @NonNull E defaultValue, @NonNull E... values) {
+    private static <E extends Enum<E>> EnumTrait<E> of(@NonNull String name, @NonNull E defaultValue, @NonNull E... values) {
         return new EnumTrait<>(name, Arrays.asList(values), defaultValue);
     }
 

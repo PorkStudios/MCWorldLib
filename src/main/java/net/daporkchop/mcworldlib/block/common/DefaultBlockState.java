@@ -23,6 +23,8 @@ package net.daporkchop.mcworldlib.block.common;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import net.daporkchop.lib.common.pool.handle.Handle;
+import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.lib.primitive.map.ObjIntMap;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.BlockType;
@@ -77,5 +79,23 @@ public class DefaultBlockState implements BlockState {
         int traitIndex = this.traitIndices.getOrDefault(trait, -1);
         checkArg(traitIndex >= 0, "unknown trait: %s", trait);
         return uncheckedCast(this.traitValues[traitIndex]);
+    }
+
+    @Override
+    public String toString() {
+        if (this.traitValues.length == 0 || this == this.type.defaultState())   {
+            return this.type.id().toString();
+        }
+
+        try (Handle<StringBuilder> handle = STRINGBUILDER_POOL.get())   {
+            StringBuilder builder = handle.get();
+            builder.setLength(0);
+
+            builder.append(this.type.id()).append('[');
+            this.type.traits().forEach(trait -> builder.append(trait.name()).append('=')
+                    .append(this.traitValues[this.traitIndices.get(trait)].toString().toLowerCase()).append(','));
+            builder.setCharAt(builder.length() - 1, ']');
+            return builder.toString();
+        }
     }
 }

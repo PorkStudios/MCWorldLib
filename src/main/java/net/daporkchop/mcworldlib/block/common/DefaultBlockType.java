@@ -34,6 +34,7 @@ import net.daporkchop.mcworldlib.util.Identifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -49,6 +50,7 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
 public class DefaultBlockType implements BlockType {
     @Getter(AccessLevel.NONE)
     protected final Map<String, Trait<?>> traitsByName = new ObjObjOpenHashMap<>();
+    protected final List<Trait<?>> traits;
 
     protected final Identifier id;
     protected final BlockState defaultState;
@@ -57,7 +59,9 @@ public class DefaultBlockType implements BlockType {
         for (Trait<?> trait : traits) {
             checkArg(this.traitsByName.put(Objects.requireNonNull(trait, "traits").name(), trait) == null, "duplicate trait: %s", trait);
         }
+
         this.id = id;
+        this.traits = Collections.unmodifiableList(Arrays.asList(traits));
 
         if (traits.length == 0) {
             this.defaultState = new DefaultBlockState(this, runtimeIdAllocator.getAsInt(), new ObjIntOpenHashMap.Identity<>(), new BlockState[0][], new Object[0]);
@@ -124,11 +128,6 @@ public class DefaultBlockType implements BlockType {
                 blockStateCallback.accept(state);
             }
         }
-    }
-
-    @Override
-    public Collection<Trait<?>> traits() {
-        return Collections.unmodifiableCollection(this.traitsByName.values());
     }
 
     @Override
