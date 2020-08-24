@@ -48,7 +48,6 @@ import static net.daporkchop.mcworldlib.format.anvil.region.RegionConstants.*;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public abstract class AbstractRegionFile implements RegionFile {
     protected static final OpenOption[] RO_OPEN_OPTIONS = {StandardOpenOption.READ};
     protected static final OpenOption[] RWC_OPEN_OPTIONS = {

@@ -45,7 +45,6 @@ import static net.daporkchop.lib.common.util.PValidation.checkArg;
 /**
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class AnvilSave extends AbstractSave<JavaVersion> {
     @Getter
     protected final NBTOptions chunkNBTOptions;

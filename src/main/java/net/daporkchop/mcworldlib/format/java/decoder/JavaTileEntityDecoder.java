@@ -57,7 +57,7 @@ public interface JavaTileEntityDecoder {
     TileEntity decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world);
 
     @RequiredArgsConstructor
-    @Accessors(fluent = true, chain = true)
+    @Accessors(chain = true)
     class Builder {
         @Setter
         @NonNull

@@ -46,7 +46,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  */
 @RequiredArgsConstructor
 @Getter
-@Accessors(fluent = true)
 public class DefaultBlockState implements BlockState {
     @NonNull
     protected final BlockRegistry registry;

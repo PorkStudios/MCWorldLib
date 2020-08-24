@@ -38,7 +38,7 @@ import net.daporkchop.mcworldlib.util.Identifier;
 @AllArgsConstructor
 @Getter
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(chain = true)
 public class ItemStack implements Cloneable<ItemStack> {
     @NonNull
     protected Identifier id;

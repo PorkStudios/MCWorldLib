@@ -36,7 +36,6 @@ import java.util.stream.Stream;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class BooleanPropertyImpl implements Property.Boolean {
     @Getter
     protected final String name;

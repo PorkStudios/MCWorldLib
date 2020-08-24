@@ -36,7 +36,7 @@ import java.util.List;
 @ToString
 @Getter
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(chain = true)
 public class FireworkExplosion {
     /**
      * Whether or not this firework explosion has the "flicker" effect.

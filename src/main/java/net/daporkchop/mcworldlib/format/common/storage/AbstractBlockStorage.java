@@ -34,7 +34,6 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
     @Getter
     protected final BlockRegistry blockRegistry;

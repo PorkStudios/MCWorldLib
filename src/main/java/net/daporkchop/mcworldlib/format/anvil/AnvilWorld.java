@@ -39,7 +39,6 @@ import java.io.File;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
     @Getter
     protected final Dimension dimension;

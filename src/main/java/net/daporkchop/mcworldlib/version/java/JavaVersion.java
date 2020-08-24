@@ -25,16 +25,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
 import net.daporkchop.lib.common.misc.InstancePool;
-import net.daporkchop.mcworldlib.version.DataVersion;
-import net.daporkchop.mcworldlib.version.MinecraftEdition;
-import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.concurrent.IntObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
+import net.daporkchop.mcworldlib.version.DataVersion;
+import net.daporkchop.mcworldlib.version.MinecraftEdition;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,40 +47,7 @@ import java.util.Map;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public final class JavaVersion extends MinecraftVersion {
-    @UtilityClass
-    private static class OldVersion {
-        private final JavaVersion OLD;
-
-        static {
-            JavaVersion v1_8_9 = fromName("1.8.9");
-            OLD = new JavaVersion("[unknown] (≤ 1.8.9)", v1_8_9.releaseTime + 1L, -1, -1);
-        }
-    }
-
-    @UtilityClass
-    private static class LatestVersion {
-        private final JavaVersion LATEST = fromName("1.16.1");
-    }
-
-    @UtilityClass
-    private static class DataVersionToId {
-        private final IntObjMap<String> MAP = new IntObjOpenHashMap<>();
-
-        static {
-            JsonObject obj;
-            try (InputStream in = JavaVersion.class.getResourceAsStream("data_version_to_id.json")) {
-                obj = InstancePool.getInstance(JsonParser.class).parse(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
-            } catch (IOException e) {
-                throw new AssertionError(e);
-            }
-            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                MAP.put(Integer.parseUnsignedInt(entry.getKey()), entry.getValue().getAsString().intern());
-            }
-        }
-    }
-
     private static final Map<String, JavaVersion> NAME_CACHE = new ObjObjConcurrentHashMap<>(); //fast computeIfAbsent
     private static final IntObjMap<JavaVersion> DATA_VERSION_CACHE = new IntObjConcurrentHashMap<>();
 
@@ -130,7 +96,6 @@ public final class JavaVersion extends MinecraftVersion {
     protected JavaVersion(String name, long releaseTime) {
         this(name, releaseTime, -1, -1);
     }
-
     protected JavaVersion(String name, long releaseTime, int protocol, int data) {
         super(MinecraftEdition.JAVA, name != null ? name : "", releaseTime);
 
@@ -157,5 +122,32 @@ public final class JavaVersion extends MinecraftVersion {
             }
         }
         return super.compareTo(o);
+    }
+
+    @UtilityClass
+    private static class OldVersion {
+        private final JavaVersion OLD = new JavaVersion("[unknown] (≤ 1.8.9)", fromName("1.8.9").releaseTime + 1L, -1, -1);
+    }
+
+    @UtilityClass
+    private static class LatestVersion {
+        private final JavaVersion LATEST = fromName("1.16.1");
+    }
+
+    @UtilityClass
+    private static class DataVersionToId {
+        private final IntObjMap<String> MAP = new IntObjOpenHashMap<>();
+
+        static {
+            JsonObject obj;
+            try (InputStream in = JavaVersion.class.getResourceAsStream("data_version_to_id.json")) {
+                obj = InstancePool.getInstance(JsonParser.class).parse(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
+            } catch (IOException e) {
+                throw new AssertionError(e);
+            }
+            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
+                MAP.put(Integer.parseUnsignedInt(entry.getKey()), entry.getValue().getAsString().intern());
+            }
+        }
     }
 }

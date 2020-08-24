@@ -31,7 +31,6 @@ import net.daporkchop.mcworldlib.block.RegistryConverter;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public class GlobalRegistryConverter implements RegistryConverter {
     protected final BlockRegistry local = BlockRegistry.global();
 

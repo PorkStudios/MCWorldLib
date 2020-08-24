@@ -37,7 +37,7 @@ import net.daporkchop.mcworldlib.util.Identifier;
 @ToString
 @Getter
 @Setter
-@Accessors(fluent = true, chain = true)
+@Accessors(chain = true)
 public class PotionEffect {
     /**
      * The ID of the potion effect.

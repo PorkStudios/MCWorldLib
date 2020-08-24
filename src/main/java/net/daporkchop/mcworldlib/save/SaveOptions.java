@@ -50,7 +50,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  * @author DaPorkchop_
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Accessors(fluent = true)
 public final class SaveOptions implements Cloneable<SaveOptions.Builder> {
     private static final Map<String, Key<?>> KEY_LOOKUP = new ConcurrentHashMap<>();
 

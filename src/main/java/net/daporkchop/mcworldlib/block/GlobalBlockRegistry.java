@@ -25,6 +25,8 @@ import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 
 /**
+ * Allows lazy initialization of the global block re
+ *
  * @author DaPorkchop_
  */
 @UtilityClass

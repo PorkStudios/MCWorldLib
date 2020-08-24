@@ -32,7 +32,6 @@ import net.daporkchop.lib.primitive.map.IntIntMap;
  * @author DaPorkchop_
  */
 @RequiredArgsConstructor
-@Accessors(fluent = true)
 public class DefaultRegistryConverter implements RegistryConverter {
     @NonNull
     protected final IntIntMap toGlobal;

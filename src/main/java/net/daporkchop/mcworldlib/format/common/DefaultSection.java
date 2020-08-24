@@ -48,7 +48,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.uncheckedCast;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public class DefaultSection extends AbstractRefCounted implements Section {
     @Getter(AccessLevel.NONE)
     protected final BlockStorage blocks;

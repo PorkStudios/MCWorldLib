@@ -50,7 +50,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  */
 @RequiredArgsConstructor
 @Getter
-@Accessors(fluent = true)
 public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractRefCounted implements Save {
     @NonNull
     protected final SaveOptions options;

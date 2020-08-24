@@ -62,7 +62,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 /**
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class JavaBlockRegistry extends AbstractBlockRegistry {
     private static final Map<String, BlockRegistry> CACHE = new ObjObjConcurrentHashMap<>(); //this has a faster computeIfAbsent implementation
     private static final Type BLOCK_MAP_TYPE = PTypes.parameterized(Map.class, String.class, JsonBlock.class);
@@ -110,14 +109,14 @@ public class JavaBlockRegistry extends AbstractBlockRegistry {
         try {
             int min = values.stream().mapToInt(Integer::parseUnsignedInt).min().orElse(0);
             int max = values.stream().mapToInt(Integer::parseUnsignedInt).max().orElse(0) + 1;
-            return new IntPropertyImpl(name.getName(), min, max);
+            return new IntPropertyImpl(name.name(), min, max);
         } catch (NumberFormatException ignored) {
         }
 
         if (values.size() == 2 && values.contains("true") && values.contains("false")) {
-            return new BooleanPropertyImpl(name.getName());
+            return new BooleanPropertyImpl(name.name());
         } else {
-            return new EnumPropertyImpl(name.getName(), values);
+            return new EnumPropertyImpl(name.name(), values);
         }
     }
 
@@ -165,7 +164,6 @@ public class JavaBlockRegistry extends AbstractBlockRegistry {
     }
 
     @Getter
-    @Accessors(fluent = true)
     public static class BlockBuilder extends AbstractBlockRegistry.BlockBuilder<JavaBlockRegistry.BlockBuilder, JavaBlockRegistry.Builder, JavaBlockRegistry> {
         protected Map<String, Property<?>> propertyLookup;
         protected List<JsonState> statesList;

@@ -38,7 +38,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class IntPropertyImpl implements Property.Int {
     @Getter
     protected final String name;

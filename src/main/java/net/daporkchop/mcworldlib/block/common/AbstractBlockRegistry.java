@@ -58,7 +58,6 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  */
 //augh... this is super slow, but most of it only has to run once so it's no big deal
 @Getter
-@Accessors(fluent = true)
 public abstract class AbstractBlockRegistry implements BlockRegistry {
     @Getter(AccessLevel.NONE)
     protected final Map<Identifier, DefaultBlockState> idToDefaultState = new HashMap<>();
@@ -236,7 +235,6 @@ public abstract class AbstractBlockRegistry implements BlockRegistry {
 
     @RequiredArgsConstructor
     @Getter
-    @Accessors(fluent = true)
     public static abstract class BlockBuilder<I extends BlockBuilder<I, P, R>, P extends Builder<P, I, R>, R extends BlockRegistry> {
         @NonNull
         protected final P parent;

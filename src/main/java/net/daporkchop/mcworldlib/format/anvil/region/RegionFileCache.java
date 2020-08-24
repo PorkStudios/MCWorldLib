@@ -52,7 +52,6 @@ import java.util.concurrent.locks.Lock;
  * @author DaPorkchop_
  */
 //this has some pretty complex locking, i don't THINK it should be able to deadlock but don't quote me on that
-@Accessors(fluent = true)
 public class RegionFileCache implements RegionFile, IOFunction<Vec2i, RegionFile> {
     protected static Vec2i toRegionCoords(int chunkX, int chunkZ) {
         return new Vec2i(chunkX >> 5, chunkZ >> 5);

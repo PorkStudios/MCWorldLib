@@ -41,7 +41,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-@Accessors(fluent = true)
 public class EnumPropertyImpl implements Property<String> {
     @Getter
     protected final String name;

@@ -40,7 +40,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 @Getter
-@Accessors(fluent = true)
 public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements World {
     protected final S parent;
     protected final SaveOptions options;
