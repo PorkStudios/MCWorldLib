@@ -72,6 +72,7 @@ import java.util.concurrent.Executor;
  *
  * @author DaPorkchop_
  */
+@Accessors(fluent = true)
 public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorage {
     protected static final ZlibInflaterOptions INFLATER_OPTIONS = Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.AUTO);
     protected static final HandledPool<PInflater> INFLATER_CACHE = HandledPool.threadLocal(() -> Zlib.PROVIDER.inflater(INFLATER_OPTIONS), 1);

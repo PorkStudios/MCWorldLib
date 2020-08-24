@@ -18,18 +18,30 @@
  *
  */
 
-package minecraft;
+package net.daporkchop.mcworldlib.block.common;
 
-import net.daporkchop.mcworldlib.block.registry.GlobalBlockRegistry;
-import org.junit.Test;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
 
 /**
+ * Implementation of {@link RegistryConverter} used by the global block registry when converting to itself.
+ *
  * @author DaPorkchop_
  */
-public class GlobalRegistryLoadTest {
-    @Test
-    public void test() {
-        GlobalBlockRegistry registry = GlobalBlockRegistry.INSTANCE;
-        System.out.printf("types: %d, states: %d\n", registry.types(), registry.states());
+@Getter
+@Accessors(fluent = true)
+public class GlobalRegistryConverter implements RegistryConverter {
+    protected final BlockRegistry local = BlockRegistry.global();
+
+    @Override
+    public int toGlobal(int id) {
+        return id;
+    }
+
+    @Override
+    public int fromGlobal(int id) {
+        return id;
     }
 }

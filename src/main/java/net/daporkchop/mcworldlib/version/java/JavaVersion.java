@@ -48,6 +48,7 @@ import java.util.Map;
  * @author DaPorkchop_
  */
 @Getter
+@Accessors(fluent = true)
 public final class JavaVersion extends MinecraftVersion {
     @UtilityClass
     private static class OldVersion {

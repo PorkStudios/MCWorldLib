@@ -25,7 +25,7 @@ import net.daporkchop.lib.binary.bit.BitArray;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.LegacyBlockStorage;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
@@ -93,14 +93,12 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public int getBlockLegacyId(int x, int y, int z) {
-        //TODO: return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
-        return -1;
+        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
     }
 
     @Override
     public int getBlockMeta(int x, int y, int z) {
-        //TODO: return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
-        return -1;
+        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
     }
 
     @Override
@@ -114,7 +112,7 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public void setBlockMeta(int x, int y, int z, int meta) {
-        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
+        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
     }
 
     @Override

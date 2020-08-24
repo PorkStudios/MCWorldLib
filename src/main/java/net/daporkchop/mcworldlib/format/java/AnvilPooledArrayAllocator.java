@@ -40,6 +40,7 @@ import net.daporkchop.lib.common.ref.ThreadRef;
  */
 @RequiredArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public final class AnvilPooledArrayAllocator implements ArrayAllocator<byte[]> {
     @Getter(AccessLevel.NONE)
     protected final ThreadRef<ThreadLocalData> threadLocal = ThreadRef.late(ThreadLocalData::new);

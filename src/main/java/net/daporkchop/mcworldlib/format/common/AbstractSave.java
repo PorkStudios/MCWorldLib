@@ -23,8 +23,9 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
@@ -49,6 +50,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  */
 @RequiredArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractRefCounted implements Save {
     @NonNull
     protected final SaveOptions options;

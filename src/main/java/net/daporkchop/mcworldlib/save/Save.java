@@ -22,7 +22,7 @@ package net.daporkchop.mcworldlib.save;
 
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;

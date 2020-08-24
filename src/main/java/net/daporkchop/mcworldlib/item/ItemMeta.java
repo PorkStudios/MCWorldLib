@@ -64,7 +64,7 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
 @EqualsAndHashCode
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(fluent = true, chain = true)
 public final class ItemMeta implements Properties<ItemMeta>, Cloneable<ItemMeta> {
     /**
      * Any additional NBT tags attached to an item that are not known by this library.

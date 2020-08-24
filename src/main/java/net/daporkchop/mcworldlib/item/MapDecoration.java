@@ -36,7 +36,7 @@ import lombok.experimental.Accessors;
 @ToString
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(fluent = true, chain = true)
 public class MapDecoration {
     /**
      * An arbitrary string used to identify this decoration.

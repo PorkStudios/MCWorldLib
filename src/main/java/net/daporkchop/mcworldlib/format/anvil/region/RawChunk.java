@@ -36,6 +36,7 @@ import net.daporkchop.lib.unsafe.util.AbstractReleasable;
  */
 @AllArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public final class RawChunk extends AbstractReleasable {
     protected final long timestamp;
     @NonNull

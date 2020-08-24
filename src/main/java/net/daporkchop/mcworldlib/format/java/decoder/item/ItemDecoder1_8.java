@@ -21,7 +21,7 @@
 package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.format.java.JavaSaveOptions;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaItemDecoder;
 import net.daporkchop.mcworldlib.item.FireworkExplosion;
@@ -217,8 +217,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
         int damage = root.getShort("Damage", (short) 0);
 
         BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
-        //TODO:
-        /*if (blockRegistry.containsBlockId(stack.id())) {
+        if (blockRegistry.containsBlockId(stack.id())) {
             cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
         } else if (stack.id().toString() == "minecraft:potion") { //decode legacy potion damage
             String potionId = tag != null && tag.contains("CustomPotionEffects") ? "minecraft:water" : LegacyPotionConversion.IDS[damage & 0x7F];
@@ -230,7 +229,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
             cache.meta.put(MAP_ID, damage);
         } else {
             cache.meta.put(DAMAGE, damage);
-        }*/
+        }
     }
 
     protected void mainDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {

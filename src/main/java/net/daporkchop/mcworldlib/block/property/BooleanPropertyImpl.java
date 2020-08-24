@@ -18,57 +18,68 @@
  *
  */
 
-package net.daporkchop.mcworldlib.version;
+package net.daporkchop.mcworldlib.block.property;
 
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.BlockState;
+import net.daporkchop.mcworldlib.block.Property;
+import net.daporkchop.mcworldlib.block.PropertyMap;
+
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
- * Base class for a representation of a Minecraft version.
+ * Default implementation of {@link Property.Boolean}.
  *
  * @author DaPorkchop_
- * @see net.daporkchop.mcworldlib.version.java.JavaVersion
  */
-@RequiredArgsConstructor
-@Getter
 @Accessors(fluent = true)
-public abstract class MinecraftVersion implements Comparable<MinecraftVersion> {
-    @NonNull
-    protected final MinecraftEdition edition;
-    @NonNull
+public class BooleanPropertyImpl implements Property.Boolean {
+    @Getter
     protected final String name;
-    protected final long releaseTime;
+
+    public BooleanPropertyImpl(@NonNull String name) {
+        this.name = name.intern();
+    }
 
     @Override
-    public int compareTo(MinecraftVersion o) {
-        if (this.edition != o.edition)  {
-            return this.edition.ordinal() - o.edition.ordinal();
-        } else if (this.releaseTime > 0L && o.releaseTime > 0L) {
-            return Long.compareUnsigned(this.releaseTime, o.releaseTime);
-        } else {
-            return this.name.compareTo(o.name);
+    public Stream<java.lang.Boolean> values() {
+        return Stream.of(java.lang.Boolean.FALSE, java.lang.Boolean.TRUE);
+    }
+
+    @Override
+    public PropertyMap<java.lang.Boolean> propertyMap(@NonNull Function<java.lang.Boolean, BlockState> mappingFunction) {
+        return new PropertyMapImpl(mappingFunction.apply(java.lang.Boolean.TRUE), mappingFunction.apply(java.lang.Boolean.FALSE));
+    }
+
+    @Override
+    public String encodeValue(@NonNull java.lang.Boolean value) {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public java.lang.Boolean decodeValue(@NonNull String encoded) {
+        return java.lang.Boolean.parseBoolean(encoded);
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
+    @RequiredArgsConstructor
+    protected static class PropertyMapImpl implements PropertyMap.Boolean {
+        @NonNull
+        protected final BlockState trueState;
+        @NonNull
+        protected final BlockState falseState;
+
+        @Override
+        public BlockState getState(boolean value) {
+            return value ? this.trueState : this.falseState;
         }
     }
-
-    @Override
-    public int hashCode() {
-        return this.edition.hashCode() ^ this.name.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (obj instanceof MinecraftVersion) {
-            MinecraftVersion version = (MinecraftVersion) obj;
-            return this.edition == version.edition && this.name.equals(version.name);
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public abstract String toString();
 }

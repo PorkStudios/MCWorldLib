@@ -18,50 +18,34 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.trait.value;
+package net.daporkchop.mcworldlib.block.common;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
+import net.daporkchop.lib.primitive.map.IntIntMap;
 
 /**
+ * Default implementation of {@link RegistryConverter}.
+ *
  * @author DaPorkchop_
  */
-public enum SlabType {
-    ACACIA,
-    ANDESITE,
-    BIRCH,
-    BLACKSTONE,
-    BRICK,
-    COBBLESTONE,
-    CRIMSON,
-    CUT_RED_SANDSTONE,
-    CUT_SANDSTONE,
-    DARK_OAK,
-    DARK_PRISMARINE,
-    DIORITE,
-    END_STONE,
-    GRANITE,
-    JUNGLE,
-    MOSSY_COBBLESTONE,
-    MOSSY_STONE_BRICK,
-    NETHER_BRICK,
-    OAK,
-    PETRIFIED_OAK,
-    POLISHED_ANDESITE,
-    POLISHED_BLACKSTONE,
-    POLISHED_BLACSTONE_BRICK,
-    POLISHED_DIORITE,
-    POLISHED_GRANITE,
-    PRISMARINE,
-    PRISMARINE_BRICK,
-    PURPUR,
-    QUARTZ,
-    RED_NETHER_BRICK,
-    RED_SANDSTONE,
-    SANDSTONE,
-    SMOOTH_QUARTZ,
-    SMOOTH_RED_SANDSTONE,
-    SMOOTH_SANDSTONE,
-    SMOOTH_STONE,
-    SPRUCE,
-    STONE,
-    STONE_BRICK,
-    WARPED;
+@RequiredArgsConstructor
+@Accessors(fluent = true)
+public class DefaultRegistryConverter implements RegistryConverter {
+    @NonNull
+    protected final IntIntMap toGlobal;
+    @NonNull
+    protected final IntIntMap fromGlobal;
+
+    @Override
+    public int toGlobal(int id) {
+        return this.toGlobal.getOrDefault(id, 0);
+    }
+
+    @Override
+    public int fromGlobal(int id) {
+        return this.fromGlobal.getOrDefault(id, 0);
+    }
 }

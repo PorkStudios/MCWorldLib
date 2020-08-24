@@ -18,56 +18,37 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.trait;
+package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
 
-import java.util.List;
+import java.util.function.Function;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A key used to define an attribute of a block state.
  *
  * @author DaPorkchop_
  */
-public interface Trait<V> {
+public interface Property<V> extends Comparable<Property<?>> {
     /**
      * @return this property's name
      */
     String name();
 
     /**
-     * @return a list of all valid values for this property
+     * @return a stream over all valid values for this property
      */
-    List<V> values();
+    Stream<V> values();
 
     /**
-     * @return this trait's default value
-     */
-    V defaultValue();
-
-    /**
-     * Checks whether or not the given value is valid.
+     * Creates a new {@link PropertyMap} populated with the return values of the given function.
      *
-     * @param value the value to check
-     * @return whether or not the given value is valid
+     * @param mappingFunction the function to use for computing the {@link BlockState}s for each value
+     * @return a new {@link PropertyMap} populated with the return values of the given function
      */
-    boolean isValid(@NonNull V value);
-
-    /**
-     * Gets the index of a value.
-     *
-     * @param value the value to get the index for
-     * @return the value's index
-     */
-    int valueIndex(@NonNull V value);
-
-    /**
-     * Gets a value from its index.
-     *
-     * @param index the index to get the value for
-     * @return the value at the given index
-     */
-    V valueFromIndex(int index);
+    PropertyMap<V> propertyMap(@NonNull Function<V, BlockState> mappingFunction);
 
     /**
      * Encodes a value to its {@link String} representation.
@@ -84,4 +65,35 @@ public interface Trait<V> {
      * @return the decoded value
      */
     V decodeValue(@NonNull String encoded);
+
+    @Override
+    default int compareTo(Property<?> o) {
+        return this.name().compareTo(o.name());
+    }
+
+    /**
+     * Extension of {@link Property} for {@code int} values.
+     *
+     * @author DaPorkchop_
+     */
+    interface Int extends Property<Integer> {
+        @Override
+        @Deprecated
+        default Stream<Integer> values() {
+            return this.intValues().boxed();
+        }
+
+        /**
+         * @return a stream over all valid values for this property
+         */
+        IntStream intValues();
+    }
+
+    /**
+     * Extension of {@link Property} for {@code boolean} values.
+     *
+     * @author DaPorkchop_
+     */
+    interface Boolean extends Property<java.lang.Boolean> {
+    }
 }

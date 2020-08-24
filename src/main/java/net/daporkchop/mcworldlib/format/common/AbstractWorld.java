@@ -22,8 +22,9 @@ package net.daporkchop.mcworldlib.format.common;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
@@ -39,6 +40,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 @Getter
+@Accessors(fluent = true)
 public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements World {
     protected final S parent;
     protected final SaveOptions options;

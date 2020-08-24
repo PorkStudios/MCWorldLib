@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
@@ -63,14 +63,13 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
     protected Palette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag, @NonNull BlockRegistry blockRegistry) {
         Palette palette = new ArrayPalette(bits);
         for (CompoundTag tag : paletteTag) {
-            //TODO: BlockState state = blockRegistry.getDefaultState(Identifier.fromString(tag.getString("Name")));
-            BlockState state = null;
+            BlockState state = blockRegistry.getDefaultState(Identifier.fromString(tag.getString("Name")));
 
             CompoundTag properties = tag.getCompound("Properties", null);
             if (properties != null) {
                 //set properties
                 for (Map.Entry<String, Tag> entry : properties) {
-                    state = state.withTrait(entry.getKey(), ((StringTag) entry.getValue()).value());
+                    state = state.withProperty(entry.getKey(), ((StringTag) entry.getValue()).value());
                 }
             }
 

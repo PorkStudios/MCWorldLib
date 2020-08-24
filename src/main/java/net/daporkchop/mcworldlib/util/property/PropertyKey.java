@@ -34,6 +34,7 @@ import net.daporkchop.mcworldlib.item.ItemMeta;
  */
 @RequiredArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public abstract class PropertyKey<T> implements Comparable<PropertyKey<?>> {
     @NonNull
     protected final String name;

@@ -18,48 +18,83 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.registry;
+package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
-import net.daporkchop.lib.primitive.lambda.ObjIntConsumer;
-import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.mcworldlib.block.BlockType;
-import net.daporkchop.mcworldlib.block.RegistryConverter;
+import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.function.ObjIntConsumer;
 
 /**
- * A {@link BlockRegistry} for a specific version of the game.
+ * Extension of {@link Registry} for blocks.
+ * <p>
+ * Note that all methods inherited from {@link Registry} (except {@link Registry#id()}) consider only mappings between block {@link Identifier}s and
+ * legacy block IDs.
+ * <p>
+ * A block registry consists of a number of different mappings to and from different types, making it a fair bit more complicated than most other
+ * registries. A brief description of each type follows:
+ * <p>
+ * - "block IDs" or "block {@link Identifier}s" are user-friendly {@link Identifier}s given to each block, for example {@code minecraft:stone} (Stone)
+ * or {@code minecraft:diamond_ore} (Diamond Ore)
+ * <p>
+ * - "legacy IDs" are {@code int} IDs given to blocks, for example 1 (Stone) or 56 (Diamond Ore). However, as they are no longer used in modern
+ * versions of the game, newer blocks will not have one.
+ * <p>
+ * - "metadata" are {@code int} values, generally in range 0-15, which describe the a block state. For example, {@code minecraft:stone} uses metadata
+ * to differentiate between the different stone varieties (Andesite, etc.), or {@code minecraft:redstone} uses 16 metadata values to store its current
+ * power level
+ * <p>
+ * - "block states" (normally referred to as {@link BlockState}) are simply a combination of a block (defined either by legacy or block ID) and a
+ * metadata value
+ * <p>
+ * - "runtime IDs" are {@code int} IDs given to each block state, and serve no purpose beyond performance
  *
  * @author DaPorkchop_
  */
-public interface VersionBlockRegistry extends BlockRegistry {
-    /**
-     * @return the version of the game that this registry is for
-     */
-    MinecraftVersion version();
+public interface BlockRegistry {
+    Identifier ID = Identifier.fromString("minecraft:block");
 
     /**
-     * Registers a new block type.
-     *
-     * @param serializer the {@link StateSerializer} to use for serializing
-     * @param globalType the {@link BlockType} registered in the global block registry
-     * @return the block type as newly added to this registry
+     * @return the {@link BlockRegistry} used globally for cross-version compatibility
      */
-    BlockType register(@NonNull StateSerializer serializer, @NonNull BlockType globalType);
-
-    /**
-     * @return a {@link RegistryConverter} for converting this registry's runtime IDs to the global block registry
-     */
-    RegistryConverter toGlobal();
+    static BlockRegistry global() {
+        return GlobalBlockRegistry.GLOBAL_REGISTRY;
+    }
 
     /**
      * @return the number of registered blocks
      */
     int blocks();
+
+    /**
+     * @return the number of registered block states
+     */
+    int states();
+
+    /**
+     * @return the highest runtime ID registered
+     */
+    int maxRuntimeId();
+
+    /**
+     * @return the {@link BlockState} used to represent air
+     */
+    BlockState air();
+
+    /**
+     * @return whether or not this is the global block registry
+     */
+    default boolean isGlobal()  {
+        return this == global();
+    }
+
+    /**
+     * @return a {@link RegistryConverter} for converting this registry's runtime IDs to the global block registry
+     */
+    RegistryConverter toGlobal();
 
     /**
      * Checks whether or not the given block ID is registered.
@@ -94,6 +129,14 @@ public interface VersionBlockRegistry extends BlockRegistry {
      * @return whether or not the given block state is registered
      */
     boolean containsState(int legacyId, int meta);
+
+    /**
+     * Checks whether or not the given block state is registered.
+     *
+     * @param runtimeId the runtime ID of the block state to check for
+     * @return whether or not the given block state is registered
+     */
+    boolean containsState(int runtimeId);
 
     /**
      * Checks if the given block ID is registered and has an associated legacy ID_CHEST.
@@ -161,6 +204,15 @@ public interface VersionBlockRegistry extends BlockRegistry {
     BlockState getDefaultState(int legacyId);
 
     /**
+     * Gets the {@link BlockState} for to the given block state.
+     *
+     * @param runtimeId the runtime ID of the block state to get
+     * @return the {@link BlockState} for the given block state
+     * @throws IllegalArgumentException if the given runtime ID is not registered
+     */
+    BlockState getState(int runtimeId);
+
+    /**
      * Gets the runtime ID for the given block state.
      *
      * @param blockId the block ID of the block state to get
@@ -192,4 +244,8 @@ public interface VersionBlockRegistry extends BlockRegistry {
      * @param action the action to perform
      */
     void forEachBlockId(@NonNull ObjIntConsumer<? super Identifier> action);
+
+    void forEachState(@NonNull Consumer<? super BlockState> action);
+
+    void forEachRuntimeId(@NonNull IntConsumer action);
 }

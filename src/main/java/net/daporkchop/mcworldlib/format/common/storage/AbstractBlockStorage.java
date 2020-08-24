@@ -22,8 +22,9 @@ package net.daporkchop.mcworldlib.format.common.storage;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
@@ -33,6 +34,7 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
  *
  * @author DaPorkchop_
  */
+@Accessors(fluent = true)
 public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
     @Getter
     protected final BlockRegistry blockRegistry;
@@ -61,14 +63,12 @@ public abstract class AbstractBlockStorage extends AbstractRefCounted implements
 
     @Override
     public Identifier getBlockId(int x, int y, int z) {
-        //TODO: return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z));
-        return null;
+        return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z));
     }
 
     @Override
     public Identifier getBlockId(int x, int y, int z, int layer) {
-        //TODO: return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z, layer));
-        return null;
+        return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z, layer));
     }
 
     @Override
@@ -97,62 +97,60 @@ public abstract class AbstractBlockStorage extends AbstractRefCounted implements
 
     @Override
     public void setBlockState(int x, int y, int z, @NonNull BlockState state) {
-        //TODO:
-        /*if (this.blockRegistry == state.registry()) {
+        if (this.blockRegistry == state.registry()) {
             this.setBlockRuntimeId(x, y, z, state.runtimeId());
         } else {
             this.setBlockState(x, y, z, state.legacyId(), state.meta());
-        }*/
+        }
     }
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, @NonNull BlockState state) {
-        //TODO:
-        /*if (this.blockRegistry == state.registry()) {
+        if (this.blockRegistry == state.registry()) {
             this.setBlockRuntimeId(x, y, z, layer, state.runtimeId());
         } else {
             this.setBlockState(x, y, z, layer, state.legacyId(), state.meta());
-        }*/
+        }
     }
 
     @Override
     public void setBlockState(int x, int y, int z, @NonNull Identifier id, int meta) {
-        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, meta));
+        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, meta));
     }
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, @NonNull Identifier id, int meta) {
-        //TODO: this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, meta));
+        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, meta));
     }
 
     @Override
     public void setBlockState(int x, int y, int z, int legacyId, int meta) {
-        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, meta));
+        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, meta));
     }
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, int legacyId, int meta) {
-        //TODO: this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, meta));
+        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, meta));
     }
 
     @Override
     public void setBlockId(int x, int y, int z, @NonNull Identifier id) {
-        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, 0));
+        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, 0));
     }
 
     @Override
     public void setBlockId(int x, int y, int z, int layer, @NonNull Identifier id) {
-        //TODO: this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, 0));
+        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, 0));
     }
 
     @Override
     public void setBlockLegacyId(int x, int y, int z, int legacyId) {
-        //TODO: this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, 0));
+        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, 0));
     }
 
     @Override
     public void setBlockLegacyId(int x, int y, int z, int layer, int legacyId) {
-        //TODO: this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, 0));
+        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, 0));
     }
 
     @Override

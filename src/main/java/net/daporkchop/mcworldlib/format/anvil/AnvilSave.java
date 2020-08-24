@@ -22,13 +22,16 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.file.PFiles;
-import net.daporkchop.mcworldlib.block.registry.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
@@ -42,6 +45,7 @@ import static net.daporkchop.lib.common.util.PValidation.checkArg;
 /**
  * @author DaPorkchop_
  */
+@Accessors(fluent = true)
 public class AnvilSave extends AbstractSave<JavaVersion> {
     @Getter
     protected final NBTOptions chunkNBTOptions;
@@ -57,7 +61,7 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
 
         this.version = this.extractVersion(levelData);
         this.registries = JavaRegistries.forVersion(this.version);
-        //TODO: this.blockRegistry = JavaBlockRegistry.forVersion(this.version);
+        this.blockRegistry = JavaBlockRegistry.forVersion(this.version);
 
         //find worlds
         this.openWorld(new DefaultDimension(Dimension.ID_OVERWORLD, 0, true, true));
@@ -102,7 +106,6 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
         if (this.version == java)   {
             return this.blockRegistry;
         }
-        //TODO: return JavaBlockRegistry.forVersion(java);
-        return null;
+        return JavaBlockRegistry.forVersion(java);
     }
 }

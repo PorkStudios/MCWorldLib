@@ -49,6 +49,7 @@ import java.util.TreeMap;
  */
 @RequiredArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public class JavaFixers {
     @RequiredArgsConstructor
     public static final class MapBuilder<K, V, M extends Map<K, V>> {

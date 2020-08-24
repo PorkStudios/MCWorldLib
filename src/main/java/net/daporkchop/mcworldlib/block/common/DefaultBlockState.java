@@ -20,82 +20,107 @@
 
 package net.daporkchop.mcworldlib.block.common;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.daporkchop.lib.common.pool.handle.Handle;
-import net.daporkchop.lib.common.util.PorkUtil;
-import net.daporkchop.lib.primitive.map.ObjIntMap;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.mcworldlib.block.BlockType;
-import net.daporkchop.mcworldlib.block.trait.BooleanTrait;
-import net.daporkchop.mcworldlib.block.trait.IntTrait;
-import net.daporkchop.mcworldlib.block.trait.Trait;
+import net.daporkchop.mcworldlib.block.Property;
+import net.daporkchop.mcworldlib.block.PropertyMap;
+import net.daporkchop.mcworldlib.util.Identifier;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
+ * Default implementation of {@link BlockState}, used by {@link AbstractBlockRegistry}.
+ *
  * @author DaPorkchop_
  */
 @RequiredArgsConstructor
 @Getter
+@Accessors(fluent = true)
 public class DefaultBlockState implements BlockState {
     @NonNull
-    protected final BlockType type;
+    protected final BlockRegistry registry;
+    @NonNull
+    protected final Identifier id;
+    protected final int legacyId;
+    protected final int meta;
     protected final int runtimeId;
 
-    @NonNull
-    protected final ObjIntMap<Trait<?>> traitIndices;
-    @NonNull
-    protected final BlockState[][] otherStates;
-    @NonNull
-    protected final Object[] traitValues;
+    @Getter(AccessLevel.PROTECTED)
+    protected BlockState[] otherMeta;
+    @Getter(AccessLevel.PROTECTED)
+    protected final Map<Property<?>, PropertyMap<?>> otherProperties = new IdentityHashMap<>(); //TODO: use a map that's better optimized for low entry counts
+
+    @Getter(AccessLevel.PROTECTED)
+    protected Map<String, Property<?>> propertiesByName;
+    @Getter(AccessLevel.PROTECTED)
+    protected Map<Property<?>, ?> propertyValues;
 
     @Override
-    public <V> BlockState withTrait(@NonNull Trait<V> trait, @NonNull V value) {
-        int traitIndex = this.traitIndices.getOrDefault(trait, -1);
-        checkArg(traitIndex >= 0, "unknown trait: %s", trait);
-        return this.otherStates[traitIndex][trait.valueIndex(value)];
+    public boolean hasLegacyId() {
+        return this.legacyId >= 0;
     }
 
     @Override
-    public BlockState withTrait(@NonNull IntTrait trait, int value) {
-        int traitIndex = this.traitIndices.getOrDefault(trait, -1);
-        checkArg(traitIndex >= 0, "unknown trait: %s", trait);
-        checkArg(trait.isValid(value), "invalid value for trait %s: %d", trait, value);
-        return this.otherStates[traitIndex][value];
+    public BlockState withMeta(int meta) {
+        BlockState[] otherMeta = this.otherMeta;
+        BlockState state = null;
+        checkArg(meta >= 0 && meta < otherMeta.length && (state = otherMeta[meta]) != null, meta);
+        return state;
     }
 
     @Override
-    public BlockState withTrait(@NonNull BooleanTrait trait, boolean value) {
-        int traitIndex = this.traitIndices.getOrDefault(trait, -1);
-        checkArg(traitIndex >= 0, "unknown trait: %s", trait);
-        return this.otherStates[traitIndex][value ? 1 : 0];
+    public <V> BlockState withProperty(@NonNull Property<V> property, @NonNull V value) {
+        PropertyMap<V> map = uncheckedCast(this.otherProperties.get(property));
+        checkArg(map != null, "Invalid property %s for block %s!", property, this.id);
+        return map.getState(value);
     }
 
     @Override
-    public <T> T propertyValue(@NonNull Trait<T> trait) {
-        int traitIndex = this.traitIndices.getOrDefault(trait, -1);
-        checkArg(traitIndex >= 0, "unknown trait: %s", trait);
-        return uncheckedCast(this.traitValues[traitIndex]);
+    public BlockState withProperty(@NonNull Property.Int property, int value) {
+        PropertyMap.Int map = uncheckedCast(this.otherProperties.get(property));
+        checkArg(map != null, "Invalid property %s for block %s!", property, this.id);
+        return map.getState(value);
+    }
+
+    @Override
+    public BlockState withProperty(@NonNull Property.Boolean property, boolean value) {
+        PropertyMap.Boolean map = uncheckedCast(this.otherProperties.get(property));
+        checkArg(map != null, "Invalid property %s for block %s!", property, this.id);
+        return map.getState(value);
+    }
+
+    @Override
+    public <T> Property<T> property(@NonNull String name) {
+        Property<T> property = uncheckedCast(this.propertiesByName.get(name));
+        checkArg(property != null, "Invalid property %s for block %s!", name, this.id);
+        return property;
+    }
+
+    @Override
+    public Collection<Property<?>> properties() {
+        return uncheckedCast(Collections.unmodifiableSet(this.propertyValues.keySet()));
+    }
+
+    @Override
+    public <T> T propertyValue(@NonNull Property<T> property) {
+        Object value = this.propertyValues.get(property);
+        checkArg(value != null, "Invalid property %s for block %s!", property, this.id);
+        return uncheckedCast(value);
     }
 
     @Override
     public String toString() {
-        if (this.traitValues.length == 0 || this == this.type.defaultState())   {
-            return this.type.id().toString();
-        }
-
-        try (Handle<StringBuilder> handle = STRINGBUILDER_POOL.get())   {
-            StringBuilder builder = handle.get();
-            builder.setLength(0);
-
-            builder.append(this.type.id()).append('[');
-            this.type.traits().forEach(trait -> builder.append(trait.name()).append('=')
-                    .append(this.traitValues[this.traitIndices.get(trait)].toString().toLowerCase()).append(','));
-            builder.setCharAt(builder.length() - 1, ']');
-            return builder.toString();
-        }
+        return this.id.toString() + '#' + this.meta;
     }
 }

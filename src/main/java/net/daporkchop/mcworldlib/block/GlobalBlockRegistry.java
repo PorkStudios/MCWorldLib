@@ -18,19 +18,16 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.trait.value;
+package net.daporkchop.mcworldlib.block;
+
+import lombok.experimental.UtilityClass;
+import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
 
 /**
  * @author DaPorkchop_
  */
-public enum FenceType {
-    ACACIA,
-    BIRCH,
-    CRIMSON,
-    DARK_OAK,
-    JUNGLE,
-    NETHER_BRICK,
-    OAK,
-    SPRUCE,
-    WARPED;
+@UtilityClass
+class GlobalBlockRegistry {
+    public static final BlockRegistry GLOBAL_REGISTRY = JavaBlockRegistry.forVersion(JavaVersion.latest());
 }
