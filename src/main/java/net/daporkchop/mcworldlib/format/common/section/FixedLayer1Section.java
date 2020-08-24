@@ -18,18 +18,44 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package net.daporkchop.mcworldlib.format.common.section;
 
-import lombok.experimental.UtilityClass;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.Section;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Allows lazy initialization of the global block re
+ * Implementation of a 2-layer {@link Section} which has a fixed a second layer.
  *
  * @author DaPorkchop_
  */
-@UtilityClass
-class GlobalBlockRegistry {
-    public static final BlockRegistry GLOBAL_REGISTRY = JavaBlockRegistry.forVersion(JavaVersion.latest());
+public class FixedLayer1Section extends DefaultSection {
+    protected final BlockStorage layer1;
+
+    public FixedLayer1Section(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+        super(x, y, z, layer0, blockLight, skyLight);
+
+        this.layer1 = layer1;
+    }
+
+    @Override
+    public int layers() {
+        return 2;
+    }
+
+    @Override
+    public BlockStorage blockStorage(int layer) {
+        checkIndex((layer & ~1) == 0, "invalid layer: %d (must be in range [0,1])", layer);
+        return layer == 0 ? this.blocks : this.layer1;
+    }
+
+    @Override
+    protected void doRelease() {
+        super.doRelease();
+
+        this.layer1.release();
+    }
 }

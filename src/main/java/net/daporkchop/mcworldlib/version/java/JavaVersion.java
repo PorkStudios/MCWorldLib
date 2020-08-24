@@ -20,9 +20,9 @@
 
 package net.daporkchop.mcworldlib.version.java;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -31,14 +31,13 @@ import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.concurrent.IntObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
+import net.daporkchop.mcworldlib.util.Util;
 import net.daporkchop.mcworldlib.version.DataVersion;
 import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -55,12 +54,10 @@ public final class JavaVersion extends MinecraftVersion {
         return NAME_CACHE.computeIfAbsent(nameIn.intern(), name -> {
             try (InputStream in = JavaVersion.class.getResourceAsStream("by_id/" + name + ".json")) {
                 if (in == null) { //file wasn't found on disk
-                    return new JavaVersion(name, -1L);
+                    return new JavaVersion(name, -1L, -1, -1);
                 } else {
-                    JsonObject obj = new JsonParser().parse(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
-                    int protocol = obj.has("protocolVersion") ? obj.get("protocolVersion").getAsInt() : -1;
-                    int data = obj.has("dataVersion") ? obj.get("dataVersion").getAsInt() : -1;
-                    return new JavaVersion(name, obj.get("releaseTime").getAsLong(), protocol, data);
+                    ObjectNode obj = InstancePool.getInstance(JsonMapper.class).readTree(in).require();
+                    return new JavaVersion(name, obj.findPath("releaseTime").require().asLong(), obj.findPath("protocolVersion").asInt(-1), obj.findPath("dataVersion").asInt(-1));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -70,7 +67,7 @@ public final class JavaVersion extends MinecraftVersion {
 
     public static JavaVersion fromDataVersion(int _dataVersion) {
         return DATA_VERSION_CACHE.computeIfAbsent(_dataVersion, dataVersion -> {
-            String name = DataVersionToId.MAP.get(dataVersion);
+            String name = DataVersionToId.INSTANCE.get(dataVersion);
             return name != null ? fromName(name) : new JavaVersion(null, -1L, -1, dataVersion);
         });
     }
@@ -96,6 +93,7 @@ public final class JavaVersion extends MinecraftVersion {
     protected JavaVersion(String name, long releaseTime) {
         this(name, releaseTime, -1, -1);
     }
+
     protected JavaVersion(String name, long releaseTime, int protocol, int data) {
         super(MinecraftEdition.JAVA, name != null ? name : "", releaseTime);
 
@@ -134,20 +132,12 @@ public final class JavaVersion extends MinecraftVersion {
         private final JavaVersion LATEST = fromName("1.16.1");
     }
 
-    @UtilityClass
-    private static class DataVersionToId {
-        private final IntObjMap<String> MAP = new IntObjOpenHashMap<>();
+    private static class DataVersionToId extends IntObjOpenHashMap<String> {
+        private static final DataVersionToId INSTANCE = Util.parseJson(DataVersionToId.class, "data_version_to_id.json");
 
-        static {
-            JsonObject obj;
-            try (InputStream in = JavaVersion.class.getResourceAsStream("data_version_to_id.json")) {
-                obj = InstancePool.getInstance(JsonParser.class).parse(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
-            } catch (IOException e) {
-                throw new AssertionError(e);
-            }
-            for (Map.Entry<String, JsonElement> entry : obj.entrySet()) {
-                MAP.put(Integer.parseUnsignedInt(entry.getKey()), entry.getValue().getAsString().intern());
-            }
+        @JsonAnySetter
+        private void add(@NonNull String dataVersion, @NonNull String version) {
+            this.put(Integer.parseUnsignedInt(dataVersion), version.intern());
         }
     }
 }

@@ -34,7 +34,7 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
  *
  * @author DaPorkchop_
  */
-public interface Chunk extends IntHolderXZ, RefCounted, Versioned<MinecraftVersion> {
+public interface Chunk extends IntHolderXZ, RefCounted {
     /**
      * @return this chunk's X coordinate
      */

@@ -27,6 +27,7 @@ import net.daporkchop.lib.common.pool.handle.Handle;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
 
 import java.util.Arrays;
 
@@ -50,12 +51,12 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     protected final Handle<byte[]> metaHandle;
     protected final ByteBuf metaBuf;
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry blockRegistry) {
-        this(blockRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0);
+    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
+        this(localRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0);
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry blockRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset) {
-        super(blockRegistry);
+    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset) {
+        super(localRegistry);
         checkRangeLen(blocks.length, blocksOffset, NUM_BLOCKS);
         checkRangeLen(meta.length, metaOffset, NibbleArray.PACKED_SIZE);
 
@@ -70,8 +71,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         this.metaBuf = null;
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry blockRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta) {
-        super(blockRegistry);
+    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta) {
+        super(localRegistry);
         checkRange(blocks instanceof ArrayHandle ? ((ArrayHandle) blocks).length() : blocks.get().length, 0, NUM_BLOCKS);
         checkRange(meta instanceof ArrayHandle ? ((ArrayHandle) meta).length() : meta.get().length, 0, NibbleArray.PACKED_SIZE);
 
@@ -86,8 +87,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         this.metaBuf = null;
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry blockRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta) {
-        super(blockRegistry);
+    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta) {
+        super(localRegistry);
         checkArg(blocks.hasArray(), "blocks buffer doesn't have an array!");
         checkArg(meta.hasArray(), "meta buffer doesn't have an array!");
         checkRangeLen(blocks.capacity(), blocks.readerIndex(), NUM_BLOCKS);
@@ -140,9 +141,18 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     @Override
     public BlockStorage clone() {
         return new HeapLegacyBlockStorage(
-                this.blockRegistry,
+                this.localRegistry,
                 Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,
                 Arrays.copyOfRange(this.meta, this.metaOffset, this.metaOffset + NibbleArray.PACKED_SIZE), 0);
+    }
+
+    @Override
+    public BlockStorage toGlobal(boolean preferView) {
+        if (this.localRegistry.isGlobal()) {
+            return this;
+        }
+
+        return new ToGlobalBlockStorageView(this);
     }
 
     @Override
@@ -173,12 +183,12 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         protected final Handle<byte[]> addHandle;
         protected final ByteBuf addBuf;
 
-        public Add(@NonNull BlockRegistry blockRegistry) {
-            this(blockRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0, new byte[NibbleArray.PACKED_SIZE], 0);
+        public Add(@NonNull BlockRegistry localRegistry) {
+            this(localRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0, new byte[NibbleArray.PACKED_SIZE], 0);
         }
 
-        public Add(@NonNull BlockRegistry blockRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset, @NonNull byte[] add, int addOffset) {
-            super(blockRegistry, blocks, blocksOffset, meta, metaOffset);
+        public Add(@NonNull BlockRegistry localRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset, @NonNull byte[] add, int addOffset) {
+            super(localRegistry, blocks, blocksOffset, meta, metaOffset);
             checkRangeLen(add.length, addOffset, NibbleArray.PACKED_SIZE);
 
             this.add = add;
@@ -187,8 +197,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
             this.addBuf = null;
         }
 
-        public Add(@NonNull BlockRegistry blockRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta, @NonNull Handle<byte[]> add) {
-            super(blockRegistry, blocks, meta);
+        public Add(@NonNull BlockRegistry localRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta, @NonNull Handle<byte[]> add) {
+            super(localRegistry, blocks, meta);
             checkRange(add instanceof ArrayHandle ? ((ArrayHandle) add).length() : add.get().length, 0, NibbleArray.PACKED_SIZE);
 
             this.add = add.retain().get();
@@ -197,8 +207,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
             this.addBuf = null;
         }
 
-        public Add(@NonNull BlockRegistry blockRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta, @NonNull ByteBuf add) {
-            super(blockRegistry, blocks, meta);
+        public Add(@NonNull BlockRegistry localRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta, @NonNull ByteBuf add) {
+            super(localRegistry, blocks, meta);
             checkArg(add.hasArray(), "add buffer doesn't have an array!");
             checkRangeLen(add.capacity(), add.readerIndex(), NibbleArray.PACKED_SIZE);
 
@@ -235,7 +245,7 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         @Override
         public BlockStorage clone() {
             return new Add(
-                    this.blockRegistry,
+                    this.localRegistry,
                     Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,
                     Arrays.copyOfRange(this.meta, this.metaOffset, this.metaOffset + NibbleArray.PACKED_SIZE), 0,
                     Arrays.copyOfRange(this.add, this.addOffset, this.addOffset + NibbleArray.PACKED_SIZE), 0);

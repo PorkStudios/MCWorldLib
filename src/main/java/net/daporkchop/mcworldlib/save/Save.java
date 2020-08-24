@@ -82,6 +82,8 @@ public interface Save extends RefCounted {
      */
     BlockRegistry blockRegistryFor(@NonNull MinecraftVersion version);
 
+    //TODO: move registries to some sort of context class
+
     /**
      * @return the {@link Identifier}s of all of the worlds present in this save
      */

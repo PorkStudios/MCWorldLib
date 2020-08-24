@@ -21,6 +21,8 @@
 package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
 
@@ -61,7 +63,7 @@ public interface BlockRegistry {
      * @return the {@link BlockRegistry} used globally for cross-version compatibility
      */
     static BlockRegistry global() {
-        return GlobalBlockRegistry.GLOBAL_REGISTRY;
+        return JavaBlockRegistry.latest();
     }
 
     /**
@@ -87,7 +89,7 @@ public interface BlockRegistry {
     /**
      * @return whether or not this is the global block registry
      */
-    default boolean isGlobal()  {
+    default boolean isGlobal() {
         return this == global();
     }
 
@@ -248,4 +250,11 @@ public interface BlockRegistry {
     void forEachState(@NonNull Consumer<? super BlockState> action);
 
     void forEachRuntimeId(@NonNull IntConsumer action);
+
+    /**
+     * Creates a new {@link BlockStorage} using the optimal implementation for this registry.
+     *
+     * @return a new {@link BlockStorage}
+     */
+    BlockStorage createStorage();
 }

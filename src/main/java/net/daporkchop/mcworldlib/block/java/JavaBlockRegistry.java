@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.experimental.UtilityClass;
 import net.daporkchop.lib.common.function.PFunctions;
 import net.daporkchop.lib.common.function.io.IOFunction;
 import net.daporkchop.lib.common.misc.InstancePool;
@@ -95,6 +96,10 @@ public class JavaBlockRegistry extends AbstractBlockRegistry {
             });
             return builder.build();
         });
+    }
+
+    public static BlockRegistry latest()    {
+        return Latest.LATEST;
     }
 
     private static RegistryConverter converter(@NonNull JavaVersion version)    {
@@ -227,5 +232,10 @@ public class JavaBlockRegistry extends AbstractBlockRegistry {
                     .findAny()
                     .orElseThrow(IllegalStateException::new);
         }
+    }
+
+    @UtilityClass
+    private static final class Latest {
+        private final BlockRegistry LATEST = forVersion(JavaVersion.latest());
     }
 }

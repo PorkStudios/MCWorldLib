@@ -18,31 +18,52 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.anvil.decoder.chunk;
+package net.daporkchop.mcworldlib.format.common.section;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.format.java.decoder.JavaChunkDecoder;
-import net.daporkchop.mcworldlib.format.vanilla.VanillaChunk;
-import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.Section;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Codec for serialization of chunks in the pre-flattening format used by Minecraft versions 1.12.2 and older.
+ * Implementation of a 2-layer {@link Section} which does not initially have a second layer, and instead creates it lazily.
  *
  * @author DaPorkchop_
  */
-public class LegacyChunkDecoder implements JavaChunkDecoder {
-    public static final JavaVersion VERSION = JavaVersion.fromName("1.12.2");
+public class LazyLayer1Section extends DefaultSection {
+    protected BlockStorage layer1;
+
+    public LazyLayer1Section(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+        super(x, y, z, layer0, blockLight, skyLight);
+    }
 
     @Override
-    public Chunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
-        CompoundTag level = tag.getCompound("Level");
-        int x = level.getInt("xPos");
-        int z = level.getInt("zPos");
+    public int layers() {
+        return 2;
+    }
 
-        return new VanillaChunk(x, z);
+    @Override
+    public BlockStorage blockStorage(int layer) {
+        checkIndex((layer & ~1) == 0, "invalid layer: %d (must be in range [0,1])", layer);
+        if (layer == 0) {
+            return this.blocks;
+        }
+
+        BlockStorage layer1 = this.layer1;
+        if (layer1 == null) {
+            this.layer1 = layer1 = this.blocks.localRegistry().createStorage();
+        }
+        return layer1;
+    }
+
+    @Override
+    protected void doRelease() {
+        super.doRelease();
+
+        if (this.layer1 != null) {
+            this.layer1.release();
+        }
     }
 }

@@ -27,6 +27,7 @@ ext {
     minecraftVersion = "1.16.2"
 
     //dependency things
+    jacksonVersion = "2.11.2"
     junitVersion = "4.12"
     lombokVersion = "1.16.20"
     gsonVersion = "2.8.5"
@@ -63,6 +64,8 @@ dependencies {
     compile "net.daporkchop.lib:reflection:$porklibVersion"
 
     compile "com.google.code.gson:gson:$gsonVersion"
+
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
     compileOnly "org.projectlombok:lombok:$lombokVersion"
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"

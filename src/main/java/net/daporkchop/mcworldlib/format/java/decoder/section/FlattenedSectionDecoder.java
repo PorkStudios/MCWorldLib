@@ -25,6 +25,9 @@ import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.FixedLayer1Section;
+import net.daporkchop.mcworldlib.format.common.section.LazyLayer1Section;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
 import net.daporkchop.mcworldlib.util.Identifier;
@@ -36,6 +39,8 @@ import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.lib.nbt.tag.LongArrayTag;
 import net.daporkchop.lib.nbt.tag.StringTag;
 import net.daporkchop.lib.nbt.tag.Tag;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.World;
 
 import java.util.Map;
 
@@ -44,6 +49,17 @@ import java.util.Map;
  */
 public class FlattenedSectionDecoder extends LegacySectionDecoder {
     public static final JavaVersion VERSION = JavaVersion.latest();
+
+    @Override
+    public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
+        int y = tag.getByte("Y") & 0xFF;
+        BlockStorage storage = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
+        NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
+        NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
+        //TODO: extract waterlogged blocks into layer 1:
+        // return new FixedLayer1Section(x, y, z, storage, , blockLight, skyLight);
+        return new LazyLayer1Section(x, y, z, storage, blockLight, skyLight);
+    }
 
     @Override
     protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {

@@ -20,7 +20,7 @@
 
 package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.BlockAccess;
+import net.daporkchop.mcworldlib.block.LayeredBlockAccess;
 
 /**
  * Additional information used to describe a {@link World}.
@@ -34,7 +34,7 @@ public interface WorldInfo {
     Dimension dimension();
 
     /**
-     * @see BlockAccess#layers()
+     * @see LayeredBlockAccess#layers()
      */
     int layers();
 

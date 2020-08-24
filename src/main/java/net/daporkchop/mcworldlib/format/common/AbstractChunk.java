@@ -37,8 +37,6 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 @RequiredArgsConstructor
 @Getter
 public abstract class AbstractChunk extends AbstractRefCounted implements Chunk {
-    @NonNull
-    protected final MinecraftVersion version;
     protected final int x;
     protected final int z;
 

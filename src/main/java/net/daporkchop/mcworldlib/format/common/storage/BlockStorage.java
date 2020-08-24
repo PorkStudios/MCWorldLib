@@ -22,9 +22,9 @@ package net.daporkchop.mcworldlib.format.common.storage;
 
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.BlockAccess;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
@@ -52,6 +52,16 @@ public interface BlockStorage extends BlockAccess, Cloneable<BlockStorage>, RefC
      * @return the {@link BlockRegistry} that this {@link BlockStorage} uses
      */
     BlockRegistry localRegistry();
+
+    /**
+     * Gets this {@link BlockStorage} using the global block registry.
+     * <p>
+     * WARNING! After calling this method, this {@link BlockStorage} is implicitly released. Do not use this for shared instances!
+     *
+     * @param preferView hints to the implementation that a view would be preferred over a copy
+     * @return this {@link BlockStorage} in the global block registry
+     */
+    BlockStorage toGlobal(boolean preferView);
 
     @Override
     int refCnt();

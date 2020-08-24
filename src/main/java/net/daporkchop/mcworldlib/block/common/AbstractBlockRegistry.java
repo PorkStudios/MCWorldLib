@@ -29,6 +29,8 @@ import net.daporkchop.lib.common.function.PFunctions;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.Property;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
@@ -217,6 +219,11 @@ public abstract class AbstractBlockRegistry implements BlockRegistry {
                 action.accept(state.runtimeId());
             }
         });
+    }
+
+    @Override
+    public BlockStorage createStorage() {
+        return new PalettedBlockStorage(this); //TODO: actually do something more useful here
     }
 
     public static abstract class Builder<I extends Builder<I, B, R>, B extends BlockBuilder<B, I, R>, R extends BlockRegistry> {

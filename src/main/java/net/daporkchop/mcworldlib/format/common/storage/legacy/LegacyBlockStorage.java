@@ -38,41 +38,18 @@ public abstract class LegacyBlockStorage extends AbstractBlockStorage {
         return (y << 8) | (z << 4) | x;
     }
 
-    public LegacyBlockStorage(@NonNull BlockRegistry blockRegistry) {
-        super(blockRegistry);
-    }
-
-    @Override
-    public int layers() {
-        return 1;
+    public LegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
+        super(localRegistry);
     }
 
     @Override
     public abstract int getBlockLegacyId(int x, int y, int z);
 
     @Override
-    public int getBlockLegacyId(int x, int y, int z, int layer) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        return this.getBlockLegacyId(x, y, z);
-    }
-
-    @Override
     public abstract int getBlockMeta(int x, int y, int z);
 
     @Override
-    public int getBlockMeta(int x, int y, int z, int layer) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        return this.getBlockMeta(x, y, z);
-    }
-
-    @Override
     public abstract int getBlockRuntimeId(int x, int y, int z);
-
-    @Override
-    public int getBlockRuntimeId(int x, int y, int z, int layer) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        return this.getBlockRuntimeId(x, y, z);
-    }
 
     @Override
     public void setBlockLegacyId(int x, int y, int z, int legacyId) {
@@ -80,26 +57,8 @@ public abstract class LegacyBlockStorage extends AbstractBlockStorage {
     }
 
     @Override
-    public void setBlockLegacyId(int x, int y, int z, int layer, int legacyId) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        this.setBlockRuntimeId(x, y, z, legacyId << 4);
-    }
-
-    @Override
     public abstract void setBlockMeta(int x, int y, int z, int meta);
 
     @Override
-    public void setBlockMeta(int x, int y, int z, int layer, int meta) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        this.setBlockMeta(x, y, z, meta);
-    }
-
-    @Override
     public abstract void setBlockRuntimeId(int x, int y, int z, int runtimeId);
-
-    @Override
-    public void setBlockRuntimeId(int x, int y, int z, int layer, int runtimeId) {
-        checkIndex(layer == 0, "non-zero layer index (%d)", layer);
-        this.setBlockRuntimeId(x, y, z, runtimeId);
-    }
 }

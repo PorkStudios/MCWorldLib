@@ -18,29 +18,26 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common;
+package net.daporkchop.mcworldlib.format.common.section;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
+import net.daporkchop.lib.primitive.map.IntObjMap;
+import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.BlockAccess;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.Section;
-import net.daporkchop.lib.primitive.map.IntObjMap;
-import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import java.util.Collection;
 
-import static net.daporkchop.lib.common.util.PorkUtil.uncheckedCast;
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
  * Default implementation of {@link Section}, as a combination of {@link BlockAccess} and multiple {@link NibbleArray}s for block and sky light.
@@ -48,7 +45,7 @@ import static net.daporkchop.lib.common.util.PorkUtil.uncheckedCast;
  * @author DaPorkchop_
  */
 @Getter
-public class DefaultSection extends AbstractRefCounted implements Section {
+public abstract class DefaultSection extends AbstractRefCounted implements Section {
     @Getter(AccessLevel.NONE)
     protected final BlockStorage blocks;
     @Getter(AccessLevel.NONE)
@@ -58,17 +55,14 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     protected final IntObjMap<TileEntity> tileEntities = new IntObjOpenHashMap<>();
 
-    protected final MinecraftVersion version;
-
     protected final int x;
     protected final int y;
     protected final int z;
 
-    public DefaultSection(int x, int y, int z, @NonNull BlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight, @NonNull MinecraftVersion version) {
+    public DefaultSection(int x, int y, int z, @NonNull BlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
         this.blocks = blocks;
         this.blockLight = blockLight;
         this.skyLight = skyLight;
-        this.version = version;
 
         this.x = x;
         this.y = y;
@@ -112,7 +106,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
     }
 
     @Override
-    public BlockStorage blockStorage() {
+    public BlockStorage defaultBlockStorage() {
         return this.blocks;
     }
 
@@ -128,9 +122,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
     //
 
     @Override
-    public int layers() {
-        return this.blocks.layers();
-    }
+    public abstract int layers();
 
     @Override
     public BlockState getBlockState(int x, int y, int z) {
@@ -139,7 +131,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        return this.blocks.getBlockState(x, y, z, layer);
+        return this.blockStorage(layer).getBlockState(x, y, z);
     }
 
     @Override
@@ -149,7 +141,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public Identifier getBlockId(int x, int y, int z, int layer) {
-        return this.blocks.getBlockId(x, y, z, layer);
+        return this.blockStorage(layer).getBlockId(x, y, z);
     }
 
     @Override
@@ -159,7 +151,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public int getBlockLegacyId(int x, int y, int z, int layer) {
-        return this.blocks.getBlockLegacyId(x, y, z, layer);
+        return this.blockStorage(layer).getBlockLegacyId(x, y, z);
     }
 
     @Override
@@ -169,7 +161,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public int getBlockMeta(int x, int y, int z, int layer) {
-        return this.blocks.getBlockMeta(x, y, z, layer);
+        return this.blockStorage(layer).getBlockMeta(x, y, z);
     }
 
     @Override
@@ -179,7 +171,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public int getBlockRuntimeId(int x, int y, int z, int layer) {
-        return this.blocks.getBlockRuntimeId(x, y, z, layer);
+        return this.blockStorage(layer).getBlockRuntimeId(x, y, z);
     }
 
     @Override
@@ -189,7 +181,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, @NonNull BlockState state) {
-        this.blocks.setBlockState(x, y, z, layer, state);
+        this.blockStorage(layer).setBlockState(x, y, z, state);
     }
 
     @Override
@@ -199,7 +191,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, @NonNull Identifier id, int meta) {
-        this.blocks.setBlockState(x, y, z, layer, id, meta);
+        this.blockStorage(layer).setBlockState(x, y, z, id, meta);
     }
 
     @Override
@@ -209,7 +201,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockState(int x, int y, int z, int layer, int legacyId, int meta) {
-        this.blocks.setBlockState(x, y, z, layer, legacyId, meta);
+        this.blockStorage(layer).setBlockState(x, y, z, legacyId, meta);
     }
 
     @Override
@@ -219,7 +211,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockId(int x, int y, int z, int layer, @NonNull Identifier id) {
-        this.blocks.setBlockId(x, y, z, layer, id);
+        this.blockStorage(layer).setBlockId(x, y, z, id);
     }
 
     @Override
@@ -229,7 +221,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockLegacyId(int x, int y, int z, int layer, int legacyId) {
-        this.blocks.setBlockLegacyId(x, y, z, layer, legacyId);
+        this.blockStorage(layer).setBlockLegacyId(x, y, z, legacyId);
     }
 
     @Override
@@ -239,7 +231,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockMeta(int x, int y, int z, int layer, int meta) {
-        this.blocks.setBlockMeta(x, y, z, layer, meta);
+        this.blockStorage(layer).setBlockMeta(x, y, z, meta);
     }
 
     @Override
@@ -249,7 +241,7 @@ public class DefaultSection extends AbstractRefCounted implements Section {
 
     @Override
     public void setBlockRuntimeId(int x, int y, int z, int layer, int runtimeId) {
-        this.blocks.setBlockRuntimeId(x, y, z, layer, runtimeId);
+        this.blockStorage(layer).setBlockRuntimeId(x, y, z, runtimeId);
     }
 
     @Override

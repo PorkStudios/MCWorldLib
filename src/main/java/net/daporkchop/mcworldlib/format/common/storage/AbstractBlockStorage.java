@@ -22,7 +22,6 @@ package net.daporkchop.mcworldlib.format.common.storage;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.util.Identifier;
@@ -36,67 +35,34 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
  */
 public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
     @Getter
-    protected final BlockRegistry blockRegistry;
+    protected final BlockRegistry localRegistry;
 
-    public AbstractBlockStorage(@NonNull BlockRegistry blockRegistry) {
-        this.blockRegistry = blockRegistry;
-    }
-
-    @Override
-    public abstract int layers();
-
-    @Override
-    public BlockRegistry localRegistry() {
-        return null; //TODO
+    public AbstractBlockStorage(@NonNull BlockRegistry localRegistry) {
+        this.localRegistry = localRegistry;
     }
 
     @Override
     public BlockState getBlockState(int x, int y, int z) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z));
-    }
-
-    @Override
-    public BlockState getBlockState(int x, int y, int z, int layer) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z, layer));
+        return this.localRegistry.getState(this.getBlockRuntimeId(x, y, z));
     }
 
     @Override
     public Identifier getBlockId(int x, int y, int z) {
-        return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z));
+        return this.localRegistry.getBlockId(this.getBlockLegacyId(x, y, z));
     }
 
     @Override
-    public Identifier getBlockId(int x, int y, int z, int layer) {
-        return this.blockRegistry.getBlockId(this.getBlockLegacyId(x, y, z, layer));
-    }
+    public abstract int getBlockLegacyId(int x, int y, int z);
 
     @Override
-    public int getBlockLegacyId(int x, int y, int z) {
-        return this.getBlockLegacyId(x, y, z, 0);
-    }
+    public abstract int getBlockMeta(int x, int y, int z);
 
     @Override
-    public abstract int getBlockLegacyId(int x, int y, int z, int layer);
-
-    @Override
-    public int getBlockMeta(int x, int y, int z) {
-        return this.getBlockMeta(x, y, z, 0);
-    }
-
-    @Override
-    public abstract int getBlockMeta(int x, int y, int z, int layer);
-
-    @Override
-    public int getBlockRuntimeId(int x, int y, int z) {
-        return this.getBlockRuntimeId(x, y, z, 0);
-    }
-
-    @Override
-    public abstract int getBlockRuntimeId(int x, int y, int z, int layer);
+    public abstract int getBlockRuntimeId(int x, int y, int z);
 
     @Override
     public void setBlockState(int x, int y, int z, @NonNull BlockState state) {
-        if (this.blockRegistry == state.registry()) {
+        if (this.localRegistry == state.registry()) {
             this.setBlockRuntimeId(x, y, z, state.runtimeId());
         } else {
             this.setBlockState(x, y, z, state.legacyId(), state.meta());
@@ -104,69 +70,30 @@ public abstract class AbstractBlockStorage extends AbstractRefCounted implements
     }
 
     @Override
-    public void setBlockState(int x, int y, int z, int layer, @NonNull BlockState state) {
-        if (this.blockRegistry == state.registry()) {
-            this.setBlockRuntimeId(x, y, z, layer, state.runtimeId());
-        } else {
-            this.setBlockState(x, y, z, layer, state.legacyId(), state.meta());
-        }
-    }
-
-    @Override
     public void setBlockState(int x, int y, int z, @NonNull Identifier id, int meta) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, meta));
-    }
-
-    @Override
-    public void setBlockState(int x, int y, int z, int layer, @NonNull Identifier id, int meta) {
-        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, meta));
+        this.setBlockRuntimeId(x, y, z, this.localRegistry.getRuntimeId(id, meta));
     }
 
     @Override
     public void setBlockState(int x, int y, int z, int legacyId, int meta) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, meta));
-    }
-
-    @Override
-    public void setBlockState(int x, int y, int z, int layer, int legacyId, int meta) {
-        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, meta));
+        this.setBlockRuntimeId(x, y, z, this.localRegistry.getRuntimeId(legacyId, meta));
     }
 
     @Override
     public void setBlockId(int x, int y, int z, @NonNull Identifier id) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(id, 0));
-    }
-
-    @Override
-    public void setBlockId(int x, int y, int z, int layer, @NonNull Identifier id) {
-        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(id, 0));
+        this.setBlockRuntimeId(x, y, z, this.localRegistry.getRuntimeId(id, 0));
     }
 
     @Override
     public void setBlockLegacyId(int x, int y, int z, int legacyId) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getRuntimeId(legacyId, 0));
+        this.setBlockRuntimeId(x, y, z, this.localRegistry.getRuntimeId(legacyId, 0));
     }
 
     @Override
-    public void setBlockLegacyId(int x, int y, int z, int layer, int legacyId) {
-        this.setBlockRuntimeId(x, y, z, layer, this.blockRegistry.getRuntimeId(legacyId, 0));
-    }
+    public abstract void setBlockMeta(int x, int y, int z, int meta);
 
     @Override
-    public void setBlockMeta(int x, int y, int z, int meta) {
-        this.setBlockMeta(x, y, z, 0, meta);
-    }
-
-    @Override
-    public abstract void setBlockMeta(int x, int y, int z, int layer, int meta);
-
-    @Override
-    public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
-        this.setBlockRuntimeId(x, y, z, 0, runtimeId);
-    }
-
-    @Override
-    public abstract void setBlockRuntimeId(int x, int y, int z, int layer, int runtimeId);
+    public abstract void setBlockRuntimeId(int x, int y, int z, int runtimeId);
 
     @Override
     public BlockStorage retain() throws AlreadyReleasedException {

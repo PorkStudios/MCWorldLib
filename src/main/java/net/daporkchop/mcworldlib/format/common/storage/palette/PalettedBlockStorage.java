@@ -81,7 +81,7 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
         } else if (bits < 9) {
             this.palette = new ArrayPalette(this, this.bits = bits); //vanilla uses a hashmap for this, i doubt it's much faster though...
         } else {
-            this.bits = BinMath.getNumBitsNeededFor(this.blockRegistry.maxRuntimeId() + 1);
+            this.bits = BinMath.getNumBitsNeededFor(this.localRegistry.maxRuntimeId() + 1);
             this.palette = IdentityPalette.INSTANCE;
         }
 
@@ -93,12 +93,12 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public int getBlockLegacyId(int x, int y, int z) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
+        return this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
     }
 
     @Override
     public int getBlockMeta(int x, int y, int z) {
-        return this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
+        return this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
     }
 
     @Override
@@ -112,7 +112,7 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
     @Override
     public void setBlockMeta(int x, int y, int z, int meta) {
-        this.setBlockRuntimeId(x, y, z, this.blockRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
+        this.setBlockRuntimeId(x, y, z, this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
     }
 
     @Override
