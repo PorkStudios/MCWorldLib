@@ -48,8 +48,11 @@ public class Blocks {
     public final BlockType PRESSURE_PLATE = register("pressure_plate", Traits.BUTTON_TYPE, Traits.PRESSED);
     public final BlockType SAPLING = register("sapling", Traits.WOOD_TYPE, Traits.SAPLING_STAGE);
     public final BlockType SIGN = register("sign", Traits.WOOD_TYPE, Traits.FACING);
+    public final BlockType SLAB = register("slab", Traits.SLAB_TYPE, Traits.SLAB_PART);
+    public final BlockType STAIRS = register("stairs", Traits.SLAB_TYPE, Traits.FACING, Traits.UPSIDE_DOWN, Traits.STAIR_SHAPE);
     public final BlockType STANDING_SIGN = register("standing_sign", Traits.WOOD_TYPE, Traits.ROTATION);
     public final BlockType STONE = register("stone", Traits.STONE_TYPE);
+    public final BlockType TRAPDOOR = register("trapdoor", Traits.DOOR_TYPE, Traits.FACING, Traits.OPEN, Traits.POWERED);
     public final BlockType WATER = register("water", Traits.WATER_FALLING, Traits.WATER_LEVEL);
     public final BlockType WEIGHTED_PRESSURE_PLATE = register("weighted_pressure_plate", Traits.WEIGHTED_PRESSURE_PLATE_TYPE, Traits.POWER);
 
