@@ -24,6 +24,7 @@ import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
@@ -40,6 +41,15 @@ public abstract class LegacyBlockStorage extends AbstractBlockStorage {
 
     public LegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
         super(localRegistry);
+    }
+
+    @Override
+    public BlockStorage toGlobal(boolean preferView) {
+        if (this.localRegistry.isGlobal()) {
+            return this;
+        }
+
+        return new ToGlobalBlockStorageView(this); //TODO: optimize this
     }
 
     @Override

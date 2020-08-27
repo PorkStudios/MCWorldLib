@@ -21,6 +21,7 @@
 package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.block.fluid.FluidRegistry;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.registry.Registry;
@@ -250,6 +251,11 @@ public interface BlockRegistry {
     void forEachState(@NonNull Consumer<? super BlockState> action);
 
     void forEachRuntimeId(@NonNull IntConsumer action);
+
+    /**
+     * @return the {@link FluidRegistry} used by this registry
+     */
+    FluidRegistry fluids();
 
     /**
      * Creates a new {@link BlockStorage} using the optimal implementation for this registry.

@@ -40,10 +40,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
@@ -62,7 +64,7 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
 @Getter
 public abstract class AbstractBlockRegistry implements BlockRegistry {
     @Getter(AccessLevel.NONE)
-    protected final Map<Identifier, DefaultBlockState> idToDefaultState = new HashMap<>();
+    protected final Map<Identifier, DefaultBlockState> idToDefaultState = new IdentityHashMap<>();
     @Getter(AccessLevel.NONE)
     protected final IntObjMap<DefaultBlockState> legacyIdToDefaultState = new IntObjOpenHashMap<>();
     @Getter(AccessLevel.NONE)

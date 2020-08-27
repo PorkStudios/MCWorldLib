@@ -106,7 +106,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
     }
 
     @Override
-    public BlockStorage defaultBlockStorage() {
+    public BlockStorage blockStorage() {
         return this.blocks;
     }
 
@@ -131,7 +131,8 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
 
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        return this.blockStorage(layer).getBlockState(x, y, z);
+        BlockStorage storage = this.blockStorage(layer);
+        return storage != null ? storage.getBlockState(x, y, z) : this.blocks.localRegistry().air();
     }
 
     @Override
@@ -141,7 +142,8 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
 
     @Override
     public Identifier getBlockId(int x, int y, int z, int layer) {
-        return this.blockStorage(layer).getBlockId(x, y, z);
+        BlockStorage storage = this.blockStorage(layer);
+        return storage != null ? storage.getBlockId(x, y, z) : this.blocks.localRegistry().air().id();
     }
 
     @Override
@@ -151,7 +153,8 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
 
     @Override
     public int getBlockLegacyId(int x, int y, int z, int layer) {
-        return this.blockStorage(layer).getBlockLegacyId(x, y, z);
+        BlockStorage storage = this.blockStorage(layer);
+        return storage != null ? storage.getBlockLegacyId(x, y, z) : this.blocks.localRegistry().air().legacyId();
     }
 
     @Override
@@ -161,7 +164,8 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
 
     @Override
     public int getBlockMeta(int x, int y, int z, int layer) {
-        return this.blockStorage(layer).getBlockMeta(x, y, z);
+        BlockStorage storage = this.blockStorage(layer);
+        return storage != null ? storage.getBlockMeta(x, y, z) : this.blocks.localRegistry().air().meta();
     }
 
     @Override
@@ -171,7 +175,8 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
 
     @Override
     public int getBlockRuntimeId(int x, int y, int z, int layer) {
-        return this.blockStorage(layer).getBlockRuntimeId(x, y, z);
+        BlockStorage storage = this.blockStorage(layer);
+        return storage != null ? storage.getBlockRuntimeId(x, y, z) : 0;
     }
 
     @Override
@@ -280,5 +285,76 @@ public abstract class DefaultSection extends AbstractRefCounted implements Secti
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    //
+    //
+    // fluidaccess methods
+    //
+    //
+
+    @Override
+    public BlockState getFluidState(int x, int y, int z) {
+        return this.getBlockState(x, y, z, 1);
+    }
+
+    @Override
+    public Identifier getFluidId(int x, int y, int z) {
+        return this.getBlockId(x, y, z, 1);
+    }
+
+    @Override
+    public int getFluidLegacyId(int x, int y, int z) {
+        return this.getBlockLegacyId(x, y, z, 1);
+    }
+
+    @Override
+    public int getFluidMeta(int x, int y, int z) {
+        return this.getBlockMeta(x, y, z, 1);
+    }
+
+    @Override
+    public int getFluidRuntimeId(int x, int y, int z) {
+        return this.getBlockRuntimeId(x, y, z, 1);
+    }
+
+    @Override
+    public void setFluidEmpty(int x, int y, int z) {
+        this.setBlockRuntimeId(x, y, z, 1, 0);
+    }
+
+    @Override
+    public void setFluidState(int x, int y, int z, @NonNull BlockState state) {
+        this.setBlockState(x, y, z, 1, state);
+    }
+
+    @Override
+    public void setFluidState(int x, int y, int z, @NonNull Identifier id, int meta) {
+        this.setBlockState(x, y, z, 1, id, meta);
+    }
+
+    @Override
+    public void setFluidState(int x, int y, int z, int legacyId, int meta) {
+        this.setBlockState(x, y, z, 1, legacyId, meta);
+    }
+
+    @Override
+    public void setFluidId(int x, int y, int z, @NonNull Identifier id) {
+        this.setBlockId(x, y, z, 1, id);
+    }
+
+    @Override
+    public void setFluidLegacyId(int x, int y, int z, int legacyId) {
+        this.setBlockLegacyId(x, y, z, 1, legacyId);
+    }
+
+    @Override
+    public void setFluidMeta(int x, int y, int z, int meta) {
+        this.setBlockMeta(x, y, z, 1, meta);
+    }
+
+    @Override
+    public void setFluidRuntimeId(int x, int y, int z, int runtimeId) {
+        this.setBlockRuntimeId(x, y, z, 1, runtimeId);
     }
 }

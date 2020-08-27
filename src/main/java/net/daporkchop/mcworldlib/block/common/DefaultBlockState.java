@@ -107,6 +107,11 @@ public class DefaultBlockState implements BlockState {
     }
 
     @Override
+    public <T> Property<T> tryProperty(@NonNull String name) {
+        return uncheckedCast(this.propertiesByName.get(name));
+    }
+
+    @Override
     public Collection<Property<?>> properties() {
         return uncheckedCast(Collections.unmodifiableSet(this.propertyValues.keySet()));
     }

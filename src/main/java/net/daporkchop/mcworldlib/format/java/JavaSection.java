@@ -18,10 +18,11 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.section;
+package net.daporkchop.mcworldlib.format.java;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.DefaultSection;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.world.Section;
 
@@ -32,10 +33,10 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-public class FixedLayer1Section extends DefaultSection {
+public class JavaSection extends DefaultSection {
     protected final BlockStorage layer1;
 
-    public FixedLayer1Section(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+    public JavaSection(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
         super(x, y, z, layer0, blockLight, skyLight);
 
         this.layer1 = layer1;

@@ -172,4 +172,35 @@ public interface BlockState {
     default Property.Boolean propertyBoolean(@NonNull String name) {
         return uncheckedCast(this.property(name));
     }
+
+    /**
+     * Gets the {@link Property} with the given name.
+     *
+     * @param name the name of the property to get
+     * @param <T>  the property's value type
+     * @return the {@link Property} with the given name, or {@code null} if the block does not have any properties with the given name
+     */
+    <T> Property<T> tryProperty(@NonNull String name);
+
+    /**
+     * Gets the {@link Property.Int} with the given name.
+     *
+     * @param name the name of the property to get
+     * @return the {@link Property.Int} with the given name, or {@code null} if the block does not have any properties with the given name
+     * @throws ClassCastException if the property is not a {@link Property.Int}
+     */
+    default Property.Int tryPropertyInt(@NonNull String name) {
+        return uncheckedCast(this.tryProperty(name));
+    }
+
+    /**
+     * Gets the {@link Property.Boolean} with the given name.
+     *
+     * @param name the name of the property to get
+     * @return the {@link Property.Boolean} with the given name, or {@code null} if the block does not have any properties with the given name
+     * @throws ClassCastException if the property is not a {@link Property.Boolean}
+     */
+    default Property.Boolean tryPropertyBoolean(@NonNull String name) {
+        return uncheckedCast(this.tryProperty(name));
+    }
 }

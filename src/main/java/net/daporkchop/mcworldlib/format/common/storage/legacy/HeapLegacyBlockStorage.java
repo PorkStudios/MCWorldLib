@@ -147,15 +147,6 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     }
 
     @Override
-    public BlockStorage toGlobal(boolean preferView) {
-        if (this.localRegistry.isGlobal()) {
-            return this;
-        }
-
-        return new ToGlobalBlockStorageView(this);
-    }
-
-    @Override
     protected void doRelease() {
         if (this.blocksHandle != null) {
             this.blocksHandle.release();

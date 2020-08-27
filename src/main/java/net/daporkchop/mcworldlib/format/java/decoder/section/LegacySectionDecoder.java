@@ -21,18 +21,20 @@
 package net.daporkchop.mcworldlib.format.java.decoder.section;
 
 import lombok.NonNull;
+import net.daporkchop.lib.nbt.tag.ByteArrayTag;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.RegistryConverter;
+import net.daporkchop.mcworldlib.block.fluid.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.section.LazyLayer1Section;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
+import net.daporkchop.mcworldlib.format.java.JavaSection;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Section;
 import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.lib.nbt.tag.ByteArrayTag;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
  * @author DaPorkchop_
@@ -43,10 +45,12 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
     @Override
     public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
         int y = tag.getByte("Y") & 0xFF;
-        BlockStorage storage = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
+        BlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
+        BlockStorage layer1 = this.extractFluidsToLayer1(layer0);
+
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
-        return new LazyLayer1Section(x, y, z, storage, blockLight, skyLight);
+        return new JavaSection(x, y, z, layer0.toGlobal(false), layer1.toGlobal(false), blockLight, skyLight);
     }
 
     protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
@@ -74,7 +78,27 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
             return null;
         }
         return data.handle() != null
-               ? new HeapNibbleArray.YZX(data.handle())
-               : new HeapNibbleArray.YZX(data.value(), 0);
+                ? new HeapNibbleArray.YZX(data.handle())
+                : new HeapNibbleArray.YZX(data.value(), 0);
+    }
+
+    protected BlockStorage extractFluidsToLayer1(@NonNull BlockStorage from) {
+        FluidRegistry registry = from.localRegistry().fluids();
+        RegistryConverter converter = from.localRegistry().toGlobal();
+
+        BlockStorage to = BlockRegistry.global().createStorage();
+        for (int x = 0; x < 16; x++) {
+            for (int y = 0; y < 16; y++) {
+                for (int z = 0; z < 16; z++) {
+                    int block = from.getBlockRuntimeId(x, y, z);
+                    int fluid = registry.extractFluid(block);
+                    if (fluid != 0) {
+                        from.setBlockRuntimeId(x, y, z, registry.stripFluid(block));
+                        to.setBlockRuntimeId(x, y, z, converter.toGlobal(fluid));
+                    }
+                }
+            }
+        }
+        return to; //already using the global registry
     }
 }
