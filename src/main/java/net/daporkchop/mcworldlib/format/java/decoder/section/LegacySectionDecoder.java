@@ -25,7 +25,7 @@ import net.daporkchop.lib.nbt.tag.ByteArrayTag;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
-import net.daporkchop.mcworldlib.block.fluid.FluidRegistry;
+import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;

@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.world;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.math.access.IntHolderXYZ;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.block.fluid.FluidAccess;
+import net.daporkchop.mcworldlib.block.FluidAccess;
 import net.daporkchop.mcworldlib.block.LayeredBlockAccess;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;

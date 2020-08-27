@@ -76,7 +76,7 @@ public abstract class AbstractBlockRegistry implements BlockRegistry {
     protected final int states;
     protected final int maxRuntimeId;
 
-    protected <I extends Builder<I, B, R>, B extends BlockBuilder<B, I, R>, R extends BlockRegistry> AbstractBlockRegistry(@NonNull I builder) {
+    protected <I extends Builder<I, B, ? extends R>, B extends BlockBuilder<B, I, ? extends R>, R extends BlockRegistry> AbstractBlockRegistry(@NonNull I builder) {
         builder.blocks.forEach((id, block) -> this.idToDefaultState.put(id, block.bake(uncheckedCast(this))));
 
         this.maxRuntimeId = this.idToDefaultState.values().stream()

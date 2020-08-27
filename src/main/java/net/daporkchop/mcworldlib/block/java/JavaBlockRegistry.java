@@ -20,218 +20,72 @@
 
 package net.daporkchop.mcworldlib.block.java;
 
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import lombok.experimental.UtilityClass;
-import net.daporkchop.lib.common.function.PFunctions;
 import net.daporkchop.lib.common.function.io.IOFunction;
-import net.daporkchop.lib.common.misc.InstancePool;
+import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.mcworldlib.block.Property;
+import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.block.common.GlobalRegistryConverter;
-import net.daporkchop.mcworldlib.block.property.BooleanPropertyImpl;
-import net.daporkchop.mcworldlib.block.property.EnumPropertyImpl;
-import net.daporkchop.mcworldlib.block.property.IntPropertyImpl;
-import net.daporkchop.mcworldlib.block.common.AbstractBlockRegistry;
-import net.daporkchop.mcworldlib.block.common.DefaultBlockState;
-import net.daporkchop.mcworldlib.registry.Registry;
+import net.daporkchop.mcworldlib.block.common.NoopFluidRegistry;
+import net.daporkchop.mcworldlib.block.common.json.JsonBlockRegistry;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
-import net.daporkchop.lib.reflection.type.PTypes;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
  * @author DaPorkchop_
  */
-public class JavaBlockRegistry extends AbstractBlockRegistry {
+public class JavaBlockRegistry extends JsonBlockRegistry {
     private static final Map<String, BlockRegistry> CACHE = new ObjObjConcurrentHashMap<>(); //this has a faster computeIfAbsent implementation
-    private static final Type BLOCK_MAP_TYPE = PTypes.parameterized(Map.class, String.class, JsonBlock.class);
 
     public static BlockRegistry forVersion(@NonNull JavaVersion versionIn) {
         if (versionIn.data() < DataVersion.DATA_1_12_2) {
             versionIn = JavaVersion.fromName("1.12.2"); //1.12.2 is used as an intermediate translation point for all legacy versions
         }
         return CACHE.computeIfAbsent(versionIn.name(), (IOFunction<String, BlockRegistry>) version -> {
-            Map<String, JsonBlock> map;
             try (InputStream in = JavaBlockRegistry.class.getResourceAsStream(version + ".json")) {
                 checkArg(in != null, "no registry stored for version: %s", version);
-                map = InstancePool.getInstance(Gson.class).fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), BLOCK_MAP_TYPE);
+                return new JavaBlockRegistry(in, JavaVersion.fromName(version));
             }
-
-            JavaVersion javaVersion = JavaVersion.fromName(version);
-            Registry legacyBlockRegistry = JavaRegistries.forVersion(javaVersion).get(BlockRegistry.ID);
-
-            Builder builder = new JavaBlockRegistry.Builder(converter(javaVersion));
-            map.forEach((name, block) -> {
-                Identifier id = Identifier.fromString(name);
-                BlockBuilder blockBuilder = builder.startBlock(id);
-
-                Map<String, Property<?>> propertyLookup = block.properties.entrySet().stream()
-                        .map(e -> makeProperty(Identifier.fromString(e.getKey()), e.getValue()))
-                        .collect(Collectors.toMap(Property::name, PFunctions.identity()));
-
-                blockBuilder.propertyLookup(propertyLookup)
-                        .states(block.states)
-                        .legacyId(legacyBlockRegistry.get(id));
-            });
-            return builder.build();
         });
     }
 
-    public static BlockRegistry latest()    {
+    public static BlockRegistry latest() {
         return Latest.LATEST;
     }
 
-    private static RegistryConverter converter(@NonNull JavaVersion version)    {
-        if (version == JavaVersion.latest())    {
+    private static RegistryConverter converter(@NonNull JavaVersion version) {
+        if (version == JavaVersion.latest()) {
             return new GlobalRegistryConverter();
         }
-        //TODO: something
+        //TODO: make registry converter
         return new GlobalRegistryConverter();
     }
 
-    private static Property<?> makeProperty(@NonNull Identifier name, @NonNull List<String> values) {
-        try {
-            int min = values.stream().mapToInt(Integer::parseUnsignedInt).min().orElse(0);
-            int max = values.stream().mapToInt(Integer::parseUnsignedInt).max().orElse(0) + 1;
-            return new IntPropertyImpl(name.name(), min, max);
-        } catch (NumberFormatException ignored) {
-        }
-
-        if (values.size() == 2 && values.contains("true") && values.contains("false")) {
-            return new BooleanPropertyImpl(name.name());
-        } else {
-            return new EnumPropertyImpl(name.name(), values);
-        }
+    private static FluidRegistry fluidRegistry(@NonNull JavaVersion version) {
+        //TODO: implement this
+        return new NoopFluidRegistry();
     }
 
     @Getter
     protected final RegistryConverter toGlobal;
-
-    protected JavaBlockRegistry(@NonNull Builder builder, @NonNull RegistryConverter toGlobal) {
-        super(builder);
-
-        this.toGlobal = toGlobal;
-    }
-
     @Getter
-    public static final class JsonBlock {
-        public Map<String, List<String>> properties = Collections.emptyMap();
-        public List<JsonState> states;
-    }
+    protected final FluidRegistry fluids;
 
-    @Getter
-    public static final class JsonState {
-        public Map<String, String> properties = Collections.emptyMap();
+    protected JavaBlockRegistry(@NonNull InputStream in, @NonNull JavaVersion version) throws IOException {
+        super(in, JavaRegistries.forVersion(version).get(BlockRegistry.ID));
 
-        public int id;
-
-        @SerializedName("default")
-        public boolean isDefault = false;
-        @SerializedName("virtual")
-        public boolean isVirtual = false;
-    }
-
-    @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class Builder extends AbstractBlockRegistry.Builder<JavaBlockRegistry.Builder, JavaBlockRegistry.BlockBuilder, JavaBlockRegistry> {
-        @NonNull
-        protected final RegistryConverter toGlobal;
-
-        @Override
-        protected JavaBlockRegistry.BlockBuilder blockBuilder(@NonNull Identifier id) {
-            return new JavaBlockRegistry.BlockBuilder(this, id);
-        }
-
-        @Override
-        public JavaBlockRegistry build() {
-            return new JavaBlockRegistry(this, this.toGlobal);
-        }
-    }
-
-    @Getter
-    public static class BlockBuilder extends AbstractBlockRegistry.BlockBuilder<JavaBlockRegistry.BlockBuilder, JavaBlockRegistry.Builder, JavaBlockRegistry> {
-        protected Map<String, Property<?>> propertyLookup;
-        protected List<JsonState> statesList;
-        protected Map<Map<Property<?>, ?>, JsonState> states;
-        protected int legacyId = -1;
-        protected int firstRuntimeId = -1;
-
-        protected BlockBuilder(JavaBlockRegistry.Builder parent, Identifier id) {
-            super(parent, id);
-        }
-
-        public JavaBlockRegistry.BlockBuilder legacyId(int legacyId) {
-            this.legacyId = notNegative(legacyId, "legacyId");
-            return this;
-        }
-
-        public JavaBlockRegistry.BlockBuilder propertyLookup(@NonNull Map<String, Property<?>> propertyLookup) {
-            this.propertyLookup = propertyLookup;
-            this.properties = propertyLookup.values().toArray(new Property[propertyLookup.size()]);
-            return this;
-        }
-
-        public JavaBlockRegistry.BlockBuilder states(@NonNull List<JsonState> states) {
-            this.firstRuntimeId = states.stream().mapToInt(JsonState::id).min().orElseThrow(IllegalArgumentException::new);
-            this.statesList = states;
-            return this;
-        }
-
-        @Override
-        protected void validateState() {
-            checkState(this.legacyId >= 0, "legacyId must be set! (block: %s)", this.id);
-            checkState(this.propertyLookup != null, "propertyLookup must be set! (block: %s)", this.id);
-            checkState(this.statesList != null, "states must be set! (block: %s)", this.id);
-
-            this.states = this.statesList.stream().collect(Collectors.toMap(
-                    state -> state.properties.entrySet().stream().collect(Collectors.toMap(
-                            e -> this.propertyLookup.get(e.getKey()),
-                            e -> this.propertyLookup.get(e.getKey()).decodeValue(e.getValue()))),
-                    PFunctions.identity()));
-        }
-
-        @Override
-        protected DefaultBlockState makeState(@NonNull JavaBlockRegistry registry, @NonNull Map<Property<?>, ?> properties) {
-            JsonState state = this.states.get(properties);
-            int meta = state.id - this.firstRuntimeId;
-            return new DefaultBlockState(registry, this.id, this.legacyId, meta, state.id);
-        }
-
-        @Override
-        protected BlockState[] getMetaArray(@NonNull Map<Map<Property<?>, ?>, DefaultBlockState> propertiesToStates) {
-            BlockState[] arr = new BlockState[propertiesToStates.values().stream().mapToInt(DefaultBlockState::meta).max().orElse(-1) + 1];
-            propertiesToStates.values().forEach(state -> arr[state.runtimeId() - this.firstRuntimeId] = state);
-            return arr;
-        }
-
-        @Override
-        protected DefaultBlockState getDefaultState(@NonNull Map<Map<Property<?>, ?>, DefaultBlockState> propertiesToStates, @NonNull BlockState[] metas) {
-            return propertiesToStates.entrySet().stream()
-                    .filter(e -> this.states.get(e.getKey()).isDefault)
-                    .map(Map.Entry::getValue)
-                    .findAny()
-                    .orElseThrow(IllegalStateException::new);
-        }
+        this.toGlobal = converter(version);
+        this.fluids = fluidRegistry(version);
     }
 
     @UtilityClass

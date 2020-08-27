@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.fluid;
+package net.daporkchop.mcworldlib.block;
 
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 

@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.fluid;
+package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.block.BlockState;
