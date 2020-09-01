@@ -20,10 +20,10 @@
 
 package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.LayeredBlockAccess;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 
 /**
- * Additional information used to describe a {@link World}.
+ * Additional information used to describe a {@link IWorld}.
  *
  * @author DaPorkchop_
  */
@@ -32,11 +32,6 @@ public interface WorldInfo {
      * @return the dimension used by the world
      */
     Dimension dimension();
-
-    /**
-     * @see LayeredBlockAccess#layers()
-     */
-    int layers();
 
     /**
      * @return whether or not this dimension has sky light

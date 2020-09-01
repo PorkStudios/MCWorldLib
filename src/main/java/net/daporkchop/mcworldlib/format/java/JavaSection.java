@@ -23,20 +23,20 @@ package net.daporkchop.mcworldlib.format.java;
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.DefaultSection;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.world.common.ISection;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Implementation of a 2-layer {@link Section} which has a fixed a second layer.
+ * Implementation of a 2-layer {@link ISection} which has a fixed a second layer.
  *
  * @author DaPorkchop_
  */
 public class JavaSection extends DefaultSection {
-    protected final BlockStorage layer1;
+    protected final IBlockStorage layer1;
 
-    public JavaSection(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+    public JavaSection(int x, int y, int z, @NonNull IBlockStorage layer0, @NonNull IBlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
         super(x, y, z, layer0, blockLight, skyLight);
 
         this.layer1 = layer1;
@@ -48,7 +48,7 @@ public class JavaSection extends DefaultSection {
     }
 
     @Override
-    public BlockStorage blockStorage(int layer) {
+    public IBlockStorage blockStorage(int layer) {
         checkIndex((layer & ~1) == 0, "invalid layer: %d (must be in range [0,1])", layer);
         return layer == 0 ? this.blocks : this.layer1;
     }

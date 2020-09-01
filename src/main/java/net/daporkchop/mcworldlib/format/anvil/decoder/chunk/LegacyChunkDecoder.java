@@ -23,10 +23,9 @@ package net.daporkchop.mcworldlib.format.anvil.decoder.chunk;
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaChunkDecoder;
 import net.daporkchop.mcworldlib.format.vanilla.VanillaChunk;
-import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
@@ -38,7 +37,7 @@ public class LegacyChunkDecoder implements JavaChunkDecoder {
     public static final JavaVersion VERSION = JavaVersion.fromName("1.12.2");
 
     @Override
-    public Chunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
+    public IChunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
         CompoundTag level = tag.getCompound("Level");
         int x = level.getInt("xPos");
         int z = level.getInt("zPos");

@@ -23,9 +23,10 @@ package net.daporkchop.mcworldlib.format.vanilla;
 import net.daporkchop.mcworldlib.format.common.AbstractWorld;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 
 /**
- * Base implementation of {@link net.daporkchop.mcworldlib.world.World} for vanilla chunks with exactly 16 sections.
+ * Base implementation of {@link IWorld} for vanilla chunks with exactly 16 sections.
  *
  * @author DaPorkchop_
  */

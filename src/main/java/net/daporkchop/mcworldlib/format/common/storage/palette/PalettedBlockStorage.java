@@ -26,8 +26,8 @@ import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
-import net.daporkchop.mcworldlib.format.common.storage.legacy.LegacyBlockStorage;
+import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.legacy.AbstractLegacyBlockStorage;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
 import net.daporkchop.mcworldlib.util.palette.IdentityPalette;
 import net.daporkchop.mcworldlib.util.palette.Palette;
@@ -37,11 +37,11 @@ import java.util.function.IntBinaryOperator;
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Implementation of {@link BlockStorage} which uses a palette.
+ * Implementation of {@link IBlockStorage} which uses a palette.
  *
  * @author DaPorkchop_
  */
-public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinaryOperator {
+public class PalettedBlockStorage extends AbstractLegacyBlockStorage implements IntBinaryOperator {
     protected final ArrayAllocator<long[]> alloc;
     protected BitArray array;
     protected Palette palette;
@@ -147,7 +147,7 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
     }
 
     @Override
-    public BlockStorage clone() {
+    public IBlockStorage clone() {
         return null;
     }
 

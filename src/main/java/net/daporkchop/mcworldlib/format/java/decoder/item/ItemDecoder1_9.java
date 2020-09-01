@@ -22,10 +22,9 @@ package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.item.ItemMeta;
 import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 import static net.daporkchop.mcworldlib.item.ItemMeta.*;
@@ -43,7 +42,7 @@ public class ItemDecoder1_9 extends ItemDecoder1_8 {
     }
 
     @Override
-    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
+    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
         int damage = root.getShort("Damage", (short) 0);
 
         BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);

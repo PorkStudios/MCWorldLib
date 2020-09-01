@@ -18,41 +18,19 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world;
+package net.daporkchop.mcworldlib.world.legacy;
 
-import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.lib.common.misc.Versioned;
-import net.daporkchop.lib.math.access.IntHolderXZ;
-import net.daporkchop.mcworldlib.version.MinecraftVersion;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.block.access.LegacyBlockAccess;
+import net.daporkchop.mcworldlib.world.common.ISection;
 
 /**
- * Representation of a Minecraft chunk, consisting of {@link Section}s identified by their integer Y coordinate.
- * <p>
- * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
- * itself is loaded.
+ * Extension of {@link ISection} for legacy worlds.
  *
  * @author DaPorkchop_
  */
-public interface Chunk extends IntHolderXZ, RefCounted {
+public interface LegacySection extends LegacyBlockAccess, ISection<LegacySection> {
     /**
-     * @return this chunk's X coordinate
+     * @return the {@link LegacyBlockStorage} used by this section for storing block data at layer 0
      */
-    @Override
-    int x();
-
-    /**
-     * @return this chunk's Z coordinate
-     */
-    @Override
-    int z();
-
-    @Override
-    int refCnt();
-
-    @Override
-    Chunk retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
+    LegacyBlockStorage blockStorage();
 }

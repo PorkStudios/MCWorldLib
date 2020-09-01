@@ -22,7 +22,6 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
@@ -31,7 +30,6 @@ import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;

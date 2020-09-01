@@ -23,7 +23,6 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
@@ -31,7 +30,7 @@ import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
-import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractR
     @NonNull
     protected final File root;
 
-    protected final Map<Identifier, World> worlds = new HashMap<>();
+    protected final Map<Identifier, IWorld> worlds = new HashMap<>();
     protected final Set<Identifier> worldIds = Collections.unmodifiableSet(this.worlds.keySet());
     protected V version;
     protected Registries registries;
@@ -72,13 +71,13 @@ public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractR
     }
 
     @Override
-    public Stream<World> worlds() {
+    public Stream<IWorld> worlds() {
         return this.worlds.values().stream();
     }
 
     @Override
-    public World world(@NonNull Identifier id) {
-        World world = this.worlds.get(id);
+    public IWorld world(@NonNull Identifier id) {
+        IWorld world = this.worlds.get(id);
         checkArg(world != null, id);
         return world.retain();
     }
@@ -91,7 +90,7 @@ public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractR
 
     @Override
     protected void doRelease() {
-        this.worlds.values().forEach(World::release);
+        this.worlds.values().forEach(IWorld::release);
         this.worlds.clear();
     }
 }

@@ -22,20 +22,19 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.mcworldlib.format.anvil.storage.AnvilWorldStorage;
 import net.daporkchop.mcworldlib.format.vanilla.VanillaWorld;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
-import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.mcworldlib.world.WorldInfo;
 
 import java.io.File;
 
 /**
- * Implementation of {@link World} for the Anvil format.
+ * Implementation of {@link IWorld} for the Anvil format.
  *
  * @author DaPorkchop_
  */

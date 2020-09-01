@@ -22,7 +22,7 @@ package net.daporkchop.mcworldlib.block;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.common.IBlockStorage;
 import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
 
@@ -257,9 +257,9 @@ public interface BlockRegistry {
     FluidRegistry fluids();
 
     /**
-     * Creates a new {@link BlockStorage} using the optimal implementation for this registry.
+     * Creates a new {@link IBlockStorage} using the optimal implementation for this registry.
      *
-     * @return a new {@link BlockStorage}
+     * @return a new {@link IBlockStorage}
      */
-    BlockStorage createStorage();
+    IBlockStorage createStorage();
 }

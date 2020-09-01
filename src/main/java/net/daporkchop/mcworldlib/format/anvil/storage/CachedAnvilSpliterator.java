@@ -23,8 +23,8 @@ package net.daporkchop.mcworldlib.format.anvil.storage;
 import lombok.NonNull;
 import net.daporkchop.lib.math.vector.i.Vec2i;
 import net.daporkchop.mcworldlib.format.anvil.region.RegionConstants;
-import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.common.ISection;
 import net.daporkchop.lib.unsafe.PUnsafe;
 
 import java.io.File;
@@ -138,7 +138,7 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
      *
      * @author DaPorkchop_
      */
-    public static class OfChunk extends CachedAnvilSpliterator<Chunk> {
+    public static class OfChunk extends CachedAnvilSpliterator<IChunk> {
         public OfChunk(@NonNull AnvilWorldStorage storage) {
             super(storage);
         }
@@ -148,12 +148,12 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        public boolean tryAdvance(@NonNull Consumer<? super Chunk> action) {
+        public boolean tryAdvance(@NonNull Consumer<? super IChunk> action) {
             Vec2i chunkPos = this.next();
             if (chunkPos == null) {
                 return false;
             }
-            try (Chunk chunk = this.storage.loadChunk(chunkPos.getX(), chunkPos.getY())) {
+            try (IChunk chunk = this.storage.loadChunk(chunkPos.getX(), chunkPos.getY())) {
                 action.accept(chunk);
                 return true;
             } catch (IOException e) {
@@ -163,7 +163,7 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        protected Spliterator<Chunk> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
+        protected Spliterator<IChunk> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
             return new OfChunk(storage, regions, index, fence);
         }
     }
@@ -173,7 +173,7 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
      *
      * @author DaPorkchop_
      */
-    public static class OfSection extends CachedAnvilSpliterator<Section> {
+    public static class OfSection extends CachedAnvilSpliterator<ISection> {
         protected Vec2i chunk;
         protected int sectionY;
 
@@ -196,10 +196,10 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        public boolean tryAdvance(@NonNull Consumer<? super Section> action) {
+        public boolean tryAdvance(@NonNull Consumer<? super ISection> action) {
             while (this.chunk != null || this.nextChunk()) {
                 while (this.sectionY < 16) {
-                    try (Section section = this.storage.loadSection(this.chunk.getX(), this.sectionY++, this.chunk.getY())) {
+                    try (ISection section = this.storage.loadSection(this.chunk.getX(), this.sectionY++, this.chunk.getY())) {
                         if (section != null) {
                             action.accept(section);
                             return true;
@@ -217,7 +217,7 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        protected Spliterator<Section> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
+        protected Spliterator<ISection> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
             return new OfSection(storage, regions, index, fence);
         }
     }

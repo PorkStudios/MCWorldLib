@@ -18,57 +18,58 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common;
+package net.daporkchop.mcworldlib.world.common;
 
-import lombok.Getter;
-import lombok.NonNull;
-import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.save.Save;
-import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.common.IWorld;
-import net.daporkchop.mcworldlib.world.common.IWorldStorage;
+import net.daporkchop.lib.common.misc.Cloneable;
+import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.block.access.BlockAccess;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Base implementation of {@link IWorld}.
+ * A 16³ array of block states.
+ * <p>
+ * All IDs used by all methods use the local block registry.
  *
  * @author DaPorkchop_
+ * @see BlockRegistry
  */
-@Getter
-public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements IWorld {
-    protected final S parent;
-    protected final SaveOptions options;
-    protected final Identifier id;
+public interface IBlockStorage<I extends IBlockStorage> extends Cloneable<I>, RefCounted {
+    /**
+     * The number of blocks in a single block storage.
+     */
+    int NUM_BLOCKS = 16 * 16 * 16;
 
-    public AbstractWorld(@NonNull S parent, @NonNull Identifier id) {
-        this.parent = parent;
-        this.options = parent.options();
-        this.id = id;
+    static void checkCoords(int x, int y, int z) {
+        checkIndex(x >= 0 && x < 16, "x");
+        checkIndex(y >= 0 && y < 16, "y");
+        checkIndex(z >= 0 && z < 16, "z");
     }
-
-    protected BlockRegistry blockRegistry;
-    protected IWorldStorage storage;
 
     /**
-     * Ensures that the implementation constructor has initialized all the required fields.
+     * @return the {@link BlockRegistry} that this {@link IBlockStorage} uses
      */
-    protected void validateState() {
-        checkState(this.blockRegistry != null, "blockRegistry must be set!");
-        checkState(this.storage != null, "storage must be set!");
-    }
+    BlockRegistry localRegistry();
+
+    /**
+     * Gets this {@link IBlockStorage} using the global block registry.
+     * <p>
+     * WARNING! After calling this method, this {@link IBlockStorage} is implicitly released. Do not use this for shared instances!
+     *
+     * @param preferView hints to the implementation that a view would be preferred over a copy
+     * @return this {@link IBlockStorage} in the global block registry
+     */
+    //TODO: this
+    //IBlockStorage toGlobal(boolean preferView);
 
     @Override
-    public IWorld retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
+    int refCnt();
 
     @Override
-    protected void doRelease() {
-        this.storage.release();
-    }
+    I retain() throws AlreadyReleasedException;
+
+    @Override
+    boolean release() throws AlreadyReleasedException;
 }

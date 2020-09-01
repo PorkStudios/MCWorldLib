@@ -18,15 +18,13 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world;
+package net.daporkchop.mcworldlib.world.common;
 
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.math.access.IntHolderXYZ;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.block.FluidAccess;
-import net.daporkchop.mcworldlib.block.LayeredBlockAccess;
+import net.daporkchop.mcworldlib.block.access.LightAccess;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 
 import java.util.Collection;
@@ -38,7 +36,7 @@ import java.util.Collection;
  *
  * @author DaPorkchop_
  */
-public interface Section extends LayeredBlockAccess, FluidAccess, LightAccess, IntHolderXYZ, RefCounted {
+public interface ISection<I extends ISection> extends LightAccess, IntHolderXYZ, RefCounted {
     /**
      * @return this section's X coordinate
      */
@@ -56,19 +54,6 @@ public interface Section extends LayeredBlockAccess, FluidAccess, LightAccess, I
      */
     @Override
     int z();
-
-    /**
-     * @return the {@link BlockStorage} used by this section for storing block data at layer 0
-     */
-    BlockStorage blockStorage();
-
-    /**
-     * Gets the {@link BlockStorage} used by this section for storing block data at the given layer.
-     *
-     * @param layer the layer of the {@link BlockStorage} to get
-     * @return the {@link BlockStorage} used by this section for storing block data at the given layer
-     */
-    BlockStorage blockStorage(int layer);
 
     /**
      * @return the {@link NibbleArray} used by this section for storing block light data
@@ -111,7 +96,7 @@ public interface Section extends LayeredBlockAccess, FluidAccess, LightAccess, I
     int refCnt();
 
     @Override
-    Section retain() throws AlreadyReleasedException;
+    I retain() throws AlreadyReleasedException;
 
     @Override
     boolean release() throws AlreadyReleasedException;

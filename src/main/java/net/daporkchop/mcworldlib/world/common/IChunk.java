@@ -18,47 +18,38 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world;
+package net.daporkchop.mcworldlib.world.common;
 
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.mcworldlib.block.BlockAccess;
-import net.daporkchop.mcworldlib.save.Save;
-import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.lib.math.access.IntHolderXZ;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 /**
- * Representation of a Minecraft world, consisting of {@link Chunk}s identified by their integer X, Z coordinates.
+ * Representation of a Minecraft chunk, consisting of {@link ISection}s identified by their integer Y coordinate.
  * <p>
- * Worlds keep a reference to their {@link WorldStorage} instance which is not released until the world is released.
+ * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
+ * itself is loaded.
  *
  * @author DaPorkchop_
  */
-public interface World extends RefCounted {
+public interface IChunk extends IntHolderXZ, RefCounted {
     /**
-     * @return the {@link Save} that loaded this world
+     * @return this chunk's X coordinate
      */
-    Save parent();
+    @Override
+    int x();
 
     /**
-     * @return the {@link Identifier} used to identify this world in its parent {@link Save}
+     * @return this chunk's Z coordinate
      */
-    Identifier id();
-
-    /**
-     * @return the {@link WorldInfo} which describes this world
-     */
-    WorldInfo info();
-
-    /**
-     * @return the {@link WorldStorage} used for handling I/O of chunks and cubes
-     */
-    WorldStorage storage();
+    @Override
+    int z();
 
     @Override
     int refCnt();
 
     @Override
-    World retain() throws AlreadyReleasedException;
+    IChunk retain() throws AlreadyReleasedException;
 
     @Override
     boolean release() throws AlreadyReleasedException;

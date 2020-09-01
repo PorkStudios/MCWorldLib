@@ -18,31 +18,15 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common;
+package net.daporkchop.mcworldlib.world.legacy;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.world.common.IChunk;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.block.access.LegacyBlockAccess;
+import net.daporkchop.mcworldlib.world.common.IBlockStorage;
 
 /**
- * Base implementation of {@link IChunk}.
+ * Extension of {@link IBlockStorage} for legacy worlds.
  *
  * @author DaPorkchop_
  */
-@RequiredArgsConstructor
-@Getter
-public abstract class AbstractChunk extends AbstractRefCounted implements IChunk {
-    protected final int x;
-    protected final int z;
-
-    @Override
-    public IChunk retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
-
-    @Override
-    protected abstract void doRelease();
+public interface LegacyBlockStorage extends LegacyBlockAccess, IBlockStorage<LegacyBlockStorage> {
 }
