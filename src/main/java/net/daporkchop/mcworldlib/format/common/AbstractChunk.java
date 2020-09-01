@@ -23,22 +23,22 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 /**
- * Base implementation of {@link IChunk}.
+ * Base implementation of {@link Chunk}.
  *
  * @author DaPorkchop_
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractChunk extends AbstractRefCounted implements IChunk {
+public abstract class AbstractChunk extends AbstractRefCounted implements Chunk {
     protected final int x;
     protected final int z;
 
     @Override
-    public IChunk retain() throws AlreadyReleasedException {
+    public Chunk retain() throws AlreadyReleasedException {
         super.retain();
         return this;
     }

@@ -26,7 +26,7 @@ import net.daporkchop.mcworldlib.format.anvil.region.RegionFile;
 import net.daporkchop.mcworldlib.format.anvil.region.impl.MemoryMappedRegionFile;
 import net.daporkchop.mcworldlib.format.anvil.region.impl.OverclockedRegionFile;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.common.ISection;
 import net.daporkchop.lib.unsafe.PUnsafe;
 
@@ -143,7 +143,7 @@ public abstract class UncachedAnvilSpliterator<T> implements Spliterator<T> {
      *
      * @author DaPorkchop_
      */
-    public static class OfChunk extends UncachedAnvilSpliterator<IChunk> {
+    public static class OfChunk extends UncachedAnvilSpliterator<Chunk> {
         public OfChunk(@NonNull AnvilWorldStorage storage) {
             super(storage);
         }
@@ -153,12 +153,12 @@ public abstract class UncachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        public boolean tryAdvance(@NonNull Consumer<? super IChunk> action) {
+        public boolean tryAdvance(@NonNull Consumer<? super Chunk> action) {
             try (AnvilCachedChunk cachedChunk = this.next())  {
                 if (cachedChunk == null)  {
                     return false;
                 }
-                try (IChunk chunk = cachedChunk.chunk()) {
+                try (Chunk chunk = cachedChunk.chunk()) {
                     action.accept(chunk);
                 }
                 return true;
@@ -166,7 +166,7 @@ public abstract class UncachedAnvilSpliterator<T> implements Spliterator<T> {
         }
 
         @Override
-        protected Spliterator<IChunk> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
+        protected Spliterator<Chunk> sub(@NonNull AnvilWorldStorage storage, @NonNull File[] regions, int index, int fence) {
             return new OfChunk(storage, regions, index, fence);
         }
     }

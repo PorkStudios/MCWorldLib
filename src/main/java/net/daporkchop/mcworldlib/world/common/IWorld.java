@@ -24,20 +24,21 @@ import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.WorldInfo;
 
 /**
- * Representation of a Minecraft world, consisting of {@link IChunk}s identified by their integer X, Z coordinates.
+ * Representation of a Minecraft world, consisting of {@link Chunk}s identified by their integer X, Z coordinates.
  * <p>
  * Worlds keep a reference to their {@link IWorldStorage} instance which is not released until the world is released.
  *
  * @author DaPorkchop_
  */
-public interface IWorld extends RefCounted {
+public interface IWorld<I extends IWorld, St extends IWorldStorage, S extends Save> extends RefCounted {
     /**
      * @return the {@link Save} that loaded this world
      */
-    Save parent();
+    S parent();
 
     /**
      * @return the {@link Identifier} used to identify this world in its parent {@link Save}
@@ -52,13 +53,13 @@ public interface IWorld extends RefCounted {
     /**
      * @return the {@link IWorldStorage} used for handling I/O of chunks and cubes
      */
-    IWorldStorage storage();
+    St storage();
 
     @Override
     int refCnt();
 
     @Override
-    IWorld retain() throws AlreadyReleasedException;
+    I retain() throws AlreadyReleasedException;
 
     @Override
     boolean release() throws AlreadyReleasedException;

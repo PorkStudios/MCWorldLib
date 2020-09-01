@@ -34,7 +34,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-public interface SaveFormat {
+public interface SaveFormat<S extends Save> {
     /**
      * Open the {@link Save} at the given path.
      *
@@ -43,8 +43,8 @@ public interface SaveFormat {
      * @return the opened {@link Save}
      * @throws IllegalArgumentException if the save could not be opened
      */
-    default Save open(@NonNull File root, @NonNull SaveOptions options) throws IOException {
-        Save save = this.tryOpen(root, options);
+    default S open(@NonNull File root, @NonNull SaveOptions options) throws IOException {
+        S save = this.tryOpen(root, options);
         checkState(save != null, "Couldn't open save at \"%s\" (options: %s)", root, options);
         return save;
     }
@@ -56,5 +56,5 @@ public interface SaveFormat {
      * @param options the {@link SaveOptions} to be used for opening the given save
      * @return the opened {@link Save}, or {@code null} if it could not be opened
      */
-    Save tryOpen(@NonNull File root, @NonNull SaveOptions options) throws IOException;
+    S tryOpen(@NonNull File root, @NonNull SaveOptions options) throws IOException;
 }

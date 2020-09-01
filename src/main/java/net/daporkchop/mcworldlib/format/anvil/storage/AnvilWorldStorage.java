@@ -46,7 +46,7 @@ import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.version.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.common.ISection;
 import net.daporkchop.mcworldlib.world.common.IWorldStorage;
 import net.daporkchop.lib.nbt.NBTFormat;
@@ -113,8 +113,8 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public IChunk loadChunk(int _x, int _z) throws IOException {
-        IChunk[] ref = new IChunk[1]; //TODO: reuse this
+    public Chunk loadChunk(int _x, int _z) throws IOException {
+        Chunk[] ref = new Chunk[1]; //TODO: reuse this
         this.cachedChunks.compute(BinMath.packXY(_x, _z), (ChunkUpdater) (x, z, cached) -> {
             if (cached == null) {
                 cached = this.load(x, z);
@@ -139,7 +139,7 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public PFuture<IChunk> loadChunkAsync(int x, int z) {
+    public PFuture<Chunk> loadChunkAsync(int x, int z) {
         return PFutures.computeThrowableAsync(() -> this.loadChunk(x, z), this.ioExecutor);
     }
 
@@ -149,12 +149,12 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public void save(@NonNull Iterable<IChunk> chunks, @NonNull Iterable<ISection> sections) throws IOException {
+    public void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<ISection> sections) throws IOException {
         throw new UnsupportedOperationException(); //TODO
     }
 
     @Override
-    public PFuture<Void> saveAsync(@NonNull Iterable<IChunk> chunks, @NonNull Iterable<ISection> sections) {
+    public PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<ISection> sections) {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -168,7 +168,7 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public Spliterator<IChunk> allChunks() throws IOException {
+    public Spliterator<Chunk> allChunks() throws IOException {
         return this.readOnly && this.options.get(SaveOptions.SPLITERATOR_CACHE)
         ? new CachedAnvilSpliterator.OfChunk(this)
         : new UncachedAnvilSpliterator.OfChunk(this);

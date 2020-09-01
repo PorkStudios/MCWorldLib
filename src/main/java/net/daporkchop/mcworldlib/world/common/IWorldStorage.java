@@ -24,6 +24,7 @@ import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.concurrent.PFuture;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.Chunk;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -48,15 +49,15 @@ import java.util.Spliterator;
  *
  * @author DaPorkchop_
  */
-public interface IWorldStorage extends RefCounted {
+public interface IWorldStorage<I extends IWorldStorage, S extends ISection> extends RefCounted {
     /**
-     * Loads the {@link IChunk} at the given coordinates.
+     * Loads the {@link Chunk} at the given coordinates.
      *
      * @param x the X coordinate of the chunk to load
      * @param z the Z coordinate of the chunk to load
-     * @return the loaded {@link IChunk}, or {@code null} if the chunk doesn't exist
+     * @return the loaded {@link Chunk}, or {@code null} if the chunk doesn't exist
      */
-    IChunk loadChunk(int x, int z) throws IOException;
+    Chunk loadChunk(int x, int z) throws IOException;
 
     /**
      * Loads the {@link ISection} at the given coordinates.
@@ -65,18 +66,18 @@ public interface IWorldStorage extends RefCounted {
      * @param y the Y coordinate of the section to load
      * @param z the Z coordinate of the section to load
      * @return the loaded {@link ISection}, or {@code null} if the section doesn't exist
-     * @throws IllegalArgumentException if the given {@link IChunk} does not belong to this storage
+     * @throws IllegalArgumentException if the given {@link Chunk} does not belong to this storage
      */
-    ISection loadSection(int x, int y, int z) throws IOException;
+    S loadSection(int x, int y, int z) throws IOException;
 
     /**
-     * Loads the {@link IChunk} at the given coordinates asynchronously.
+     * Loads the {@link Chunk} at the given coordinates asynchronously.
      *
      * @param x the X coordinate of the chunk to load
      * @param z the Z coordinate of the chunk to load
      * @return a {@link PFuture} which will be completed with the loaded chunk, or {@code null} if the chunk doesn't exist
      */
-    PFuture<IChunk> loadChunkAsync(int x, int z);
+    PFuture<Chunk> loadChunkAsync(int x, int z);
 
     /**
      * Loads the {@link ISection} at the given coordinates asynchronously.
@@ -86,19 +87,19 @@ public interface IWorldStorage extends RefCounted {
      * @param z the Z coordinate of the section to load
      * @return a {@link PFuture} which will be completed with the loaded section, or {@code null} if the section doesn't exist
      */
-    PFuture<ISection> loadSectionAsync(int x, int y, int z);
+    PFuture<S> loadSectionAsync(int x, int y, int z);
 
     /**
-     * Saves all of the {@link IChunk}s in the given {@link Iterable}.
+     * Saves all of the {@link Chunk}s in the given {@link Iterable}.
      * <p>
      * This method will block until all of the given chunks have been completely written to disk.
      * <p>
      * Chunks that are not dirty will be ignored.
      *
-     * @param chunks the {@link IChunk}s to save
+     * @param chunks the {@link Chunk}s to save
      * @see #save(Iterable, Iterable)
      */
-    default void saveChunks(@NonNull Iterable<IChunk> chunks) throws IOException {
+    default void saveChunks(@NonNull Iterable<Chunk> chunks) throws IOException {
         this.save(chunks, Collections.emptySet());
     }
 
@@ -112,7 +113,7 @@ public interface IWorldStorage extends RefCounted {
      * @param sections the {@link ISection}s to save
      * @see #save(Iterable, Iterable)
      */
-    default void saveSections(@NonNull Iterable<ISection> sections) throws IOException {
+    default void saveSections(@NonNull Iterable<S> sections) throws IOException {
         this.save(Collections.emptySet(), sections);
     }
 
@@ -126,13 +127,13 @@ public interface IWorldStorage extends RefCounted {
      * <p>
      * Chunks and sections that are not dirty will be ignored.
      *
-     * @param chunks   the {@link IChunk}s to save
+     * @param chunks   the {@link Chunk}s to save
      * @param sections the {@link ISection}s to save
      */
-    void save(@NonNull Iterable<IChunk> chunks, @NonNull Iterable<ISection> sections) throws IOException;
+    void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections) throws IOException;
 
     /**
-     * Saves all of the {@link IChunk}s in the given {@link Iterable} asynchronously.
+     * Saves all of the {@link Chunk}s in the given {@link Iterable} asynchronously.
      * <p>
      * Unlike {@link #saveChunks(Iterable)}, this method makes no guarantees as to when the chunks will be saved. An implementation may choose to make the
      * entire operation block, returning a completed {@link PFuture}, or it may do everything asynchronously, causing the chunk's dirty flag to be
@@ -140,11 +141,11 @@ public interface IWorldStorage extends RefCounted {
      * <p>
      * Chunks that are not dirty will be ignored.
      *
-     * @param chunks the {@link IChunk}s to save
+     * @param chunks the {@link Chunk}s to save
      * @return a {@link PFuture} which will be completed after the chunks were written to disk
      * @see #saveAsync(Iterable, Iterable)
      */
-    default PFuture<Void> saveChunksAsync(@NonNull Iterable<IChunk> chunks) {
+    default PFuture<Void> saveChunksAsync(@NonNull Iterable<Chunk> chunks) {
         return this.saveAsync(chunks, Collections.emptySet());
     }
 
@@ -161,7 +162,7 @@ public interface IWorldStorage extends RefCounted {
      * @return a {@link PFuture} which will be completed after the sections were written to disk
      * @see #saveAsync(Iterable, Iterable)
      */
-    default PFuture<Void> saveSectionsAsync(@NonNull Iterable<ISection> sections) {
+    default PFuture<Void> saveSectionsAsync(@NonNull Iterable<S> sections) {
         return this.saveAsync(Collections.emptySet(), sections);
     }
 
@@ -177,10 +178,10 @@ public interface IWorldStorage extends RefCounted {
      * <p>
      * Chunks and sections that are not dirty will be ignored.
      *
-     * @param chunks   the {@link IChunk}s to save
+     * @param chunks   the {@link Chunk}s to save
      * @param sections the {@link ISection}s to save
      */
-    PFuture<Void> saveAsync(@NonNull Iterable<IChunk> chunks, @NonNull Iterable<ISection> sections);
+    PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections);
 
     /**
      * Flushes any data that may be queued for writing to disk.
@@ -205,15 +206,15 @@ public interface IWorldStorage extends RefCounted {
     PFuture<Void> flushAsync();
 
     /**
-     * Gets a {@link Spliterator} over all the {@link IChunk}s in the world.
+     * Gets a {@link Spliterator} over all the {@link Chunk}s in the world.
      * <p>
-     * The order in which {@link IChunk}s are returned is up to the implementation, which may choose any order most efficient for parallel iteration.
+     * The order in which {@link Chunk}s are returned is up to the implementation, which may choose any order most efficient for parallel iteration.
      * <p>
-     * Note that all of the {@link IChunk}s returned by the {@link Spliterator} will have been newly loaded from disk, and must be released manually.
+     * Note that all of the {@link Chunk}s returned by the {@link Spliterator} will have been newly loaded from disk, and must be released manually.
      *
-     * @return a {@link Spliterator} over all the {@link IChunk}s in the world
+     * @return a {@link Spliterator} over all the {@link Chunk}s in the world
      */
-    Spliterator<IChunk> allChunks() throws IOException;
+    Spliterator<Chunk> allChunks() throws IOException;
 
     /**
      * Gets a {@link Spliterator} over all the {@link ISection}s in the world.
@@ -224,13 +225,13 @@ public interface IWorldStorage extends RefCounted {
      *
      * @return a {@link Spliterator} over all the {@link ISection}s in the world
      */
-    Spliterator<ISection> allSections() throws IOException;
+    Spliterator<S> allSections() throws IOException;
 
     @Override
     int refCnt();
 
     @Override
-    IWorldStorage retain() throws AlreadyReleasedException;
+    I retain() throws AlreadyReleasedException;
 
     @Override
     boolean release() throws AlreadyReleasedException;

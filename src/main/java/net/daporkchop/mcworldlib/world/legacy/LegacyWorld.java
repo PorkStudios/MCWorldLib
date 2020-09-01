@@ -18,23 +18,14 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.vanilla;
+package net.daporkchop.mcworldlib.world.legacy;
 
-import net.daporkchop.mcworldlib.format.common.AbstractChunk;
-import net.daporkchop.mcworldlib.world.Chunk;
+import net.daporkchop.mcworldlib.world.common.IWorld;
 
 /**
- * Base implementation of {@link Chunk} for vanilla chunks with exactly 16 sections.
+ * Extension of {@link IWorld} for legacy worlds.
  *
  * @author DaPorkchop_
  */
-public class VanillaChunk extends AbstractChunk {
-    public VanillaChunk(int x, int z) {
-        super(x, z);
-    }
-
-    @Override
-    protected void doRelease() {
-        //literally just do nothing lol
-    }
+public interface LegacyWorld extends IWorld<LegacyWorld, LegacyWorldStorage> {
 }

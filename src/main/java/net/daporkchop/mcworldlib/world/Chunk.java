@@ -18,23 +18,40 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.vanilla;
+package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.format.common.AbstractChunk;
-import net.daporkchop.mcworldlib.world.Chunk;
+import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.lib.math.access.IntHolderXZ;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.common.ISection;
 
 /**
- * Base implementation of {@link Chunk} for vanilla chunks with exactly 16 sections.
+ * Representation of a Minecraft chunk, consisting of {@link ISection}s identified by their integer Y coordinate.
+ * <p>
+ * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
+ * itself is loaded.
  *
  * @author DaPorkchop_
  */
-public class VanillaChunk extends AbstractChunk {
-    public VanillaChunk(int x, int z) {
-        super(x, z);
-    }
+public interface Chunk extends IntHolderXZ, RefCounted {
+    /**
+     * @return this chunk's X coordinate
+     */
+    @Override
+    int x();
+
+    /**
+     * @return this chunk's Z coordinate
+     */
+    @Override
+    int z();
 
     @Override
-    protected void doRelease() {
-        //literally just do nothing lol
-    }
+    int refCnt();
+
+    @Override
+    Chunk retain() throws AlreadyReleasedException;
+
+    @Override
+    boolean release() throws AlreadyReleasedException;
 }

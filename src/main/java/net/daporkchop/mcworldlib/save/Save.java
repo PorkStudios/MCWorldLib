@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  *
  * @author DaPorkchop_
  */
-public interface Save extends RefCounted {
+public interface Save<I extends Save, W extends IWorld> extends RefCounted {
     /**
      * @return this save's root directory/file
      */
@@ -57,34 +57,6 @@ public interface Save extends RefCounted {
     SaveOptions options();
 
     /**
-     * @return any additional registries used by this save
-     */
-    Registries registries();
-
-    /**
-     * @return the {@link BlockRegistry} used by this save
-     */
-    BlockRegistry blockRegistry();
-
-    /**
-     * Gets any additional registries used by this save when reading data at the given version.
-     *
-     * @param version the {@link MinecraftVersion} of the additional registries to get
-     * @return any additional registries used by this save when reading data at the given version
-     */
-    Registries registriesFor(@NonNull MinecraftVersion version);
-
-    /**
-     * Gets the {@link BlockRegistry} used by this save when reading data at the given version.
-     *
-     * @param version the {@link MinecraftVersion} of the {@link BlockRegistry} to get
-     * @return the {@link BlockRegistry} used by this save when reading data at the given version
-     */
-    BlockRegistry blockRegistryFor(@NonNull MinecraftVersion version);
-
-    //TODO: move registries to some sort of context class
-
-    /**
      * @return the {@link Identifier}s of all of the worlds present in this save
      */
     Set<Identifier> worldIds();
@@ -92,7 +64,7 @@ public interface Save extends RefCounted {
     /**
      * @return a stream over all of the {@link IWorld}s currently loaded by this save
      */
-    Stream<IWorld> worlds();
+    Stream<W> worlds();
 
     /**
      * Gets the {@link IWorld} with the given {@link Identifier}.
@@ -101,8 +73,8 @@ public interface Save extends RefCounted {
      * @return the {@link IWorld} with the given {@link Identifier}
      * @throws IllegalArgumentException if no world the given {@link Identifier} exists in this save
      */
-    IWorld world(@NonNull Identifier id);
+    W world(@NonNull Identifier id);
 
     @Override
-    Save retain() throws AlreadyReleasedException;
+    I retain() throws AlreadyReleasedException;
 }

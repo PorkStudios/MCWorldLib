@@ -18,39 +18,21 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world.common;
+package net.daporkchop.mcworldlib.save;
 
-import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.lib.math.access.IntHolderXZ;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.registry.Registry;
+import net.daporkchop.mcworldlib.world.legacy.LegacyWorld;
 
 /**
- * Representation of a Minecraft chunk, consisting of {@link ISection}s identified by their integer Y coordinate.
- * <p>
- * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
- * itself is loaded.
+ * Representation of a {@link Save} for legacy worlds.
  *
  * @author DaPorkchop_
  */
-public interface IChunk extends IntHolderXZ, RefCounted {
-    /**
-     * @return this chunk's X coordinate
-     */
-    @Override
-    int x();
+public interface LegacySave extends Save<LegacySave, LegacyWorld> {
+    //TODO: move registries to some sort of context class
 
     /**
-     * @return this chunk's Z coordinate
+     * @return the {@link Registry} used for blocks by this save
      */
-    @Override
-    int z();
-
-    @Override
-    int refCnt();
-
-    @Override
-    IChunk retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
+    Registry blockRegistry();
 }

@@ -27,7 +27,7 @@ import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.common.ISection;
 import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
@@ -42,12 +42,12 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
-    public abstract IChunk chunk();
+    public abstract Chunk chunk();
 
     public abstract ISection section(int y);
 
     public static class ReadOnly extends AnvilCachedChunk {
-        protected final IChunk chunk;
+        protected final Chunk chunk;
         protected final ISection[] sections = new ISection[16];
 
         public ReadOnly(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull JavaFixers fixers, @NonNull IWorld world) {
@@ -74,7 +74,7 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
         }
 
         @Override
-        public IChunk chunk() {
+        public Chunk chunk() {
             return this.chunk.retain();
         }
 

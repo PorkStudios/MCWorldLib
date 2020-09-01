@@ -20,10 +20,10 @@
 
 package net.daporkchop.mcworldlib.format.anvil.chunk;
 
-import net.daporkchop.mcworldlib.world.common.IChunk;
+import net.daporkchop.mcworldlib.world.Chunk;
 
 /**
  * @author DaPorkchop_
  */
-public interface AnvilChunk extends IChunk {
+public interface AnvilChunk extends Chunk {
 }
