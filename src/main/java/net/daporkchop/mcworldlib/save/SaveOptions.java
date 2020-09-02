@@ -28,6 +28,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
+import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.world.common.IWorldStorage;
 

@@ -30,6 +30,7 @@ import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
+import net.daporkchop.mcworldlib.world.Dimension;
 import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
@@ -41,6 +42,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
  * Base implementation of {@link Save}.
@@ -49,43 +51,45 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractRefCounted implements Save {
+public abstract class AbstractSave<V extends MinecraftVersion, I extends Save, W extends IWorld<W, ?, I>> extends AbstractRefCounted implements Save<I, W> {
     @NonNull
     protected final SaveOptions options;
     @NonNull
     protected final File root;
 
-    protected final Map<Identifier, IWorld> worlds = new HashMap<>();
+    protected final Map<Identifier, W> worlds = new HashMap<>();
     protected final Set<Identifier> worldIds = Collections.unmodifiableSet(this.worlds.keySet());
     protected V version;
-    protected Registries registries;
-    protected BlockRegistry blockRegistry;
 
     /**
      * Ensures that the implementation constructor has initialized all the required fields.
      */
     protected void validateState() {
         checkState(this.version != null, "version must be set!");
-        checkState(this.registries != null, "registries must be set!");
-        checkState(this.blockRegistry != null, "blockRegistry must be set!");
     }
 
+    protected void putWorld(@NonNull Dimension dimension) {
+        this.worlds.put(dimension.id(), this.openWorld(dimension));
+    }
+
+    protected abstract W openWorld(@NonNull Dimension dimension);
+
     @Override
-    public Stream<IWorld> worlds() {
+    public Stream<W> worlds() {
         return this.worlds.values().stream();
     }
 
     @Override
-    public IWorld world(@NonNull Identifier id) {
-        IWorld world = this.worlds.get(id);
+    public W world(@NonNull Identifier id) {
+        W world = this.worlds.get(id);
         checkArg(world != null, id);
-        return world.retain();
+        return uncheckedCast(world.retain());
     }
 
     @Override
-    public Save retain() throws AlreadyReleasedException {
+    public I retain() throws AlreadyReleasedException {
         super.retain();
-        return this;
+        return uncheckedCast(this);
     }
 
     @Override

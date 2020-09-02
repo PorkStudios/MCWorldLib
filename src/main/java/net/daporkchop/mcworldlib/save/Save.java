@@ -40,7 +40,7 @@ import java.util.stream.Stream;
  *
  * @author DaPorkchop_
  */
-public interface Save<I extends Save, W extends IWorld> extends RefCounted {
+public interface Save<I extends Save, W extends IWorld<W, ?, I>> extends RefCounted {
     /**
      * @return this save's root directory/file
      */

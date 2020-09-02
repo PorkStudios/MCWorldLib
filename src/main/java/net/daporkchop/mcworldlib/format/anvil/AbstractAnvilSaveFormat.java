@@ -20,56 +20,45 @@
 
 package net.daporkchop.mcworldlib.format.anvil;
 
-import lombok.Getter;
 import lombok.NonNull;
+import net.daporkchop.lib.binary.stream.DataIn;
 import net.daporkchop.lib.common.misc.file.PFiles;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
-import net.daporkchop.mcworldlib.format.common.AbstractSave;
-import net.daporkchop.mcworldlib.format.common.DefaultDimension;
-import net.daporkchop.mcworldlib.registry.Registries;
-import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
+import net.daporkchop.lib.compression.context.PInflater;
+import net.daporkchop.lib.compression.zlib.Zlib;
+import net.daporkchop.lib.compression.zlib.ZlibMode;
 import net.daporkchop.mcworldlib.save.Save;
+import net.daporkchop.mcworldlib.save.SaveFormat;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.version.MinecraftVersion;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.Dimension;
-import net.daporkchop.lib.nbt.NBTOptions;
+import net.daporkchop.lib.nbt.NBTFormat;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
 
 import java.io.File;
-
-import static net.daporkchop.lib.common.util.PValidation.checkArg;
+import java.io.IOException;
 
 /**
  * @author DaPorkchop_
  */
-public abstract class AnvilSave<I extends Save, W extends IWorld<W, ?, I>> extends AbstractSave<JavaVersion, I, W> {
-    @Getter
-    protected final NBTOptions chunkNBTOptions;
-
-    public AnvilSave(@NonNull File root, @NonNull SaveOptions options, @NonNull CompoundTag levelDat, @NonNull JavaVersion version) {
-        super(options, root);
-
-        this.chunkNBTOptions = NBTOptions.DEFAULT
-                .withByteAlloc(options.get(SaveOptions.BYTE_ALLOC))
-                .withIntAlloc(options.get(SaveOptions.INT_ALLOC))
-                .withLongAlloc(options.get(SaveOptions.LONG_ALLOC));
-                //.withObjectParser(null); //TODO
-
-        this.version = version;
-
-        //find worlds
-        this.putWorld(new DefaultDimension(Dimension.ID_OVERWORLD, 0, true, true));
-        if (PFiles.checkDirectoryExists(new File(this.root, "DIM-1"))) {
-            this.putWorld(new DefaultDimension(Dimension.ID_NETHER, -1, false, false));
-        }
-        if (PFiles.checkDirectoryExists(new File(this.root, "DIM1"))) {
-            this.putWorld(new DefaultDimension(Dimension.ID_END, 1, false, false));
+public abstract class AbstractAnvilSaveFormat<S extends Save> implements SaveFormat<S> {
+    @Override
+    public S tryOpen(@NonNull File root, @NonNull SaveOptions options) throws IOException {
+        File levelDatFile = new File(root, "level.dat");
+        if (!PFiles.checkFileExists(levelDatFile)) {
+            return null;
         }
 
-        this.validateState();
+        CompoundTag nbt;
+        try (PInflater inflater = Zlib.PROVIDER.inflater(Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.GZIP));
+             DataIn in = inflater.decompressionStream(DataIn.wrapBuffered(levelDatFile))) {
+            nbt = NBTFormat.BIG_ENDIAN.readCompound(in);
+        }
+        try (CompoundTag levelDat = nbt) {
+            //System.out.println(levelDat);
+            if (levelDat.contains("Data")) {
+                return this.doOpen(root, options, levelDat, this.extractVersion(levelDat));
+            }
+            return null;
+        }
     }
 
     protected JavaVersion extractVersion(@NonNull CompoundTag levelData)   {
@@ -79,4 +68,6 @@ public abstract class AnvilSave<I extends Save, W extends IWorld<W, ?, I>> exten
         }
         return JavaVersion.fromName(versionTag.getString("Name"));
     }
+
+    protected abstract S doOpen(@NonNull File root, @NonNull SaveOptions options, @NonNull CompoundTag levelDat, @NonNull JavaVersion version);
 }

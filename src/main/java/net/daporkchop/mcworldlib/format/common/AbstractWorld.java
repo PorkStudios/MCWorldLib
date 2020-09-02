@@ -23,15 +23,16 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.world.common.IWorld;
 import net.daporkchop.mcworldlib.world.common.IWorldStorage;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
  * Base implementation of {@link IWorld}.
@@ -39,10 +40,14 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 @Getter
-public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements IWorld {
+public abstract class AbstractWorld<I extends IWorld<I, St, S>, St extends IWorldStorage, S extends Save<S, I>> extends AbstractRefCounted implements IWorld<I, St, S> {
     protected final S parent;
+
     protected final SaveOptions options;
+
     protected final Identifier id;
+
+    protected St storage;
 
     public AbstractWorld(@NonNull S parent, @NonNull Identifier id) {
         this.parent = parent;
@@ -50,21 +55,17 @@ public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted i
         this.id = id;
     }
 
-    protected BlockRegistry blockRegistry;
-    protected IWorldStorage storage;
-
     /**
      * Ensures that the implementation constructor has initialized all the required fields.
      */
     protected void validateState() {
-        checkState(this.blockRegistry != null, "blockRegistry must be set!");
         checkState(this.storage != null, "storage must be set!");
     }
 
     @Override
-    public IWorld retain() throws AlreadyReleasedException {
+    public I retain() throws AlreadyReleasedException {
         super.retain();
-        return this;
+        return uncheckedCast(this);
     }
 
     @Override

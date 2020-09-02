@@ -63,6 +63,8 @@ import java.io.IOException;
 import java.util.Spliterator;
 import java.util.concurrent.Executor;
 
+import static net.daporkchop.lib.common.util.PorkUtil.*;
+
 /**
  * Implementation of {@link IWorldStorage} for the Anvil save format.
  * <p>
@@ -71,7 +73,7 @@ import java.util.concurrent.Executor;
  *
  * @author DaPorkchop_
  */
-public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStorage {
+public abstract class AnvilWorldStorage<I extends IWorldStorage<I, S>, S extends ISection<S>> extends AbstractRefCounted implements IWorldStorage<I, S> {
     protected static final ZlibInflaterOptions INFLATER_OPTIONS = Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.AUTO);
     protected static final HandledPool<PInflater> INFLATER_CACHE = HandledPool.threadLocal(() -> Zlib.PROVIDER.inflater(INFLATER_OPTIONS), 1);
 
@@ -126,7 +128,7 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public ISection loadSection(int _x, int _y, int _z) throws IOException {
+    public S loadSection(int _x, int _y, int _z) throws IOException {
         ISection[] ref = new ISection[1]; //TODO: reuse this
         this.cachedChunks.compute(BinMath.packXY(_x, _z), (ChunkUpdater) (x, z, cached) -> {
             if (cached == null) {
@@ -144,17 +146,17 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public PFuture<ISection> loadSectionAsync(int x, int y, int z) {
+    public PFuture<S> loadSectionAsync(int x, int y, int z) {
         return PFutures.computeThrowableAsync(() -> this.loadSection(x, y, z), this.ioExecutor);
     }
 
     @Override
-    public void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<ISection> sections) throws IOException {
+    public void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections) throws IOException {
         throw new UnsupportedOperationException(); //TODO
     }
 
     @Override
-    public PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<ISection> sections) {
+    public PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections) {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -175,16 +177,16 @@ public class AnvilWorldStorage extends AbstractRefCounted implements IWorldStora
     }
 
     @Override
-    public Spliterator<ISection> allSections() throws IOException {
+    public Spliterator<S> allSections() throws IOException {
         return this.readOnly && this.options.get(SaveOptions.SPLITERATOR_CACHE)
                ? new CachedAnvilSpliterator.OfSection(this)
                : new UncachedAnvilSpliterator.OfSection(this);
     }
 
     @Override
-    public IWorldStorage retain() throws AlreadyReleasedException {
+    public I retain() throws AlreadyReleasedException {
         super.retain();
-        return this;
+        return uncheckedCast(this);
     }
 
     @Override

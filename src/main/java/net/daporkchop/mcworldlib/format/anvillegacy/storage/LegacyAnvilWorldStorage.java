@@ -18,20 +18,23 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.vanilla;
+package net.daporkchop.mcworldlib.format.anvillegacy.storage;
 
-import net.daporkchop.mcworldlib.format.common.AbstractWorld;
-import net.daporkchop.mcworldlib.save.Save;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import lombok.NonNull;
+import net.daporkchop.lib.nbt.NBTOptions;
+import net.daporkchop.mcworldlib.format.anvil.AnvilWorld;
+import net.daporkchop.mcworldlib.format.anvil.storage.AnvilWorldStorage;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
+import net.daporkchop.mcworldlib.world.legacy.LegacySection;
+import net.daporkchop.mcworldlib.world.legacy.LegacyWorldStorage;
+
+import java.io.File;
 
 /**
- * Base implementation of {@link IWorld} for vanilla chunks with exactly 16 sections.
- *
  * @author DaPorkchop_
  */
-public abstract class VanillaWorld<S extends Save> extends AbstractWorld<S> {
-    public VanillaWorld(S parent, Identifier id) {
-        super(parent, id);
+public class LegacyAnvilWorldStorage extends AnvilWorldStorage<LegacyWorldStorage, LegacySection> implements LegacyWorldStorage {
+    public LegacyAnvilWorldStorage(@NonNull File root, @NonNull AnvilWorld world, @NonNull NBTOptions nbtOptions, JavaVersion worldVersion) {
+        super(root, world, nbtOptions, worldVersion);
     }
 }

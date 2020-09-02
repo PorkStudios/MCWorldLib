@@ -18,15 +18,37 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world.legacy;
+package net.daporkchop.mcworldlib.format.anvillegacy;
 
+import lombok.Getter;
+import lombok.NonNull;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.mcworldlib.format.anvil.AnvilSave;
+import net.daporkchop.mcworldlib.registry.Registry;
+import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.save.LegacySave;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
+import net.daporkchop.mcworldlib.world.Dimension;
+import net.daporkchop.mcworldlib.world.legacy.LegacyWorld;
+
+import java.io.File;
 
 /**
- * Extension of {@link IWorld} for legacy worlds.
- *
  * @author DaPorkchop_
  */
-public interface LegacyWorld extends IWorld<LegacyWorld, LegacyWorldStorage, LegacySave> {
+@Getter
+public class LegacyAnvilSave extends AnvilSave<LegacySave, LegacyWorld> implements LegacySave {
+    protected final Registry blockRegistry;
+
+    public LegacyAnvilSave(@NonNull File root, @NonNull SaveOptions options, @NonNull CompoundTag levelDat, @NonNull JavaVersion version)   {
+        super(root, options, levelDat, version);
+
+        this.blockRegistry = JavaRegistries.forVersion(version).block(); //TODO: this won't work for versions other than 1.12.2, or for modded contexts
+    }
+
+    @Override
+    protected LegacyWorld openWorld(@NonNull Dimension dimension) {
+        return new LegacyAnvilWorld(this, dimension);
+    }
 }
