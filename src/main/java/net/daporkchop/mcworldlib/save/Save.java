@@ -26,7 +26,7 @@ import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import java.io.File;
@@ -34,13 +34,13 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Representation of a Minecraft save, consisting of one or more {@link IWorld}s identified by numeric IDs and {@link Identifier}s.
+ * Representation of a Minecraft save, consisting of one or more {@link World}s identified by numeric IDs and {@link Identifier}s.
  * <p>
- * Every {@link IWorld} loaded by a save keeps a reference to the save which is not released until the {@link IWorld} itself is released.
+ * Every {@link World} loaded by a save keeps a reference to the save which is not released until the {@link World} itself is released.
  *
  * @author DaPorkchop_
  */
-public interface Save<I extends Save, W extends IWorld<W, ?, I>> extends RefCounted {
+public interface Save extends RefCounted {
     /**
      * @return this save's root directory/file
      */
@@ -57,24 +57,52 @@ public interface Save<I extends Save, W extends IWorld<W, ?, I>> extends RefCoun
     SaveOptions options();
 
     /**
+     * @return any additional registries used by this save
+     */
+    Registries registries();
+
+    /**
+     * @return the {@link BlockRegistry} used by this save
+     */
+    BlockRegistry blockRegistry();
+
+    /**
+     * Gets any additional registries used by this save when reading data at the given version.
+     *
+     * @param version the {@link MinecraftVersion} of the additional registries to get
+     * @return any additional registries used by this save when reading data at the given version
+     */
+    Registries registriesFor(@NonNull MinecraftVersion version);
+
+    /**
+     * Gets the {@link BlockRegistry} used by this save when reading data at the given version.
+     *
+     * @param version the {@link MinecraftVersion} of the {@link BlockRegistry} to get
+     * @return the {@link BlockRegistry} used by this save when reading data at the given version
+     */
+    BlockRegistry blockRegistryFor(@NonNull MinecraftVersion version);
+
+    //TODO: move registries to some sort of context class
+
+    /**
      * @return the {@link Identifier}s of all of the worlds present in this save
      */
     Set<Identifier> worldIds();
 
     /**
-     * @return a stream over all of the {@link IWorld}s currently loaded by this save
+     * @return a stream over all of the {@link World}s currently loaded by this save
      */
-    Stream<W> worlds();
+    Stream<World> worlds();
 
     /**
-     * Gets the {@link IWorld} with the given {@link Identifier}.
+     * Gets the {@link World} with the given {@link Identifier}.
      *
-     * @param id the {@link Identifier} of the {@link IWorld}
-     * @return the {@link IWorld} with the given {@link Identifier}
+     * @param id the {@link Identifier} of the {@link World}
+     * @return the {@link World} with the given {@link Identifier}
      * @throws IllegalArgumentException if no world the given {@link Identifier} exists in this save
      */
-    W world(@NonNull Identifier id);
+    World world(@NonNull Identifier id);
 
     @Override
-    I retain() throws AlreadyReleasedException;
+    Save retain() throws AlreadyReleasedException;
 }

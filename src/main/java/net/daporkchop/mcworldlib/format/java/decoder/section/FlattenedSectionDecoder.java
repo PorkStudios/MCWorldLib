@@ -25,8 +25,9 @@ import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
+import net.daporkchop.mcworldlib.format.java.JavaWaterloggingMappings;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
 import net.daporkchop.mcworldlib.util.palette.Palette;
@@ -46,7 +47,7 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
     public static final JavaVersion VERSION = JavaVersion.latest();
 
     @Override
-    protected IBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
+    protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
         LongArrayTag blockStatesTag = tag.getTag("BlockStates");
 

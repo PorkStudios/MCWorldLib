@@ -22,8 +22,8 @@ package net.daporkchop.mcworldlib.format.java.decoder;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.ISection;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
@@ -38,10 +38,10 @@ public interface JavaSectionDecoder {
      *
      * @param tag     the {@link CompoundTag} containing the section data
      * @param version the version of the section data
-     * @param world   the {@link IWorld} that the section is in
+     * @param world   the {@link World} that the section is in
      * @param x       the X coordinate of the section
      * @param z       the Z coordinate of the section
      * @return the decoded section
      */
-    ISection decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world, int x, int z);
+    Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z);
 }

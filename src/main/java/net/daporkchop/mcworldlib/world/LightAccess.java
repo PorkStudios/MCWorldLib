@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.access;
+package net.daporkchop.mcworldlib.world;
 
 /**
  * Provides access to light data at given coordinates.

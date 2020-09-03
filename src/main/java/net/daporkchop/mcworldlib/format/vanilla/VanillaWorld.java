@@ -18,21 +18,19 @@
  *
  */
 
-package net.daporkchop.mcworldlib.save;
+package net.daporkchop.mcworldlib.format.vanilla;
 
-import net.daporkchop.mcworldlib.registry.Registry;
-import net.daporkchop.mcworldlib.world.legacy.LegacyWorld;
+import net.daporkchop.mcworldlib.format.common.AbstractWorld;
+import net.daporkchop.mcworldlib.save.Save;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
- * Representation of a {@link Save} for legacy worlds.
+ * Base implementation of {@link net.daporkchop.mcworldlib.world.World} for vanilla chunks with exactly 16 sections.
  *
  * @author DaPorkchop_
  */
-public interface LegacySave extends Save<LegacySave, LegacyWorld> {
-    //TODO: move registries to some sort of context class
-
-    /**
-     * @return the {@link Registry} used for blocks by this save
-     */
-    Registry blockRegistry();
+public abstract class VanillaWorld<S extends Save> extends AbstractWorld<S> {
+    public VanillaWorld(S parent, Identifier id) {
+        super(parent, id);
+    }
 }

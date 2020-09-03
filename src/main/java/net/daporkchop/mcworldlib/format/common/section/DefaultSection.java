@@ -27,27 +27,27 @@ import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.block.access.BlockAccess;
+import net.daporkchop.mcworldlib.block.BlockAccess;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.common.ISection;
+import net.daporkchop.mcworldlib.world.Section;
 
 import java.util.Collection;
 
 import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
- * Default implementation of {@link ISection}, as a combination of {@link BlockAccess} and multiple {@link NibbleArray}s for block and sky light.
+ * Default implementation of {@link Section}, as a combination of {@link BlockAccess} and multiple {@link NibbleArray}s for block and sky light.
  *
  * @author DaPorkchop_
  */
 @Getter
-public abstract class DefaultSection extends AbstractRefCounted implements ISection {
+public abstract class DefaultSection extends AbstractRefCounted implements Section {
     @Getter(AccessLevel.NONE)
-    protected final IBlockStorage blocks;
+    protected final BlockStorage blocks;
     @Getter(AccessLevel.NONE)
     protected final NibbleArray blockLight;
     @Getter(AccessLevel.NONE)
@@ -59,7 +59,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
     protected final int y;
     protected final int z;
 
-    public DefaultSection(int x, int y, int z, @NonNull IBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+    public DefaultSection(int x, int y, int z, @NonNull BlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
         this.blocks = blocks;
         this.blockLight = blockLight;
         this.skyLight = skyLight;
@@ -70,7 +70,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
     }
 
     @Override
-    public ISection retain() throws AlreadyReleasedException {
+    public Section retain() throws AlreadyReleasedException {
         super.retain();
         return this;
     }
@@ -86,13 +86,13 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public <T extends TileEntity> T getTileEntity(int x, int y, int z) {
-        IBlockStorage.checkCoords(x, y, z);
+        BlockStorage.checkCoords(x, y, z);
         return uncheckedCast(this.tileEntities.get((x << 8) | (y << 4) | z));
     }
 
     @Override
     public void setTileEntity(int x, int y, int z, TileEntity tileEntity) {
-        IBlockStorage.checkCoords(x, y, z);
+        BlockStorage.checkCoords(x, y, z);
         if (tileEntity == null) {
             this.tileEntities.remove((x << 8) | (y << 4) | z);
         } else {
@@ -106,7 +106,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
     }
 
     @Override
-    public IBlockStorage blockStorage() {
+    public BlockStorage blockStorage() {
         return this.blocks;
     }
 
@@ -131,7 +131,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public BlockState getBlockState(int x, int y, int z, int layer) {
-        IBlockStorage storage = this.blockStorage(layer);
+        BlockStorage storage = this.blockStorage(layer);
         return storage != null ? storage.getBlockState(x, y, z) : this.blocks.localRegistry().air();
     }
 
@@ -142,7 +142,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public Identifier getBlockId(int x, int y, int z, int layer) {
-        IBlockStorage storage = this.blockStorage(layer);
+        BlockStorage storage = this.blockStorage(layer);
         return storage != null ? storage.getBlockId(x, y, z) : this.blocks.localRegistry().air().id();
     }
 
@@ -153,7 +153,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public int getBlockLegacyId(int x, int y, int z, int layer) {
-        IBlockStorage storage = this.blockStorage(layer);
+        BlockStorage storage = this.blockStorage(layer);
         return storage != null ? storage.getBlockLegacyId(x, y, z) : this.blocks.localRegistry().air().legacyId();
     }
 
@@ -164,7 +164,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public int getBlockMeta(int x, int y, int z, int layer) {
-        IBlockStorage storage = this.blockStorage(layer);
+        BlockStorage storage = this.blockStorage(layer);
         return storage != null ? storage.getBlockMeta(x, y, z) : this.blocks.localRegistry().air().meta();
     }
 
@@ -175,7 +175,7 @@ public abstract class DefaultSection extends AbstractRefCounted implements ISect
 
     @Override
     public int getBlockRuntimeId(int x, int y, int z, int layer) {
-        IBlockStorage storage = this.blockStorage(layer);
+        BlockStorage storage = this.blockStorage(layer);
         return storage != null ? storage.getBlockRuntimeId(x, y, z) : 0;
     }
 

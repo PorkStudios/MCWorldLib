@@ -18,14 +18,17 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block.access;
+package net.daporkchop.mcworldlib.block;
+
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.util.Identifier;
 
 /**
- * Provides access to block data, using the legacy id+meta system.
+ * Provides access to block data at given coordinates.
  *
  * @author DaPorkchop_
  */
-public interface LegacyBlockAccess {
+public interface BlockAccess {
     //
     //
     // getters
@@ -33,7 +36,27 @@ public interface LegacyBlockAccess {
     //
 
     /**
-     * Gets the legacy ID of the block at the given coordinates.
+     * Gets the {@link BlockState} at the given coordinates in the default layer.
+     *
+     * @param x the X coordinate of the block to get
+     * @param y the Y coordinate of the block to get
+     * @param z the Z coordinate of the block to get
+     * @return the {@link BlockState}
+     */
+    BlockState getBlockState(int x, int y, int z);
+
+    /**
+     * Gets the {@link Identifier} of the block at the given coordinates in the default layer.
+     *
+     * @param x the X coordinate of the block to get
+     * @param y the Y coordinate of the block to get
+     * @param z the Z coordinate of the block to get
+     * @return the {@link Identifier} of the block
+     */
+    Identifier getBlockId(int x, int y, int z);
+
+    /**
+     * Gets the legacy ID of the block at the given coordinates in the default layer.
      *
      * @param x the X coordinate of the block to get
      * @param y the Y coordinate of the block to get
@@ -43,7 +66,7 @@ public interface LegacyBlockAccess {
     int getBlockLegacyId(int x, int y, int z);
 
     /**
-     * Gets the metadata of the block at the given coordinates.
+     * Gets the metadata of the block at the given coordinates in the default layer.
      *
      * @param x the X coordinate of the block to get
      * @param y the Y coordinate of the block to get
@@ -53,7 +76,7 @@ public interface LegacyBlockAccess {
     int getBlockMeta(int x, int y, int z);
 
     /**
-     * Gets the runtime ID of the block at the given coordinates.
+     * Gets the runtime ID of the block at the given coordinates in the default layer.
      *
      * @param x the X coordinate of the block to get
      * @param y the Y coordinate of the block to get
@@ -69,7 +92,29 @@ public interface LegacyBlockAccess {
     //
 
     /**
-     * Sets the block state at the given coordinates.
+     * Sets the {@link BlockState} at the given coordinates in the default layer.
+     *
+     * @param x     the X coordinate of the block to set
+     * @param y     the Y coordinate of the block to set
+     * @param z     the Z coordinate of the block to set
+     * @param state the new {@link BlockState}
+     */
+    void setBlockState(int x, int y, int z, @NonNull BlockState state);
+
+    /**
+     * Sets the block state at the given coordinates in the default layer.
+     *
+     * @param x    the X coordinate of the block to set
+     * @param y    the Y coordinate of the block to set
+     * @param z    the Z coordinate of the block to set
+     * @param id   the new {@link Identifier}
+     * @param meta the new metadata
+     * @throws IllegalArgumentException if the given metadata value was not registered for the given block {@link Identifier}
+     */
+    void setBlockState(int x, int y, int z, @NonNull Identifier id, int meta);
+
+    /**
+     * Sets the block state at the given coordinates in the default layer.
      *
      * @param x        the X coordinate of the block to set
      * @param y        the Y coordinate of the block to set
@@ -81,7 +126,19 @@ public interface LegacyBlockAccess {
     void setBlockState(int x, int y, int z, int legacyId, int meta);
 
     /**
-     * Sets the legacy ID of the block at the given coordinates.
+     * Sets the {@link Identifier} of the block at the given coordinates in the default layer.
+     * <p>
+     * The metadata value will be automatically set to the default (normally {@code 0}).
+     *
+     * @param x  the X coordinate of the block to set
+     * @param y  the Y coordinate of the block to set
+     * @param z  the Z coordinate of the block to set
+     * @param id the new {@link Identifier}
+     */
+    void setBlockId(int x, int y, int z, @NonNull Identifier id);
+
+    /**
+     * Sets the legacy ID of the block at the given coordinates in the default layer.
      * <p>
      * The metadata value will be automatically set to the default (normally {@code 0}).
      *
@@ -93,7 +150,7 @@ public interface LegacyBlockAccess {
     void setBlockLegacyId(int x, int y, int z, int legacyId);
 
     /**
-     * Sets the metadata of the block at the given coordinates.
+     * Sets the metadata of the block at the given coordinates in the default layer.
      * <p>
      * The block ID will remain unaffected by this change.
      *
@@ -106,7 +163,7 @@ public interface LegacyBlockAccess {
     void setBlockMeta(int x, int y, int z, int meta);
 
     /**
-     * Sets the runtime ID of the block at the given coordinates.
+     * Sets the runtime ID of the block at the given coordinates in the default layer.
      *
      * @param x         the X coordinate of the block to set
      * @param y         the Y coordinate of the block to set

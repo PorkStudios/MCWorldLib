@@ -18,15 +18,48 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world.legacy;
+package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.save.LegacySave;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.mcworldlib.block.BlockAccess;
+import net.daporkchop.mcworldlib.save.Save;
+import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 /**
- * Extension of {@link IWorld} for legacy worlds.
+ * Representation of a Minecraft world, consisting of {@link Chunk}s identified by their integer X, Z coordinates.
+ * <p>
+ * Worlds keep a reference to their {@link WorldStorage} instance which is not released until the world is released.
  *
  * @author DaPorkchop_
  */
-public interface LegacyWorld extends IWorld<LegacyWorld, LegacyWorldStorage, LegacySave> {
+public interface World extends RefCounted {
+    /**
+     * @return the {@link Save} that loaded this world
+     */
+    Save parent();
+
+    /**
+     * @return the {@link Identifier} used to identify this world in its parent {@link Save}
+     */
+    Identifier id();
+
+    /**
+     * @return the {@link WorldInfo} which describes this world
+     */
+    WorldInfo info();
+
+    /**
+     * @return the {@link WorldStorage} used for handling I/O of chunks and cubes
+     */
+    WorldStorage storage();
+
+    @Override
+    int refCnt();
+
+    @Override
+    World retain() throws AlreadyReleasedException;
+
+    @Override
+    boolean release() throws AlreadyReleasedException;
 }

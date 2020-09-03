@@ -23,6 +23,7 @@ package net.daporkchop.mcworldlib.format.anvil.storage;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.binary.stream.DataIn;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.common.misc.file.PFiles;
@@ -47,8 +48,8 @@ import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.version.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.common.ISection;
-import net.daporkchop.mcworldlib.world.common.IWorldStorage;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.WorldStorage;
 import net.daporkchop.lib.nbt.NBTFormat;
 import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
@@ -63,17 +64,15 @@ import java.io.IOException;
 import java.util.Spliterator;
 import java.util.concurrent.Executor;
 
-import static net.daporkchop.lib.common.util.PorkUtil.*;
-
 /**
- * Implementation of {@link IWorldStorage} for the Anvil save format.
+ * Implementation of {@link WorldStorage} for the Anvil save format.
  * <p>
- * Since Anvil compresses sections and chunks together, but the {@link IWorldStorage} interface requires chunks and sections to be handled individually,
+ * Since Anvil compresses sections and chunks together, but the {@link WorldStorage} interface requires chunks and sections to be handled individually,
  * this interface uses a more complex caching mechanism to improve performance and reduce allocations.
  *
  * @author DaPorkchop_
  */
-public abstract class AnvilWorldStorage<I extends IWorldStorage<I, S>, S extends ISection<S>> extends AbstractRefCounted implements IWorldStorage<I, S> {
+public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorage {
     protected static final ZlibInflaterOptions INFLATER_OPTIONS = Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.AUTO);
     protected static final HandledPool<PInflater> INFLATER_CACHE = HandledPool.threadLocal(() -> Zlib.PROVIDER.inflater(INFLATER_OPTIONS), 1);
 
@@ -128,8 +127,8 @@ public abstract class AnvilWorldStorage<I extends IWorldStorage<I, S>, S extends
     }
 
     @Override
-    public S loadSection(int _x, int _y, int _z) throws IOException {
-        ISection[] ref = new ISection[1]; //TODO: reuse this
+    public Section loadSection(int _x, int _y, int _z) throws IOException {
+        Section[] ref = new Section[1]; //TODO: reuse this
         this.cachedChunks.compute(BinMath.packXY(_x, _z), (ChunkUpdater) (x, z, cached) -> {
             if (cached == null) {
                 cached = this.load(x, z);
@@ -146,17 +145,17 @@ public abstract class AnvilWorldStorage<I extends IWorldStorage<I, S>, S extends
     }
 
     @Override
-    public PFuture<S> loadSectionAsync(int x, int y, int z) {
+    public PFuture<Section> loadSectionAsync(int x, int y, int z) {
         return PFutures.computeThrowableAsync(() -> this.loadSection(x, y, z), this.ioExecutor);
     }
 
     @Override
-    public void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections) throws IOException {
+    public void save(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<Section> sections) throws IOException {
         throw new UnsupportedOperationException(); //TODO
     }
 
     @Override
-    public PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<S> sections) {
+    public PFuture<Void> saveAsync(@NonNull Iterable<Chunk> chunks, @NonNull Iterable<Section> sections) {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -177,16 +176,16 @@ public abstract class AnvilWorldStorage<I extends IWorldStorage<I, S>, S extends
     }
 
     @Override
-    public Spliterator<S> allSections() throws IOException {
+    public Spliterator<Section> allSections() throws IOException {
         return this.readOnly && this.options.get(SaveOptions.SPLITERATOR_CACHE)
                ? new CachedAnvilSpliterator.OfSection(this)
                : new UncachedAnvilSpliterator.OfSection(this);
     }
 
     @Override
-    public I retain() throws AlreadyReleasedException {
+    public WorldStorage retain() throws AlreadyReleasedException {
         super.retain();
-        return uncheckedCast(this);
+        return this;
     }
 
     @Override

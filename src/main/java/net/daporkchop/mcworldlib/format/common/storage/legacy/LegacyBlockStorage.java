@@ -22,42 +22,34 @@ package net.daporkchop.mcworldlib.format.common.storage.legacy;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
-import net.daporkchop.mcworldlib.world.legacy.LegacyBlockStorage;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Base implementation of {@link IBlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
+ * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
  *
  * @author DaPorkchop_
  */
-public abstract class AbstractLegacyBlockStorage extends AbstractBlockStorage<LegacyBlockStorage> implements LegacyBlockStorage {
+public abstract class LegacyBlockStorage extends AbstractBlockStorage {
     protected static int index(int x, int y, int z) {
-        IBlockStorage.checkCoords(x, y, z);
+        BlockStorage.checkCoords(x, y, z);
         return (y << 8) | (z << 4) | x;
     }
 
-    public AbstractLegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
+    public LegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
         super(localRegistry);
     }
 
-    //TODO: actually do this
-    /*@Override
-    public IBlockStorage toGlobal(boolean preferView) {
+    @Override
+    public BlockStorage toGlobal(boolean preferView) {
         if (this.localRegistry.isGlobal()) {
             return this;
         }
 
         return new ToGlobalBlockStorageView(this); //TODO: optimize this
-    }*/
-
-    @Override
-    public void setBlockState(int x, int y, int z, int legacyId, int meta) {
-        checkArg((meta & 0xF) == meta, "invalid meta: %d (must be in range [0-15]", meta);
-        this.setBlockLegacyId(x, y, z, (legacyId << 4) | meta);
     }
 
     @Override

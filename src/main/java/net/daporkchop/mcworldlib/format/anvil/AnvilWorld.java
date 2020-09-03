@@ -22,41 +22,52 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.format.common.AbstractWorld;
-import net.daporkchop.mcworldlib.save.Save;
+import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.format.anvil.storage.AnvilWorldStorage;
+import net.daporkchop.mcworldlib.format.vanilla.VanillaWorld;
+import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.util.WriteAccess;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.mcworldlib.world.WorldInfo;
-import net.daporkchop.mcworldlib.world.common.IWorld;
-import net.daporkchop.mcworldlib.world.common.IWorldStorage;
 
 import java.io.File;
 
 /**
- * Implementation of {@link IWorld} for the Anvil format.
+ * Implementation of {@link World} for the Anvil format.
  *
  * @author DaPorkchop_
  */
-public abstract class AnvilWorld<I extends IWorld<I, St, S>, St extends IWorldStorage, S extends Save<S, I>> extends AbstractWorld<I, St, S> implements WorldInfo {
+public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
     @Getter
     protected final Dimension dimension;
 
-    public AnvilWorld(@NonNull S parent, @NonNull Dimension dimension) {
+    public AnvilWorld(AnvilSave parent, @NonNull Dimension dimension) {
         super(parent, dimension.id());
 
         this.dimension = dimension;
 
+        this.blockRegistry = parent.blockRegistry();
+
         //anvil is implemented in a way that makes it a real pain to have their dimension be abstracted away from the individual worlds
         File root = dimension.legacyId() == 0 ? parent.root() : new File(parent.root(), "DIM" + dimension.legacyId());
-        this.storage = this.createStorage(root);
+        JavaVersion worldVersion = this.options.get(SaveOptions.ACCESS) == WriteAccess.READ_ONLY
+                                   ? null //allow chunks in read-only worlds to be decoded using any implemented version for performance
+                                   : (JavaVersion) parent.version(); //force chunks in writable worlds to be upgraded to the world version
+        this.storage = new AnvilWorldStorage(root, this, parent.chunkNBTOptions(), worldVersion);
 
         this.validateState();
     }
 
-    protected abstract St createStorage(@NonNull File root);
-
     @Override
     public WorldInfo info() {
         return this;
+    }
+
+    @Override
+    public int layers() {
+        return 1; //anvil only supports a single block layer
     }
 
     @Override

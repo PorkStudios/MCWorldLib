@@ -25,7 +25,7 @@ import net.daporkchop.mcworldlib.item.ItemMeta;
 import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.primitive.map.ObjIntMap;
 import net.daporkchop.lib.primitive.map.open.ObjIntOpenHashMap;
@@ -59,7 +59,7 @@ public class ItemDecoder1_13 extends ItemDecoder1_9 {
     }
 
     @Override
-    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
+    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
         if (tag != null) {
             cache.meta.put(ItemMeta.DAMAGE, tag.getInt("Damage", 0));
         }

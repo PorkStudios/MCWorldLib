@@ -18,48 +18,56 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world.common;
+package net.daporkchop.mcworldlib.format.common.storage;
 
+import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.mcworldlib.save.Save;
-import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.WorldInfo;
+import net.daporkchop.mcworldlib.block.BlockAccess;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Representation of a Minecraft world, consisting of {@link Chunk}s identified by their integer X, Z coordinates.
+ * A 16³ array of block states.
  * <p>
- * Worlds keep a reference to their {@link IWorldStorage} instance which is not released until the world is released.
+ * All IDs used by all methods use the local block registry.
  *
  * @author DaPorkchop_
+ * @see BlockRegistry
  */
-public interface IWorld<I extends IWorld, St extends IWorldStorage, S extends Save> extends RefCounted {
+public interface BlockStorage extends BlockAccess, Cloneable<BlockStorage>, RefCounted {
     /**
-     * @return the {@link Save} that loaded this world
+     * The number of blocks in a single block storage.
      */
-    S parent();
+    int NUM_BLOCKS = 16 * 16 * 16;
+
+    static void checkCoords(int x, int y, int z) {
+        checkIndex(x >= 0 && x < 16, "x");
+        checkIndex(y >= 0 && y < 16, "y");
+        checkIndex(z >= 0 && z < 16, "z");
+    }
 
     /**
-     * @return the {@link Identifier} used to identify this world in its parent {@link Save}
+     * @return the {@link BlockRegistry} that this {@link BlockStorage} uses
      */
-    Identifier id();
+    BlockRegistry localRegistry();
 
     /**
-     * @return the {@link WorldInfo} which describes this world
+     * Gets this {@link BlockStorage} using the global block registry.
+     * <p>
+     * WARNING! After calling this method, this {@link BlockStorage} is implicitly released. Do not use this for shared instances!
+     *
+     * @param preferView hints to the implementation that a view would be preferred over a copy
+     * @return this {@link BlockStorage} in the global block registry
      */
-    WorldInfo info();
-
-    /**
-     * @return the {@link IWorldStorage} used for handling I/O of chunks and cubes
-     */
-    St storage();
+    BlockStorage toGlobal(boolean preferView);
 
     @Override
     int refCnt();
 
     @Override
-    I retain() throws AlreadyReleasedException;
+    BlockStorage retain() throws AlreadyReleasedException;
 
     @Override
     boolean release() throws AlreadyReleasedException;

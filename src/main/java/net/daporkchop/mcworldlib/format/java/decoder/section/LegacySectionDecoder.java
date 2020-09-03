@@ -28,13 +28,13 @@ import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
 import net.daporkchop.mcworldlib.format.java.JavaSection;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.ISection;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.World;
 
 /**
  * @author DaPorkchop_
@@ -43,17 +43,17 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
     public static final JavaVersion VERSION = JavaVersion.fromName("1.12.2");
 
     @Override
-    public ISection decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world, int x, int z) {
+    public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
         int y = tag.getByte("Y") & 0xFF;
-        IBlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
-        IBlockStorage layer1 = this.extractFluidsToLayer1(layer0);
+        BlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
+        BlockStorage layer1 = this.extractFluidsToLayer1(layer0);
 
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
         return new JavaSection(x, y, z, layer0.toGlobal(false), layer1.toGlobal(false), blockLight, skyLight);
     }
 
-    protected IBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
+    protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
         ByteArrayTag blocksTag = tag.getTag("Blocks");
         ByteArrayTag dataTag = tag.getTag("Data");
         ByteArrayTag addTag = tag.getTag("Add", null);
@@ -82,11 +82,11 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
                 : new HeapNibbleArray.YZX(data.value(), 0);
     }
 
-    protected IBlockStorage extractFluidsToLayer1(@NonNull IBlockStorage from) {
+    protected BlockStorage extractFluidsToLayer1(@NonNull BlockStorage from) {
         FluidRegistry registry = from.localRegistry().fluids();
         RegistryConverter converter = from.localRegistry().toGlobal();
 
-        IBlockStorage to = BlockRegistry.global().createStorage();
+        BlockStorage to = BlockRegistry.global().createStorage();
         for (int x = 0; x < 16; x++) {
             for (int y = 0; y < 16; y++) {
                 for (int z = 0; z < 16; z++) {

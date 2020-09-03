@@ -27,17 +27,16 @@ import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
 
 /**
  * @author DaPorkchop_
  */
 @Getter
-public class ToGlobalBlockStorageView implements IBlockStorage {
+public class ToGlobalBlockStorageView implements BlockStorage {
     protected final RegistryConverter converter;
-    protected final IBlockStorage delegate;
+    protected final BlockStorage delegate;
 
-    public ToGlobalBlockStorageView(@NonNull IBlockStorage delegate) {
+    public ToGlobalBlockStorageView(@NonNull BlockStorage delegate) {
         this.delegate = delegate;
         this.converter = delegate.localRegistry().toGlobal();
     }
@@ -48,7 +47,7 @@ public class ToGlobalBlockStorageView implements IBlockStorage {
     }
 
     @Override
-    public IBlockStorage toGlobal(boolean preferView) {
+    public BlockStorage toGlobal(boolean preferView) {
         return this;
     }
 
@@ -58,7 +57,7 @@ public class ToGlobalBlockStorageView implements IBlockStorage {
     }
 
     @Override
-    public IBlockStorage retain() throws AlreadyReleasedException {
+    public BlockStorage retain() throws AlreadyReleasedException {
         this.delegate.retain();
         return this;
     }
@@ -69,7 +68,7 @@ public class ToGlobalBlockStorageView implements IBlockStorage {
     }
 
     @Override
-    public IBlockStorage clone() {
+    public BlockStorage clone() {
         return new ToGlobalBlockStorageView(this.delegate.clone());
     }
 

@@ -24,23 +24,23 @@ import io.netty.buffer.ByteBuf;
 import lombok.NonNull;
 import net.daporkchop.lib.common.pool.array.ArrayHandle;
 import net.daporkchop.lib.common.pool.handle.Handle;
-import net.daporkchop.mcworldlib.world.common.IBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.world.legacy.LegacyBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
 
 import java.util.Arrays;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Heap-based {@link AbstractLegacyBlockStorage} implementation.
+ * Heap-based {@link LegacyBlockStorage} implementation.
  * <p>
  * This also stores block meta itself (without wrapping it into a {@link NibbleArray}) for performance reasons.
  *
  * @author DaPorkchop_
  */
-public class HeapLegacyBlockStorage extends AbstractLegacyBlockStorage {
+public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     protected final byte[] blocks;
     protected final int blocksOffset;
     protected final byte[] meta;
@@ -139,7 +139,7 @@ public class HeapLegacyBlockStorage extends AbstractLegacyBlockStorage {
     }
 
     @Override
-    public LegacyBlockStorage clone() {
+    public BlockStorage clone() {
         return new HeapLegacyBlockStorage(
                 this.localRegistry,
                 Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,
@@ -234,7 +234,7 @@ public class HeapLegacyBlockStorage extends AbstractLegacyBlockStorage {
         }
 
         @Override
-        public LegacyBlockStorage clone() {
+        public BlockStorage clone() {
             return new Add(
                     this.localRegistry,
                     Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,

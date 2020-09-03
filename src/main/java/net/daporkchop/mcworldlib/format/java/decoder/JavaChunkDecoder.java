@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.java.decoder;
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 /**
@@ -38,8 +38,8 @@ public interface JavaChunkDecoder {
      *
      * @param tag     the {@link CompoundTag} containing the chunk data
      * @param version the version of the chunk data
-     * @param world   the {@link IWorld} that the chunk is in
+     * @param world   the {@link World} that the chunk is in
      * @return the decoded chunk
      */
-    Chunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world);
+    Chunk decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world);
 }

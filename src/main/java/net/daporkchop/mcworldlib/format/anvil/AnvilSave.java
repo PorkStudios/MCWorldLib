@@ -22,6 +22,7 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
@@ -29,14 +30,13 @@ import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
-import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
 import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
-import net.daporkchop.mcworldlib.world.common.IWorld;
 
 import java.io.File;
 
@@ -45,11 +45,11 @@ import static net.daporkchop.lib.common.util.PValidation.checkArg;
 /**
  * @author DaPorkchop_
  */
-public abstract class AnvilSave<I extends Save, W extends IWorld<W, ?, I>> extends AbstractSave<JavaVersion, I, W> {
+public class AnvilSave extends AbstractSave<JavaVersion> {
     @Getter
     protected final NBTOptions chunkNBTOptions;
 
-    public AnvilSave(@NonNull File root, @NonNull SaveOptions options, @NonNull CompoundTag levelDat, @NonNull JavaVersion version) {
+    public AnvilSave(SaveOptions options, CompoundTag levelData, File root) {
         super(options, root);
 
         this.chunkNBTOptions = NBTOptions.DEFAULT
@@ -58,18 +58,24 @@ public abstract class AnvilSave<I extends Save, W extends IWorld<W, ?, I>> exten
                 .withLongAlloc(options.get(SaveOptions.LONG_ALLOC));
                 //.withObjectParser(null); //TODO
 
-        this.version = version;
+        this.version = this.extractVersion(levelData);
+        this.registries = JavaRegistries.forVersion(this.version);
+        this.blockRegistry = JavaBlockRegistry.forVersion(this.version);
 
         //find worlds
-        this.putWorld(new DefaultDimension(Dimension.ID_OVERWORLD, 0, true, true));
+        this.openWorld(new DefaultDimension(Dimension.ID_OVERWORLD, 0, true, true));
         if (PFiles.checkDirectoryExists(new File(this.root, "DIM-1"))) {
-            this.putWorld(new DefaultDimension(Dimension.ID_NETHER, -1, false, false));
+            this.openWorld(new DefaultDimension(Dimension.ID_NETHER, -1, false, false));
         }
         if (PFiles.checkDirectoryExists(new File(this.root, "DIM1"))) {
-            this.putWorld(new DefaultDimension(Dimension.ID_END, 1, false, false));
+            this.openWorld(new DefaultDimension(Dimension.ID_END, 1, false, false));
         }
 
         this.validateState();
+    }
+
+    protected void openWorld(@NonNull Dimension dimension)  {
+        this.worlds.put(dimension.id(), new AnvilWorld(this, dimension));
     }
 
     protected JavaVersion extractVersion(@NonNull CompoundTag levelData)   {
@@ -78,5 +84,27 @@ public abstract class AnvilSave<I extends Save, W extends IWorld<W, ?, I>> exten
             return JavaVersion.pre15w32a();
         }
         return JavaVersion.fromName(versionTag.getString("Name"));
+    }
+
+    @Override
+    public Registries registriesFor(@NonNull MinecraftVersion version) {
+        checkArg(version instanceof JavaVersion, "invalid version: %s", version);
+        JavaVersion java = (JavaVersion) version;
+        checkArg(this.version.data() <= java.data(), "version (%s) may not be newer than save version (%s)", java, this.version);
+        if (this.version == java)   {
+            return this.registries;
+        }
+        return JavaRegistries.forVersion(java);
+    }
+
+    @Override
+    public BlockRegistry blockRegistryFor(@NonNull MinecraftVersion version) {
+        checkArg(version instanceof JavaVersion, "invalid version: %s", version);
+        JavaVersion java = (JavaVersion) version;
+        checkArg(this.version.data() <= java.data(), "version (%s) may not be newer than save version (%s)", java, this.version);
+        if (this.version == java)   {
+            return this.blockRegistry;
+        }
+        return JavaBlockRegistry.forVersion(java);
     }
 }

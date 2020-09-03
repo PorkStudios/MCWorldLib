@@ -21,10 +21,10 @@
 package net.daporkchop.mcworldlib.format.vanilla;
 
 import net.daporkchop.mcworldlib.format.common.AbstractChunk;
-import net.daporkchop.mcworldlib.world.Chunk;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 /**
- * Base implementation of {@link Chunk} for vanilla chunks with exactly 16 sections.
+ * Base implementation of {@link net.daporkchop.mcworldlib.world.Chunk} for vanilla chunks with exactly 16 sections.
  *
  * @author DaPorkchop_
  */

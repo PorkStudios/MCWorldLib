@@ -21,11 +21,10 @@
 package net.daporkchop.mcworldlib.world;
 
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.world.common.IWorld;
 
 /**
  * A description of a Minecraft dimension. A dimension describes various things about worlds using them, such as whether or not they have sky light or
- * rainfall. Having dimensions be separate from the IDs used to identify individual {@link IWorld}s in a {@link net.daporkchop.mcworldlib.save.Save}
+ * rainfall. Having dimensions be separate from the IDs used to identify individual {@link World}s in a {@link net.daporkchop.mcworldlib.save.Save}
  * allows us to support complex modded or server configuration, which might have e.g. multiple nether worlds.
  *
  * @author DaPorkchop_

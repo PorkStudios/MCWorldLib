@@ -18,27 +18,45 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.anvillegacy;
+package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.NonNull;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
-import net.daporkchop.mcworldlib.format.anvil.AbstractAnvilSaveFormat;
-import net.daporkchop.mcworldlib.save.LegacySave;
+import net.daporkchop.lib.binary.stream.DataIn;
+import net.daporkchop.lib.common.misc.file.PFiles;
+import net.daporkchop.lib.compression.context.PInflater;
+import net.daporkchop.lib.compression.zlib.Zlib;
+import net.daporkchop.lib.compression.zlib.ZlibMode;
+import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveFormat;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.version.DataVersion;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
+import net.daporkchop.lib.nbt.NBTFormat;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
- * {@link SaveFormat} implementation which can load legacy Anvil worlds.
- *
  * @author DaPorkchop_
  */
-public class LegacyAnvilSaveFormat extends AbstractAnvilSaveFormat<LegacySave> {
+public class AnvilSaveFormat implements SaveFormat {
     @Override
-    protected LegacySave doOpen(@NonNull File root, @NonNull SaveOptions options, @NonNull CompoundTag levelDat, @NonNull JavaVersion version) {
-        return version.data() <= DataVersion.DATA_1_12_2 ? new LegacyAnvilSave(root, options, levelDat, version) : null;
+    public Save tryOpen(@NonNull File root, @NonNull SaveOptions options) throws IOException {
+        File levelDatFile = new File(root, "level.dat");
+        if (!PFiles.checkFileExists(levelDatFile)) {
+            return null;
+        }
+
+        CompoundTag nbt;
+        try (PInflater inflater = Zlib.PROVIDER.inflater(Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.GZIP));
+             DataIn in = inflater.decompressionStream(DataIn.wrapBuffered(levelDatFile))) {
+            nbt = NBTFormat.BIG_ENDIAN.readCompound(in);
+        }
+        try (CompoundTag levelDat = nbt) {
+            //System.out.println(levelDat);
+            if (levelDat.contains("Data")) {
+                return new AnvilSave(options, levelDat, root);
+            }
+            return null;
+        }
     }
 }

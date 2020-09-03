@@ -32,7 +32,7 @@ import net.daporkchop.mcworldlib.tileentity.DefaultTileEntity;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.Tag;
 
@@ -97,7 +97,7 @@ public class TileEntityDecoder1_8 implements JavaTileEntityDecoder {
     }
 
     @Override
-    public TileEntity decode(@NonNull CompoundTag root, @NonNull JavaVersion version, @NonNull IWorld world) {
+    public TileEntity decode(@NonNull CompoundTag root, @NonNull JavaVersion version, @NonNull World world) {
         Deque<CompoundTag> overflowQueue = this.overflow.get();
         CompoundTag overflow = overflowQueue.isEmpty() ? new CompoundTag() : overflowQueue.pop();
 
@@ -129,7 +129,7 @@ public class TileEntityDecoder1_8 implements JavaTileEntityDecoder {
     public interface TileEntityDecoder {
         TileEntityDecoder NOOP = (tile, tag) -> {};
 
-        default void decode(@NonNull TileEntity tile, @NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
+        default void decode(@NonNull TileEntity tile, @NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
             this.decode(tile, tag);
         }
 
@@ -139,7 +139,7 @@ public class TileEntityDecoder1_8 implements JavaTileEntityDecoder {
     @FunctionalInterface
     public interface AdvancedTileEntityDecoder extends TileEntityDecoder {
         @Override
-        void decode(@NonNull TileEntity tile, @NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world);
+        void decode(@NonNull TileEntity tile, @NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world);
 
         @Override
         default void decode(@NonNull TileEntity tile, @NonNull CompoundTag tag) {

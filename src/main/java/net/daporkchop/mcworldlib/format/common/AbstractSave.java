@@ -23,6 +23,7 @@ package net.daporkchop.mcworldlib.format.common;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
@@ -30,8 +31,7 @@ import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
-import net.daporkchop.mcworldlib.world.Dimension;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
 import java.io.File;
@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
-import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
  * Base implementation of {@link Save}.
@@ -51,50 +50,48 @@ import static net.daporkchop.lib.common.util.PorkUtil.*;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class AbstractSave<V extends MinecraftVersion, I extends Save, W extends IWorld<W, ?, I>> extends AbstractRefCounted implements Save<I, W> {
+public abstract class AbstractSave<V extends MinecraftVersion> extends AbstractRefCounted implements Save {
     @NonNull
     protected final SaveOptions options;
     @NonNull
     protected final File root;
 
-    protected final Map<Identifier, W> worlds = new HashMap<>();
+    protected final Map<Identifier, World> worlds = new HashMap<>();
     protected final Set<Identifier> worldIds = Collections.unmodifiableSet(this.worlds.keySet());
     protected V version;
+    protected Registries registries;
+    protected BlockRegistry blockRegistry;
 
     /**
      * Ensures that the implementation constructor has initialized all the required fields.
      */
     protected void validateState() {
         checkState(this.version != null, "version must be set!");
+        checkState(this.registries != null, "registries must be set!");
+        checkState(this.blockRegistry != null, "blockRegistry must be set!");
     }
-
-    protected void putWorld(@NonNull Dimension dimension) {
-        this.worlds.put(dimension.id(), this.openWorld(dimension));
-    }
-
-    protected abstract W openWorld(@NonNull Dimension dimension);
 
     @Override
-    public Stream<W> worlds() {
+    public Stream<World> worlds() {
         return this.worlds.values().stream();
     }
 
     @Override
-    public W world(@NonNull Identifier id) {
-        W world = this.worlds.get(id);
+    public World world(@NonNull Identifier id) {
+        World world = this.worlds.get(id);
         checkArg(world != null, id);
-        return uncheckedCast(world.retain());
+        return world.retain();
     }
 
     @Override
-    public I retain() throws AlreadyReleasedException {
+    public Save retain() throws AlreadyReleasedException {
         super.retain();
-        return uncheckedCast(this);
+        return this;
     }
 
     @Override
     protected void doRelease() {
-        this.worlds.values().forEach(IWorld::release);
+        this.worlds.values().forEach(World::release);
         this.worlds.clear();
     }
 }

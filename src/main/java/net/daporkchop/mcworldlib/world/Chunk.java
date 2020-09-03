@@ -21,12 +21,13 @@
 package net.daporkchop.mcworldlib.world;
 
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
+import net.daporkchop.lib.common.misc.Versioned;
 import net.daporkchop.lib.math.access.IntHolderXZ;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.world.common.ISection;
 
 /**
- * Representation of a Minecraft chunk, consisting of {@link ISection}s identified by their integer Y coordinate.
+ * Representation of a Minecraft chunk, consisting of {@link Section}s identified by their integer Y coordinate.
  * <p>
  * In vanilla Minecraft, a chunk has a fixed limit of 16 sections (with coordinates between 0 and 15), which are always loaded as long as the chunk
  * itself is loaded.

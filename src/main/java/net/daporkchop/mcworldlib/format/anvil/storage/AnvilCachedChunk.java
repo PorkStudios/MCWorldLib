@@ -24,12 +24,13 @@ import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
+import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.common.ISection;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
@@ -44,13 +45,13 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
     public abstract Chunk chunk();
 
-    public abstract ISection section(int y);
+    public abstract Section section(int y);
 
     public static class ReadOnly extends AnvilCachedChunk {
         protected final Chunk chunk;
-        protected final ISection[] sections = new ISection[16];
+        protected final Section[] sections = new Section[16];
 
-        public ReadOnly(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull JavaFixers fixers, @NonNull IWorld world) {
+        public ReadOnly(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull JavaFixers fixers, @NonNull World world) {
             this.chunk = fixers.chunk().ceilingEntry(version).getValue()
                     .decode(tag, version, world);
 
@@ -58,7 +59,7 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
 
             JavaSectionDecoder sectionDecoder = fixers.section().ceilingEntry(version).getValue();
             for (CompoundTag sectionTag : levelTag.getList("Sections", CompoundTag.class)) {
-                ISection section = sectionDecoder.decode(sectionTag, version, world, this.chunk.x(), this.chunk.z());
+                Section section = sectionDecoder.decode(sectionTag, version, world, this.chunk.x(), this.chunk.z());
                 checkState(this.sections[section.y()] == null, "duplicate section at y=%d!", section.y());
                 this.sections[section.y()] = section;
             }
@@ -79,15 +80,15 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
         }
 
         @Override
-        public ISection section(int y) {
-            ISection section = this.sections[y];
+        public Section section(int y) {
+            Section section = this.sections[y];
             return section != null ? section.retain() : null;
         }
 
         @Override
         protected void doRelease() {
             this.chunk.release();
-            for (ISection section : this.sections) {
+            for (Section section : this.sections) {
                 if (section != null) {
                     section.release();
                 }

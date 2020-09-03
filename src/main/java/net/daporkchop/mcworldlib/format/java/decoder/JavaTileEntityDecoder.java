@@ -27,7 +27,7 @@ import lombok.experimental.Accessors;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 import java.util.Collections;
@@ -51,10 +51,10 @@ public interface JavaTileEntityDecoder {
      *
      * @param tag     the {@link CompoundTag} containing the tile entity data
      * @param version the version of the tile entity data
-     * @param world   the {@link IWorld} that the tile entity is in
+     * @param world   the {@link World} that the tile entity is in
      * @return the decoded tile entity
      */
-    TileEntity decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world);
+    TileEntity decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world);
 
     @RequiredArgsConstructor
     @Accessors(chain = true)
@@ -117,7 +117,7 @@ public interface JavaTileEntityDecoder {
             protected final JavaTileEntityDecoder unknownDecoder;
 
             @Override
-            public TileEntity decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
+            public TileEntity decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
                 String idText = tag.getString("id", "unknown");
                 Identifier id = this.aliases.get(idText);
                 if (id == null) {

@@ -26,11 +26,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
-import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
-import net.daporkchop.mcworldlib.world.common.IWorldStorage;
+import net.daporkchop.mcworldlib.world.WorldStorage;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -135,7 +135,7 @@ public final class SaveOptions implements Cloneable<SaveOptions.Builder> {
     public static final Key<ArrayAllocator<long[]>> LONG_ALLOC = key("alloc_long", null);
 
     /**
-     * Whether or not the values provided by {@link IWorldStorage#allChunks()} and {@link IWorldStorage#allSections()} will be served from the
+     * Whether or not the values provided by {@link WorldStorage#allChunks()} and {@link WorldStorage#allSections()} will be served from the
      * cache.
      * <p>
      * This is only guaranteed to affect read-only worlds, implementations may choose whether or not to respect this option for worlds opened

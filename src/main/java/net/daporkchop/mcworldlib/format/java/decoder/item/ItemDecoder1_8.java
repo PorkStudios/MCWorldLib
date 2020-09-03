@@ -33,7 +33,7 @@ import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.lib.minecraft.text.parser.MCFormatParser;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.common.IWorld;
+import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.lib.nbt.tag.StringTag;
@@ -191,7 +191,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
     }
 
     @Override
-    public ItemStack decode(@NonNull CompoundTag root, @NonNull JavaVersion version, @NonNull IWorld world) {
+    public ItemStack decode(@NonNull CompoundTag root, @NonNull JavaVersion version, @NonNull World world) {
         CompoundTag tag = root.getCompound("tag", null);
         ItemStack stack = new ItemStack(Identifier.fromString(root.getString("id", "stone")), root.getByte("Count", (byte) 1));
         Deque<Cache> cacheQueue = this.cache.get();
@@ -213,7 +213,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
         return stack;
     }
 
-    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
+    protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
         int damage = root.getShort("Damage", (short) 0);
 
         BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
@@ -232,7 +232,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
         }
     }
 
-    protected void mainDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull IWorld world) {
+    protected void mainDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
         if (tag != null) {
             tag.forEach((key, value) -> {
                 ItemMetaDecoder decoder = this.map.get(key);
@@ -247,7 +247,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
 
     @FunctionalInterface
     public interface ItemMetaDecoder {
-        default void decode(@NonNull ItemMeta meta, @NonNull CompoundTag tag, ItemStack stack, @NonNull JavaVersion version, @NonNull IWorld world) {
+        default void decode(@NonNull ItemMeta meta, @NonNull CompoundTag tag, ItemStack stack, @NonNull JavaVersion version, @NonNull World world) {
             this.decode(meta, tag);
         }
 
@@ -257,7 +257,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
     @FunctionalInterface
     public interface AdvancedItemMetaDecoder extends ItemMetaDecoder {
         @Override
-        void decode(@NonNull ItemMeta meta, @NonNull CompoundTag tag, ItemStack stack, @NonNull JavaVersion version, @NonNull IWorld world);
+        void decode(@NonNull ItemMeta meta, @NonNull CompoundTag tag, ItemStack stack, @NonNull JavaVersion version, @NonNull World world);
 
         @Override
         default void decode(@NonNull ItemMeta meta, @NonNull CompoundTag tag) {
