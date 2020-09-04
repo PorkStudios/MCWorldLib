@@ -24,6 +24,7 @@ import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.concurrent.PFuture;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.section.Section;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -227,11 +228,5 @@ public interface WorldStorage extends RefCounted {
     Spliterator<Section> allSections() throws IOException;
 
     @Override
-    int refCnt();
-
-    @Override
     WorldStorage retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
 }

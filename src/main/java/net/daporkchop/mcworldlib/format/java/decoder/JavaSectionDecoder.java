@@ -22,7 +22,7 @@ package net.daporkchop.mcworldlib.format.java.decoder;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 

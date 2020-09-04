@@ -18,25 +18,22 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage;
+package net.daporkchop.mcworldlib.world.storage;
 
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.block.BlockAccess;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
  * A 16³ array of block states.
- * <p>
- * All IDs used by all methods use the local block registry.
  *
  * @author DaPorkchop_
  * @see BlockRegistry
  */
-public interface BlockStorage extends BlockAccess, Cloneable<BlockStorage>, RefCounted {
+public interface BlockStorage extends Cloneable<BlockStorage>, RefCounted {
     /**
      * The number of blocks in a single block storage.
      */
@@ -49,26 +46,15 @@ public interface BlockStorage extends BlockAccess, Cloneable<BlockStorage>, RefC
     }
 
     /**
-     * @return the {@link BlockRegistry} that this {@link BlockStorage} uses
-     */
-    BlockRegistry localRegistry();
-
-    /**
-     * Gets this {@link BlockStorage} using the global block registry.
+     * Gets this {@link BlockStorage} using the universal registry.
      * <p>
      * WARNING! After calling this method, this {@link BlockStorage} is implicitly released. Do not use this for shared instances!
      *
      * @param preferView hints to the implementation that a view would be preferred over a copy
-     * @return this {@link BlockStorage} in the global block registry
+     * @return this {@link BlockStorage} in the universal registry
      */
-    BlockStorage toGlobal(boolean preferView);
-
-    @Override
-    int refCnt();
+    UniversalBlockStorage toUniversal(boolean preferView);
 
     @Override
     BlockStorage retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
 }

@@ -26,7 +26,7 @@ import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.LegacyBlockStorage;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
 import net.daporkchop.mcworldlib.util.palette.IdentityPalette;

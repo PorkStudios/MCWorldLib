@@ -24,7 +24,7 @@ import lombok.NonNull;
 import net.daporkchop.lib.math.vector.i.Vec2i;
 import net.daporkchop.mcworldlib.format.anvil.region.RegionConstants;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.lib.unsafe.PUnsafe;
 
 import java.io.File;

@@ -27,6 +27,7 @@ import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 
 /**
  * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.

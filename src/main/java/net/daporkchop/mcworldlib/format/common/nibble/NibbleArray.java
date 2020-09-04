@@ -103,11 +103,5 @@ public interface NibbleArray extends Cloneable<NibbleArray>, RefCounted {
     NibbleArray clone();
 
     @Override
-    int refCnt();
-
-    @Override
     NibbleArray retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
 }

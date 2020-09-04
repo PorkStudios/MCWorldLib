@@ -21,7 +21,6 @@
 package net.daporkchop.mcworldlib.world;
 
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.mcworldlib.block.BlockAccess;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
@@ -55,11 +54,5 @@ public interface World extends RefCounted {
     WorldStorage storage();
 
     @Override
-    int refCnt();
-
-    @Override
     World retain() throws AlreadyReleasedException;
-
-    @Override
-    boolean release() throws AlreadyReleasedException;
 }

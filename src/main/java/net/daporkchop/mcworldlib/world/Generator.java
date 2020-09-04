@@ -22,8 +22,9 @@ package net.daporkchop.mcworldlib.world;
 
 import lombok.NonNull;
 import net.daporkchop.lib.math.vector.i.Vec3i;
-import net.daporkchop.mcworldlib.block.BlockAccess;
+import net.daporkchop.mcworldlib.block.access.BlockAccess;
 import net.daporkchop.lib.random.PRandom;
+import net.daporkchop.mcworldlib.world.section.Section;
 
 import java.util.Collection;
 

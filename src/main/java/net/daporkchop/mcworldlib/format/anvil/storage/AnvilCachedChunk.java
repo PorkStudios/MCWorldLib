@@ -24,12 +24,11 @@ import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
-import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 

@@ -22,11 +22,10 @@ package net.daporkchop.mcworldlib.format.common.storage.legacy;
 
 import lombok.NonNull;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
-
-import static net.daporkchop.lib.common.util.PValidation.*;
+import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
  * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
@@ -44,7 +43,7 @@ public abstract class LegacyBlockStorage extends AbstractBlockStorage {
     }
 
     @Override
-    public BlockStorage toGlobal(boolean preferView) {
+    public UniversalBlockStorage toUniversal(boolean preferView) {
         if (this.localRegistry.isGlobal()) {
             return this;
         }

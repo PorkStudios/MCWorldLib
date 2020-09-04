@@ -27,6 +27,8 @@ import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
  * @author DaPorkchop_
@@ -47,7 +49,7 @@ public class ToGlobalBlockStorageView implements BlockStorage {
     }
 
     @Override
-    public BlockStorage toGlobal(boolean preferView) {
+    public UniversalBlockStorage toUniversal(boolean preferView) {
         return this;
     }
 

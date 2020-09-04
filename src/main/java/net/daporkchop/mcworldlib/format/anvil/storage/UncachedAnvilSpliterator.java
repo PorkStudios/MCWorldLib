@@ -27,7 +27,7 @@ import net.daporkchop.mcworldlib.format.anvil.region.impl.MemoryMappedRegionFile
 import net.daporkchop.mcworldlib.format.anvil.region.impl.OverclockedRegionFile;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.lib.unsafe.PUnsafe;
 
 import java.io.File;

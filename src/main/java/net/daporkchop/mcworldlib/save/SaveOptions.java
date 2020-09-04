@@ -26,7 +26,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.mcworldlib.util.WriteAccess;
@@ -54,43 +53,6 @@ public final class SaveOptions implements Cloneable<SaveOptions.Builder> {
     private static final Map<String, Key<?>> KEY_LOOKUP = new ConcurrentHashMap<>();
 
     public static final SaveOptions DEFAULT = new SaveOptions(Collections.emptyMap());
-
-    /**
-     * @return a new {@link Builder}
-     */
-    public static Builder builder() {
-        return new Builder(new HashMap<>());
-    }
-
-    /**
-     * Gets a new {@link Key} with the given name and default value.
-     *
-     * @param name         the name of the {@link Key}
-     * @param defaultValue the default value for the key
-     * @param <T>          the key's value type
-     * @return a new {@link Key} with the given name
-     * @throws IllegalStateException if another key with the same name already exists
-     */
-    public static <T> Key<T> key(@NonNull String name, T defaultValue) {
-        Key<T> key = new Key<>(name = name.intern(), null, defaultValue);
-        checkState(KEY_LOOKUP.putIfAbsent(name, key) == null, "duplicate key name: %s", name);
-        return key;
-    }
-
-    /**
-     * Gets a new {@link Key} with the given name and default value factory.
-     *
-     * @param name         the name of the {@link Key}
-     * @param defaultValue a {@link Supplier} for providing instances of the default value for the key
-     * @param <T>          the key's value type
-     * @return a new {@link Key} with the given name
-     * @throws IllegalStateException if another key with the same name already exists
-     */
-    public static <T> Key<T> keyLazy(@NonNull String name, @NonNull Supplier<T> defaultValue) {
-        Key<T> key = new Key<>(name = name.intern(), defaultValue, null);
-        checkState(KEY_LOOKUP.putIfAbsent(name, key) == null, "duplicate key name: %s", name);
-        return key;
-    }
 
     /**
      * The write access level that the save will be opened with.
@@ -143,6 +105,50 @@ public final class SaveOptions implements Cloneable<SaveOptions.Builder> {
      */
     public static final Key<Boolean> SPLITERATOR_CACHE = key("spliterator_cache", Boolean.FALSE);
 
+    /**
+     * Whether or not chunks and sections returned by a {@link WorldStorage} are converted to the universal format.
+     * <p>
+     * Currently unimplemented.
+     */
+    public static final Key<Boolean> CONVERT_UNIVERSAL = key("convert_universal", Boolean.FALSE);
+
+    /**
+     * @return a new {@link Builder}
+     */
+    public static Builder builder() {
+        return new Builder(new HashMap<>());
+    }
+
+    /**
+     * Gets a new {@link Key} with the given name and default value.
+     *
+     * @param name         the name of the {@link Key}
+     * @param defaultValue the default value for the key
+     * @param <T>          the key's value type
+     * @return a new {@link Key} with the given name
+     * @throws IllegalStateException if another key with the same name already exists
+     */
+    public static <T> Key<T> key(@NonNull String name, T defaultValue) {
+        Key<T> key = new Key<>(name = name.intern(), null, defaultValue);
+        checkState(KEY_LOOKUP.putIfAbsent(name, key) == null, "duplicate key name: %s", name);
+        return key;
+    }
+
+    /**
+     * Gets a new {@link Key} with the given name and default value factory.
+     *
+     * @param name         the name of the {@link Key}
+     * @param defaultValue a {@link Supplier} for providing instances of the default value for the key
+     * @param <T>          the key's value type
+     * @return a new {@link Key} with the given name
+     * @throws IllegalStateException if another key with the same name already exists
+     */
+    public static <T> Key<T> keyLazy(@NonNull String name, @NonNull Supplier<T> defaultValue) {
+        Key<T> key = new Key<>(name = name.intern(), defaultValue, null);
+        checkState(KEY_LOOKUP.putIfAbsent(name, key) == null, "duplicate key name: %s", name);
+        return key;
+    }
+
     @NonNull
     private final Map<Key<?>, ?> map;
 
@@ -180,8 +186,11 @@ public final class SaveOptions implements Cloneable<SaveOptions.Builder> {
     public static final class Key<T> implements Comparable<Key<?>> {
         @NonNull
         private final String name;
+
         private Supplier<T> defaultValueFactory;
+
         private T defaultValue;
+
         private final int hashCode = ThreadLocalRandom.current().nextInt();
 
         @Override

@@ -28,12 +28,12 @@ import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
-import net.daporkchop.mcworldlib.format.java.JavaSection;
+import net.daporkchop.mcworldlib.format.java.FlattenedJavaSection;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.Section;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
 
 /**
@@ -45,12 +45,12 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
     @Override
     public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
         int y = tag.getByte("Y") & 0xFF;
-        BlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toGlobal(false);
+        BlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toUniversal(false);
         BlockStorage layer1 = this.extractFluidsToLayer1(layer0);
 
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
-        return new JavaSection(x, y, z, layer0.toGlobal(false), layer1.toGlobal(false), blockLight, skyLight);
+        return new FlattenedJavaSection(x, y, z, layer0.toUniversal(false), layer1.toUniversal(false), blockLight, skyLight);
     }
 
     protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {

@@ -20,7 +20,7 @@
 
 package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.LayeredBlockAccess;
+import net.daporkchop.mcworldlib.block.access.LayeredBlockAccess;
 
 /**
  * Additional information used to describe a {@link World}.

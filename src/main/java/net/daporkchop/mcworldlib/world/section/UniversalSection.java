@@ -18,45 +18,21 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.java;
+package net.daporkchop.mcworldlib.world.section;
 
-import lombok.NonNull;
-import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.section.DefaultSection;
-import net.daporkchop.mcworldlib.format.common.storage.BlockStorage;
-import net.daporkchop.mcworldlib.world.Section;
-
-import static net.daporkchop.lib.common.util.PValidation.*;
+import net.daporkchop.mcworldlib.block.access.FluidAccess;
+import net.daporkchop.mcworldlib.block.access.LayeredBlockAccess;
+import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
- * Implementation of a 2-layer {@link Section} which has a fixed a second layer.
- *
  * @author DaPorkchop_
  */
-public class JavaSection extends DefaultSection {
-    protected final BlockStorage layer1;
-
-    public JavaSection(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
-        super(x, y, z, layer0, blockLight, skyLight);
-
-        this.layer1 = layer1;
-    }
-
-    @Override
-    public int layers() {
-        return 2;
-    }
-
-    @Override
-    public BlockStorage blockStorage(int layer) {
-        checkIndex((layer & ~1) == 0, "invalid layer: %d (must be in range [0,1])", layer);
-        return layer == 0 ? this.blocks : this.layer1;
-    }
-
-    @Override
-    protected void doRelease() {
-        super.doRelease();
-
-        this.layer1.release();
-    }
+public interface UniversalSection extends LayeredBlockAccess, FluidAccess, Section {
+    /**
+     * Gets the {@link UniversalBlockStorage} used by this section for storing block data at the given layer.
+     *
+     * @param layer the layer of the {@link UniversalBlockStorage} to get
+     * @return the {@link UniversalBlockStorage} used by this section for storing block data at the given layer
+     */
+    UniversalBlockStorage blockStorage(int layer);
 }
