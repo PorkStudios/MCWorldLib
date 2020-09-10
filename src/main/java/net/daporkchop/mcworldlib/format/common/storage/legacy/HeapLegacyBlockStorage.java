@@ -24,22 +24,21 @@ import io.netty.buffer.ByteBuf;
 import lombok.NonNull;
 import net.daporkchop.lib.common.pool.array.ArrayHandle;
 import net.daporkchop.lib.common.pool.handle.Handle;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 
 import java.util.Arrays;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Heap-based {@link LegacyBlockStorage} implementation.
+ * Heap-based {@link AbstractLegacyBlockStorage} implementation.
  * <p>
  * This also stores block meta itself (without wrapping it into a {@link NibbleArray}) for performance reasons.
  *
  * @author DaPorkchop_
  */
-public class HeapLegacyBlockStorage extends LegacyBlockStorage {
+public class HeapLegacyBlockStorage extends AbstractLegacyBlockStorage {
     protected final byte[] blocks;
     protected final int blocksOffset;
     protected final byte[] meta;
@@ -50,12 +49,11 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     protected final Handle<byte[]> metaHandle;
     protected final ByteBuf metaBuf;
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
-        this(localRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0);
+    public HeapLegacyBlockStorage() {
+        this(new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0);
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset) {
-        super(localRegistry);
+    public HeapLegacyBlockStorage(@NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset) {
         checkRangeLen(blocks.length, blocksOffset, NUM_BLOCKS);
         checkRangeLen(meta.length, metaOffset, NibbleArray.PACKED_SIZE);
 
@@ -70,8 +68,7 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         this.metaBuf = null;
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta) {
-        super(localRegistry);
+    public HeapLegacyBlockStorage(@NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta) {
         checkRange(blocks instanceof ArrayHandle ? ((ArrayHandle) blocks).length() : blocks.get().length, 0, NUM_BLOCKS);
         checkRange(meta instanceof ArrayHandle ? ((ArrayHandle) meta).length() : meta.get().length, 0, NibbleArray.PACKED_SIZE);
 
@@ -86,8 +83,7 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         this.metaBuf = null;
     }
 
-    public HeapLegacyBlockStorage(@NonNull BlockRegistry localRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta) {
-        super(localRegistry);
+    public HeapLegacyBlockStorage(@NonNull ByteBuf blocks, @NonNull ByteBuf meta) {
         checkArg(blocks.hasArray(), "blocks buffer doesn't have an array!");
         checkArg(meta.hasArray(), "meta buffer doesn't have an array!");
         checkRangeLen(blocks.capacity(), blocks.readerIndex(), NUM_BLOCKS);
@@ -116,31 +112,37 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
     }
 
     @Override
-    public int getBlockRuntimeId(int x, int y, int z) {
+    public int getCombinedIdMeta(int x, int y, int z) {
         int index = index(x, y, z);
-        return ((this.blocks[this.blocksOffset + index(x, y, z)] & 0xFF) << 4)
-                | NibbleArray.extractNibble(index, this.meta[this.metaOffset + (index >> 1)]);
+        return ((this.blocks[this.blocksOffset + index] & 0xFF) << 4)
+               | NibbleArray.extractNibble(index, this.meta[this.metaOffset + (index >> 1)]);
+    }
+
+    @Override
+    public void setBlockState(int x, int y, int z, int legacyId, int meta) {
+        checkArg((legacyId & 0xFF) == legacyId, "legacy ID must be in range [0-256)");
+        checkArg((meta & 0xF) == meta, "nibble value must be in range [0-16)");
+        int index = index(x, y, z);
+        this.blocks[this.blocksOffset + index] = (byte) legacyId;
+        this.meta[this.metaOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.meta[this.metaOffset + (index >> 1)], meta);
+    }
+
+    @Override
+    public void setBlockLegacyId(int x, int y, int z, int legacyId) {
+        checkArg((legacyId & 0xFF) == legacyId, "legacy ID must be in range [0-256)");
+        this.blocks[this.blocksOffset + index(x, y, z)] = (byte) legacyId;
     }
 
     @Override
     public void setBlockMeta(int x, int y, int z, int meta) {
-        checkArg(meta >= 0 && meta < 16, "nibble value must be in range 0-15");
+        checkArg((meta & 0xF) == meta, "nibble value must be in range [0-16)");
         int index = index(x, y, z);
         this.meta[this.metaOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.meta[this.metaOffset + (index >> 1)], meta);
     }
 
     @Override
-    public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
-        checkArg(runtimeId >= 0 && runtimeId < 4096, "runtime ID must be in range 0-4095");
-        int index = index(x, y, z);
-        this.blocks[this.blocksOffset + index] = (byte) (runtimeId >> 4);
-        this.meta[this.metaOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.meta[this.metaOffset + (index >> 1)], runtimeId & 0xF);
-    }
-
-    @Override
-    public BlockStorage clone() {
+    public LegacyBlockStorage clone() {
         return new HeapLegacyBlockStorage(
-                this.localRegistry,
                 Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,
                 Arrays.copyOfRange(this.meta, this.metaOffset, this.metaOffset + NibbleArray.PACKED_SIZE), 0);
     }
@@ -173,12 +175,12 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         protected final Handle<byte[]> addHandle;
         protected final ByteBuf addBuf;
 
-        public Add(@NonNull BlockRegistry localRegistry) {
-            this(localRegistry, new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0, new byte[NibbleArray.PACKED_SIZE], 0);
+        public Add() {
+            this(new byte[NUM_BLOCKS], 0, new byte[NibbleArray.PACKED_SIZE], 0, new byte[NibbleArray.PACKED_SIZE], 0);
         }
 
-        public Add(@NonNull BlockRegistry localRegistry, @NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset, @NonNull byte[] add, int addOffset) {
-            super(localRegistry, blocks, blocksOffset, meta, metaOffset);
+        public Add(@NonNull byte[] blocks, int blocksOffset, @NonNull byte[] meta, int metaOffset, @NonNull byte[] add, int addOffset) {
+            super(blocks, blocksOffset, meta, metaOffset);
             checkRangeLen(add.length, addOffset, NibbleArray.PACKED_SIZE);
 
             this.add = add;
@@ -187,8 +189,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
             this.addBuf = null;
         }
 
-        public Add(@NonNull BlockRegistry localRegistry, @NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta, @NonNull Handle<byte[]> add) {
-            super(localRegistry, blocks, meta);
+        public Add(@NonNull Handle<byte[]> blocks, @NonNull Handle<byte[]> meta, @NonNull Handle<byte[]> add) {
+            super(blocks, meta);
             checkRange(add instanceof ArrayHandle ? ((ArrayHandle) add).length() : add.get().length, 0, NibbleArray.PACKED_SIZE);
 
             this.add = add.retain().get();
@@ -197,8 +199,8 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
             this.addBuf = null;
         }
 
-        public Add(@NonNull BlockRegistry localRegistry, @NonNull ByteBuf blocks, @NonNull ByteBuf meta, @NonNull ByteBuf add) {
-            super(localRegistry, blocks, meta);
+        public Add(@NonNull ByteBuf blocks, @NonNull ByteBuf meta, @NonNull ByteBuf add) {
+            super(blocks, meta);
             checkArg(add.hasArray(), "add buffer doesn't have an array!");
             checkRangeLen(add.capacity(), add.readerIndex(), NibbleArray.PACKED_SIZE);
 
@@ -212,30 +214,38 @@ public class HeapLegacyBlockStorage extends LegacyBlockStorage {
         public int getBlockLegacyId(int x, int y, int z) {
             int index = index(x, y, z);
             return (this.blocks[this.blocksOffset + index] & 0xFF)
-                    | (NibbleArray.extractNibble(index, this.add[this.addOffset + (index >> 1)]) << 8);
+                   | (NibbleArray.extractNibble(index, this.add[this.addOffset + (index >> 1)]) << 8);
         }
 
         @Override
-        public int getBlockRuntimeId(int x, int y, int z) {
+        public int getCombinedIdMeta(int x, int y, int z) {
             int index = index(x, y, z);
-            return ((this.blocks[this.blocksOffset + index(x, y, z)] & 0xFF) << 4)
-                    | NibbleArray.extractNibble(index, this.meta[this.metaOffset + (index >> 1)])
-                    | (NibbleArray.extractNibble(index, this.add[this.addOffset + (index >> 1)]) << 12);
+            return ((this.blocks[this.blocksOffset + index] & 0xFF) << 4)
+                   | (NibbleArray.extractNibble(index, this.add[this.addOffset + (index >> 1)]) << 12)
+                   | NibbleArray.extractNibble(index, this.meta[this.metaOffset + (index >> 1)]);
         }
 
         @Override
-        public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
-            checkArg(runtimeId >= 0 && runtimeId < 65536, "runtime ID must be in range 0-4095");
+        public void setBlockState(int x, int y, int z, int legacyId, int meta) {
+            checkArg((legacyId & 0xFFF) == legacyId, "legacy ID must be in range [0-4096)");
+            checkArg((meta & 0xF) == meta, "nibble value must be in range [0-16)");
             int index = index(x, y, z);
-            this.blocks[this.blocksOffset + index] = (byte) (runtimeId >> 4);
-            this.meta[this.metaOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.meta[this.metaOffset + (index >> 1)], runtimeId & 0xF);
-            this.add[this.addOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.add[this.addOffset + (index >> 1)], (runtimeId >> 12) & 0xF);
+            this.blocks[this.blocksOffset + index] = (byte) legacyId;
+            this.add[this.addOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.add[this.addOffset + (index >> 1)], (legacyId >> 8) & 0xF);
+            this.meta[this.metaOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.meta[this.metaOffset + (index >> 1)], meta);
         }
 
         @Override
-        public BlockStorage clone() {
+        public void setBlockLegacyId(int x, int y, int z, int legacyId) {
+            checkArg((legacyId & 0xFFF) == legacyId, "legacy ID must be in range [0-4096)");
+            int index = index(x, y, z);
+            this.blocks[this.blocksOffset + index] = (byte) legacyId;
+            this.add[this.addOffset + (index >> 1)] = (byte) NibbleArray.insertNibble(index, this.add[this.addOffset + (index >> 1)], (legacyId >> 8) & 0xF);
+        }
+
+        @Override
+        public LegacyBlockStorage clone() {
             return new Add(
-                    this.localRegistry,
                     Arrays.copyOfRange(this.blocks, this.blocksOffset, this.blocksOffset + NUM_BLOCKS), 0,
                     Arrays.copyOfRange(this.meta, this.metaOffset, this.metaOffset + NibbleArray.PACKED_SIZE), 0,
                     Arrays.copyOfRange(this.add, this.addOffset, this.addOffset + NibbleArray.PACKED_SIZE), 0);

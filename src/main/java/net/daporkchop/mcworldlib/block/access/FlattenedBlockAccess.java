@@ -18,29 +18,43 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage;
-
-import lombok.Getter;
-import lombok.NonNull;
-import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
+package net.daporkchop.mcworldlib.block.access;
 
 /**
- * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
+ * Provides access to flattened block data at given coordinates.
  *
  * @author DaPorkchop_
  */
-public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
-    @Override
-    public BlockStorage retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
+public interface FlattenedBlockAccess {
+    //
+    //
+    // getters
+    //
+    //
 
-    @Override
-    protected abstract void doRelease();
+    /**
+     * Gets the runtime ID of the block at the given coordinates in the default layer.
+     *
+     * @param x the X coordinate of the block to get
+     * @param y the Y coordinate of the block to get
+     * @param z the Z coordinate of the block to get
+     * @return the runtime ID of the block
+     */
+    int getBlockRuntimeId(int x, int y, int z);
+
+    //
+    //
+    // setters
+    //
+    //
+
+    /**
+     * Sets the runtime ID of the block at the given coordinates in the default layer.
+     *
+     * @param x         the X coordinate of the block to set
+     * @param y         the Y coordinate of the block to set
+     * @param z         the Z coordinate of the block to set
+     * @param runtimeId the new runtime ID
+     */
+    void setBlockRuntimeId(int x, int y, int z, int runtimeId);
 }

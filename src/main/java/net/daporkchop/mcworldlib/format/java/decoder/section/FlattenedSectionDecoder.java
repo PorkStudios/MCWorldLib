@@ -26,7 +26,7 @@ import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.format.common.storage.palette.PalettedBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
 import net.daporkchop.mcworldlib.util.palette.Palette;
@@ -54,9 +54,9 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
         Palette palette = this.parseBlockPalette(bits, paletteTag, blockRegistry);
 
         if (blockStatesTag.handle() != null) {
-            return new PalettedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
+            return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
         } else {
-            return new PalettedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
+            return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
         }
     }
 

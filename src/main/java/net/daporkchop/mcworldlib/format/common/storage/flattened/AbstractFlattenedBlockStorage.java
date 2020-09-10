@@ -18,29 +18,31 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage;
+package net.daporkchop.mcworldlib.format.common.storage.flattened;
 
-import lombok.Getter;
-import lombok.NonNull;
-import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
+import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
- * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
- *
  * @author DaPorkchop_
  */
-public abstract class AbstractBlockStorage extends AbstractRefCounted implements BlockStorage {
-    @Override
-    public BlockStorage retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
+public abstract class AbstractFlattenedBlockStorage extends AbstractBlockStorage implements FlattenedBlockStorage {
+    protected static int index(int x, int y, int z) {
+        BlockStorage.checkCoords(x, y, z);
+        return (y << 8) | (z << 4) | x;
     }
 
     @Override
-    protected abstract void doRelease();
+    public UniversalBlockStorage toUniversal(boolean preferView) {
+        throw new UnsupportedOperationException(); //TODO: implement this
+    }
+
+    @Override
+    public FlattenedBlockStorage retain() throws AlreadyReleasedException {
+        super.retain();
+        return this;
+    }
 }

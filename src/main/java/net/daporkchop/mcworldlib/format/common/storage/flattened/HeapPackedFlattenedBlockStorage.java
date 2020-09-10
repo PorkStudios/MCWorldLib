@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage.palette;
+package net.daporkchop.mcworldlib.format.common.storage.flattened;
 
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.BitArray;
@@ -27,13 +27,16 @@ import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.format.common.storage.legacy.LegacyBlockStorage;
+import net.daporkchop.mcworldlib.format.common.storage.legacy.AbstractLegacyBlockStorage;
 import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
 import net.daporkchop.mcworldlib.util.palette.IdentityPalette;
 import net.daporkchop.mcworldlib.util.palette.Palette;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
+import java.util.Arrays;
 import java.util.function.IntBinaryOperator;
 
+import static java.lang.Math.*;
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
@@ -41,30 +44,26 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinaryOperator {
+public class HeapPackedFlattenedBlockStorage extends AbstractFlattenedBlockStorage implements IntBinaryOperator {
     protected final ArrayAllocator<long[]> alloc;
     protected BitArray array;
     protected Palette palette;
     protected int bits;
 
-    public PalettedBlockStorage(@NonNull BlockRegistry blockRegistry) {
-        this(blockRegistry, null);
+    public HeapPackedFlattenedBlockStorage() {
+        this(null);
     }
 
-    public PalettedBlockStorage(@NonNull BlockRegistry blockRegistry, ArrayAllocator<long[]> alloc) {
-        super(blockRegistry);
-
+    public HeapPackedFlattenedBlockStorage(ArrayAllocator<long[]> alloc) {
         this.alloc = alloc;
         this.setBits(4);
     }
 
-    public PalettedBlockStorage(@NonNull BlockRegistry blockRegistry, @NonNull BitArray array, @NonNull Palette palette) {
-        this(blockRegistry, null, array, palette);
+    public HeapPackedFlattenedBlockStorage(@NonNull BitArray array, @NonNull Palette palette) {
+        this(null, array, palette);
     }
 
-    public PalettedBlockStorage(@NonNull BlockRegistry blockRegistry, ArrayAllocator<long[]> alloc, @NonNull BitArray array, @NonNull Palette palette) {
-        super(blockRegistry);
-
+    public HeapPackedFlattenedBlockStorage(ArrayAllocator<long[]> alloc, @NonNull BitArray array, @NonNull Palette palette) {
         this.alloc = alloc;
         checkArg(array.size() >= 4096, "array (%d) must be at least 4096 entries!", array.size());
         this.array = array;
@@ -81,7 +80,8 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
         } else if (bits < 9) {
             this.palette = new ArrayPalette(this, this.bits = bits); //vanilla uses a hashmap for this, i doubt it's much faster though...
         } else {
-            this.bits = BinMath.getNumBitsNeededFor(this.localRegistry.maxRuntimeId() + 1);
+            //this.bits = BinMath.getNumBitsNeededFor(this.localRegistry.maxRuntimeId() + 1);
+            this.bits = 12; //TODO: get the number of required bits from somewhere
             this.palette = IdentityPalette.INSTANCE;
         }
 
@@ -92,37 +92,14 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
     }
 
     @Override
-    public int getBlockLegacyId(int x, int y, int z) {
-        return this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).legacyId();
-    }
-
-    @Override
-    public int getBlockMeta(int x, int y, int z) {
-        return this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).meta();
-    }
-
-    @Override
     public int getBlockRuntimeId(int x, int y, int z) {
-        return this.getBlockRuntimeId(index(x, y, z));
-    }
-
-    protected int getBlockRuntimeId(int index) {
-        return Math.max(this.palette.getReverse(this.array.get(index)), 0);
-    }
-
-    @Override
-    public void setBlockMeta(int x, int y, int z, int meta) {
-        this.setBlockRuntimeId(x, y, z, this.localRegistry.getState(this.getBlockRuntimeId(x, y, z)).withMeta(meta).runtimeId());
+        return max(this.palette.getReverse(this.array.get(index(x, y, z))), 0);
     }
 
     @Override
     public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
-        this.setBlockRuntimeId(index(x, y, z), runtimeId);
-    }
-
-    protected void setBlockRuntimeId(int index, int runtimeId) {
         int paletteId = this.palette.get(runtimeId);
-        this.array.set(index, paletteId); //this prevents this.array from being loaded first, in case it gets modified
+        this.array.set(index(x, y, z), paletteId); //this prevents this.array from being loaded first, in case it gets modified
     }
 
     /**
@@ -139,7 +116,8 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
 
         //copy values
         for (int i = 0; i < 4096; i++) {
-            this.setBlockRuntimeId(i, Math.max(palette.get(array.get(i)), 0));
+            int paletteId = this.palette.get(max(palette.get(array.get(i)), 0));
+            this.array.set(i, paletteId); //this prevents this.array from being loaded first, in case it gets modified
         }
         array.release();
 
@@ -147,8 +125,8 @@ public class PalettedBlockStorage extends LegacyBlockStorage implements IntBinar
     }
 
     @Override
-    public BlockStorage clone() {
-        return null;
+    public FlattenedBlockStorage clone() {
+        return null; //TODO
     }
 
     @Override

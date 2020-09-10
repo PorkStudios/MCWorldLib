@@ -24,7 +24,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.pool.array.AbstractArrayHandle;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.lib.common.pool.array.ArrayHandle;
@@ -40,7 +39,7 @@ import net.daporkchop.lib.common.ref.ThreadRef;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AnvilPooledArrayAllocator implements ArrayAllocator<byte[]> {
+public final class LegacyAnvilPooledArrayAllocator implements ArrayAllocator<byte[]> {
     @Getter(AccessLevel.NONE)
     protected final ThreadRef<ThreadLocalData> threadLocal = ThreadRef.late(ThreadLocalData::new);
 
@@ -81,9 +80,9 @@ public final class AnvilPooledArrayAllocator implements ArrayAllocator<byte[]> {
      */
     private final class ThreadLocalData {
         @SuppressWarnings("unchecked")
-        protected final byte[][] handles2kb = new byte[AnvilPooledArrayAllocator.this.max2kbCount][];
+        protected final byte[][] handles2kb = new byte[LegacyAnvilPooledArrayAllocator.this.max2kbCount][];
         @SuppressWarnings("unchecked")
-        protected final byte[][] handles4kb = new byte[AnvilPooledArrayAllocator.this.max4kbCount][];
+        protected final byte[][] handles4kb = new byte[LegacyAnvilPooledArrayAllocator.this.max4kbCount][];
 
         protected int index2kb = 0;
         protected int index4kb = 0;
@@ -120,7 +119,7 @@ public final class AnvilPooledArrayAllocator implements ArrayAllocator<byte[]> {
     }
 
     /**
-     * An {@link ArrayHandle} which contains a pooled {@code byte[]} for an {@link AnvilPooledArrayAllocator}.
+     * An {@link ArrayHandle} which contains a pooled {@code byte[]} for an {@link LegacyAnvilPooledArrayAllocator}.
      *
      * @author DaPorkchop_
      */

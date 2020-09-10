@@ -20,11 +20,10 @@
 
 package net.daporkchop.mcworldlib.format.common.storage.legacy;
 
-import lombok.NonNull;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.format.common.storage.ToGlobalBlockStorageView;
+import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
@@ -32,42 +31,20 @@ import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
  *
  * @author DaPorkchop_
  */
-public abstract class LegacyBlockStorage extends AbstractBlockStorage {
+public abstract class AbstractLegacyBlockStorage extends AbstractBlockStorage implements LegacyBlockStorage {
     protected static int index(int x, int y, int z) {
         BlockStorage.checkCoords(x, y, z);
         return (y << 8) | (z << 4) | x;
     }
 
-    public LegacyBlockStorage(@NonNull BlockRegistry localRegistry) {
-        super(localRegistry);
-    }
-
     @Override
     public UniversalBlockStorage toUniversal(boolean preferView) {
-        if (this.localRegistry.isGlobal()) {
-            return this;
-        }
-
-        return new ToGlobalBlockStorageView(this); //TODO: optimize this
+        throw new UnsupportedOperationException(); //TODO: implement this
     }
 
     @Override
-    public abstract int getBlockLegacyId(int x, int y, int z);
-
-    @Override
-    public abstract int getBlockMeta(int x, int y, int z);
-
-    @Override
-    public abstract int getBlockRuntimeId(int x, int y, int z);
-
-    @Override
-    public void setBlockLegacyId(int x, int y, int z, int legacyId) {
-        this.setBlockRuntimeId(x, y, z, legacyId << 4);
+    public LegacyBlockStorage retain() throws AlreadyReleasedException {
+        super.retain();
+        return this;
     }
-
-    @Override
-    public abstract void setBlockMeta(int x, int y, int z, int meta);
-
-    @Override
-    public abstract void setBlockRuntimeId(int x, int y, int z, int runtimeId);
 }
