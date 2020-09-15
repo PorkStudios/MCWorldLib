@@ -43,4 +43,7 @@ public abstract class AbstractBlockStorage extends AbstractRefCounted implements
 
     @Override
     protected abstract void doRelease();
+
+    @Override
+    public abstract BlockStorage clone();
 }

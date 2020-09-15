@@ -25,14 +25,18 @@ import net.daporkchop.lib.binary.stream.DataIn;
 import net.daporkchop.lib.binary.stream.DataOut;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
+import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveFormat;
-import net.daporkchop.mcworldlib.format.java.AnvilPooledArrayAllocator;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.WriteAccess;
-import net.daporkchop.mcworldlib.world.Section;
 import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.section.FlattenedSection;
+import net.daporkchop.mcworldlib.world.section.LegacySection;
+import net.daporkchop.mcworldlib.world.section.Section;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
+import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,6 +47,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
  * @author DaPorkchop_
@@ -91,12 +97,12 @@ public class LevelDatParserTest {
 
                 try (World world = save.world(Identifier.fromString("overworld"))) {
                     try (Section section = world.storage().loadSection(0, 0, 0)) {
-                        System.out.println(section.getBlockRuntimeId(0, 0, 0));
-                        //System.out.println(section.blockRegistry().getState(section.getBlockRuntimeId(0, 0, 0)));
-                        System.out.println(section.getBlockState(0, 0, 0));
-                        /*System.out.println(section.blockRegistry()
-                                .getDefaultState(section.getBlockLegacyId(0, 0, 0))
-                                .withMeta(section.getBlockMeta(0, 0, 0)));*/
+                        System.out.println(className(section));
+                        if (section instanceof LegacySection)  {
+                            System.out.printf("legacy ID: %d#%d\n", ((LegacySection) section).getBlockLegacyId(0, 0, 0), ((LegacySection) section).getBlockMeta(0, 0, 0));
+                        } else if (section instanceof FlattenedSection) {
+                            System.out.printf("runtime ID: %d\n", ((FlattenedSection) section).getBlockRuntimeId(0, 0, 0));
+                        }
                     }
                 }
             }
@@ -116,7 +122,7 @@ public class LevelDatParserTest {
     private void loadTestWorld(@NonNull String name) throws IOException {
         try (Save save = new AnvilSaveFormat().open(new File(ROOT, name), SaveOptions.DEFAULT.clone()
                 .set(SaveOptions.ACCESS, WriteAccess.READ_ONLY)
-                .set(SaveOptions.BYTE_ALLOC, new AnvilPooledArrayAllocator(ArrayAllocator.unpooled(byte.class), 32, 32))
+                //.set(SaveOptions.BYTE_ALLOC, new AnvilPooledArrayAllocator(ArrayAllocator.unpooled(byte.class), 32, 32))
                 //.set(SaveOptions.SPLITERATOR_CACHE, true)
                 .build())) {
             try (World world = save.world(Identifier.fromString("minecraft:overworld"))) {

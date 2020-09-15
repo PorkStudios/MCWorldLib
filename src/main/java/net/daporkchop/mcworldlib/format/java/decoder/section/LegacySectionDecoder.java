@@ -28,13 +28,14 @@ import net.daporkchop.mcworldlib.block.RegistryConverter;
 import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.legacy.DefaultLegacySection;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
-import net.daporkchop.mcworldlib.format.java.FlattenedJavaSection;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 
 /**
  * @author DaPorkchop_
@@ -45,29 +46,28 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
     @Override
     public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
         int y = tag.getByte("Y") & 0xFF;
-        BlockStorage layer0 = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version)).toUniversal(false);
-        BlockStorage layer1 = this.extractFluidsToLayer1(layer0);
+        LegacyBlockStorage blocks = this.parseBlockStorage(tag);
 
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
-        return new FlattenedJavaSection(x, y, z, layer0.toUniversal(false), layer1.toUniversal(false), blockLight, skyLight);
+        return new DefaultLegacySection(x, y, z, blocks, blockLight, skyLight);
     }
 
-    protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
+    protected LegacyBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {
         ByteArrayTag blocksTag = tag.getTag("Blocks");
         ByteArrayTag dataTag = tag.getTag("Data");
         ByteArrayTag addTag = tag.getTag("Add", null);
         if (addTag == null) {
             if (blocksTag.handle() != null) { //assume that all tags have handles
-                return new HeapLegacyBlockStorage(blockRegistry, blocksTag.handle(), dataTag.handle());
+                return new HeapLegacyBlockStorage(blocksTag.handle(), dataTag.handle());
             } else {
-                return new HeapLegacyBlockStorage(blockRegistry, blocksTag.value(), 0, dataTag.value(), 0);
+                return new HeapLegacyBlockStorage(blocksTag.value(), 0, dataTag.value(), 0);
             }
         } else {
             if (blocksTag.handle() != null) { //assume that all tags have handles
-                return new HeapLegacyBlockStorage.Add(blockRegistry, blocksTag.handle(), dataTag.handle(), addTag.handle());
+                return new HeapLegacyBlockStorage.Add(blocksTag.handle(), dataTag.handle(), addTag.handle());
             } else {
-                return new HeapLegacyBlockStorage.Add(blockRegistry, blocksTag.value(), 0, dataTag.value(), 0, addTag.value(), 0);
+                return new HeapLegacyBlockStorage.Add(blocksTag.value(), 0, dataTag.value(), 0, addTag.value(), 0);
             }
         }
     }
@@ -80,25 +80,5 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
         return data.handle() != null
                 ? new HeapNibbleArray.YZX(data.handle())
                 : new HeapNibbleArray.YZX(data.value(), 0);
-    }
-
-    protected BlockStorage extractFluidsToLayer1(@NonNull BlockStorage from) {
-        FluidRegistry registry = from.localRegistry().fluids();
-        RegistryConverter converter = from.localRegistry().toGlobal();
-
-        BlockStorage to = BlockRegistry.global().createStorage();
-        for (int x = 0; x < 16; x++) {
-            for (int y = 0; y < 16; y++) {
-                for (int z = 0; z < 16; z++) {
-                    int block = from.getBlockRuntimeId(x, y, z);
-                    int fluid = registry.extractFluid(block);
-                    if (fluid != 0) {
-                        from.setBlockRuntimeId(x, y, z, registry.stripFluid(block));
-                        to.setBlockRuntimeId(x, y, z, converter.toGlobal(fluid));
-                    }
-                }
-            }
-        }
-        return to; //already using the global registry
     }
 }

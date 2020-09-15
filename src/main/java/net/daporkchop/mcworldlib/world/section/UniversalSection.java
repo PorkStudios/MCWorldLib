@@ -20,6 +20,7 @@
 
 package net.daporkchop.mcworldlib.world.section;
 
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.FluidAccess;
 import net.daporkchop.mcworldlib.block.access.LayeredBlockAccess;
 import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
@@ -35,4 +36,7 @@ public interface UniversalSection extends LayeredBlockAccess, FluidAccess, Secti
      * @return the {@link UniversalBlockStorage} used by this section for storing block data at the given layer
      */
     UniversalBlockStorage blockStorage(int layer);
+
+    @Override
+    UniversalSection retain() throws AlreadyReleasedException;
 }

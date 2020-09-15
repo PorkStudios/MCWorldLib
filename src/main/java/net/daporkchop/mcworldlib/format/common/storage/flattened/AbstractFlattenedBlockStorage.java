@@ -45,4 +45,7 @@ public abstract class AbstractFlattenedBlockStorage extends AbstractBlockStorage
         super.retain();
         return this;
     }
+
+    @Override
+    public abstract FlattenedBlockStorage clone();
 }

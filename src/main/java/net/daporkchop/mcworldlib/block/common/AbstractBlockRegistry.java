@@ -221,11 +221,6 @@ public abstract class AbstractBlockRegistry implements BlockRegistry {
         });
     }
 
-    @Override
-    public BlockStorage createStorage() {
-        return new HeapPackedFlattenedBlockStorage(this); //TODO: actually do something more useful here
-    }
-
     public static abstract class Builder<I extends Builder<I, B, R>, B extends BlockBuilder<B, I, R>, R extends BlockRegistry> {
         protected final Map<Identifier, B> blocks = new HashMap<>();
 

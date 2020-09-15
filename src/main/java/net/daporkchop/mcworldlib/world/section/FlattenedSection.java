@@ -18,45 +18,24 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.java;
+package net.daporkchop.mcworldlib.world.section;
 
-import lombok.NonNull;
-import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.section.DefaultSection;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.world.section.Section;
-
-import static net.daporkchop.lib.common.util.PValidation.*;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.block.access.FlattenedBlockAccess;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
 /**
- * Implementation of a 2-layer {@link Section} which has a fixed a second layer.
- *
  * @author DaPorkchop_
  */
-public class FlattenedJavaSection extends DefaultSection {
-    protected final BlockStorage layer1;
-
-    public FlattenedJavaSection(int x, int y, int z, @NonNull BlockStorage layer0, @NonNull BlockStorage layer1, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
-        super(x, y, z, layer0, blockLight, skyLight);
-
-        this.layer1 = layer1;
-    }
-
-    @Override
-    public int layers() {
-        return 2;
-    }
+public interface FlattenedSection extends FlattenedBlockAccess, Section {
+    /**
+     * Gets the {@link FlattenedBlockStorage} used by this section for storing block data at the given layer.
+     *
+     * @param layer the layer of the {@link FlattenedBlockStorage} to get
+     * @return the {@link FlattenedBlockStorage} used by this section for storing block data at the given layer
+     */
+    FlattenedBlockStorage blockStorage(int layer);
 
     @Override
-    public BlockStorage blockStorage(int layer) {
-        checkIndex((layer & ~1) == 0, "invalid layer: %d (must be in range [0,1])", layer);
-        return layer == 0 ? this.blocks : this.layer1;
-    }
-
-    @Override
-    protected void doRelease() {
-        super.doRelease();
-
-        this.layer1.release();
-    }
+    FlattenedSection retain() throws AlreadyReleasedException;
 }

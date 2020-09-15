@@ -18,36 +18,56 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage.legacy;
+package net.daporkchop.mcworldlib.format.common.section.flattened;
 
+import lombok.NonNull;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.AbstractSection;
+import net.daporkchop.mcworldlib.world.section.FlattenedSection;
+import net.daporkchop.mcworldlib.world.section.Section;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
- * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
- *
  * @author DaPorkchop_
  */
-public abstract class AbstractLegacyBlockStorage extends AbstractBlockStorage implements LegacyBlockStorage {
-    protected static int index(int x, int y, int z) {
-        BlockStorage.checkCoords(x, y, z);
-        return (y << 8) | (z << 4) | x;
+public class SingleLayerFlattenedSection extends AbstractSection implements FlattenedSection {
+    protected final FlattenedBlockStorage blocks;
+
+    public SingleLayerFlattenedSection(int x, int y, int z, @NonNull FlattenedBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+        super(x, y, z, blockLight, skyLight);
+
+        this.blocks = blocks;
     }
 
     @Override
-    public UniversalBlockStorage toUniversal(boolean preferView) {
-        throw new UnsupportedOperationException(); //TODO: implement this
-    }
-
-    @Override
-    public LegacyBlockStorage retain() throws AlreadyReleasedException {
+    public FlattenedSection retain() throws AlreadyReleasedException {
         super.retain();
         return this;
     }
 
     @Override
-    public abstract LegacyBlockStorage clone();
+    protected void doRelease() {
+        super.doRelease();
+
+        this.blocks.release();
+    }
+
+    @Override
+    public FlattenedBlockStorage blockStorage(int layer) {
+        checkIndex(layer == 0, layer);
+        return this.blocks;
+    }
+
+    @Override
+    public int getBlockRuntimeId(int x, int y, int z) {
+        return this.blocks.getBlockRuntimeId(x, y, z);
+    }
+
+    @Override
+    public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
+        this.blocks.setBlockRuntimeId(x, y, z, runtimeId);
+    }
 }

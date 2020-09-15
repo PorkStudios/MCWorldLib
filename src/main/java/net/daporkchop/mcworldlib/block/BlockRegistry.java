@@ -255,11 +255,4 @@ public interface BlockRegistry {
      * @return the {@link FluidRegistry} used by this registry
      */
     FluidRegistry fluids();
-
-    /**
-     * Creates a new {@link BlockStorage} using the optimal implementation for this registry.
-     *
-     * @return a new {@link BlockStorage}
-     */
-    BlockStorage createStorage();
 }

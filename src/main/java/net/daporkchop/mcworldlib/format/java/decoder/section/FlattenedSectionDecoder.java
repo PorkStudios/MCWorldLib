@@ -23,8 +23,16 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
+import net.daporkchop.lib.nbt.tag.ByteArrayTag;
 import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.block.BlockState;
+import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.flattened.SingleLayerFlattenedSection;
+import net.daporkchop.mcworldlib.format.common.section.legacy.DefaultLegacySection;
+import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
 import net.daporkchop.mcworldlib.util.Identifier;
@@ -36,17 +44,28 @@ import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.lib.nbt.tag.LongArrayTag;
 import net.daporkchop.lib.nbt.tag.StringTag;
 import net.daporkchop.lib.nbt.tag.Tag;
+import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
+import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 
 import java.util.Map;
 
 /**
  * @author DaPorkchop_
  */
-public class FlattenedSectionDecoder extends LegacySectionDecoder {
+public class FlattenedSectionDecoder implements JavaSectionDecoder {
     public static final JavaVersion VERSION = JavaVersion.latest();
 
     @Override
-    protected BlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
+    public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
+        int y = tag.getByte("Y") & 0xFF;
+        FlattenedBlockStorage blocks = this.parseBlockStorage(tag, world.parent().blockRegistryFor(version));
+
+        NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
+        NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
+        return new SingleLayerFlattenedSection(x, y, z, blocks, blockLight, skyLight);
+    }
+
+    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
         LongArrayTag blockStatesTag = tag.getTag("BlockStates");
 
@@ -54,10 +73,16 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
         Palette palette = this.parseBlockPalette(bits, paletteTag, blockRegistry);
 
         if (blockStatesTag.handle() != null) {
+            return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
+        } else {
+            return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
+        }
+        //TODO: use block registries again...
+        /*if (blockStatesTag.handle() != null) {
             return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
         } else {
             return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
-        }
+        }*/
     }
 
     protected Palette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag, @NonNull BlockRegistry blockRegistry) {
@@ -76,5 +101,15 @@ public class FlattenedSectionDecoder extends LegacySectionDecoder {
             palette.get(state.runtimeId());
         }
         return palette;
+    }
+
+    protected NibbleArray parseNibbleArray(@NonNull CompoundTag tag, @NonNull String name) {
+        ByteArrayTag data = tag.getTag(name, null);
+        if (data == null) {
+            return null;
+        }
+        return data.handle() != null
+                ? new HeapNibbleArray.YZX(data.handle())
+                : new HeapNibbleArray.YZX(data.value(), 0);
     }
 }

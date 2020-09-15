@@ -20,8 +20,10 @@
 
 package net.daporkchop.mcworldlib.world.section;
 
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.LegacyBlockAccess;
 import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
+import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
  * A {@link Section} using the legacy registry (for Java Edition ≤ 1.12.2).
@@ -33,4 +35,7 @@ public interface LegacySection extends LegacyBlockAccess, Section {
      * @return the {@link LegacyBlockStorage} used by this section for storing block data at layer 0
      */
     LegacyBlockStorage blockStorage();
+
+    @Override
+    LegacySection retain() throws AlreadyReleasedException;
 }
