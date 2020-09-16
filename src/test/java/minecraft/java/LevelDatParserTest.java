@@ -29,6 +29,7 @@ import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveFormat;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.world.World;
@@ -127,13 +128,13 @@ public class LevelDatParserTest {
                 .build())) {
             try (World world = save.world(Identifier.fromString("minecraft:overworld"))) {
                 try (Section section = world.storage().loadSection(0, 4, 0)) {
-                    section.tileEntities().forEach(System.out::println);
+                    System.out.println("Printing all tile entities in section:");
+                    section.tileEntities().stream().map(TileEntity::toString).map("  "::concat).forEach(System.out::println);
                 }
 
-                System.out.println(StreamSupport.stream(world.storage().allChunks(), true)
-                        .count() + " chunks");
-                System.out.println(StreamSupport.stream(world.storage().allSections(), true)
-                        .count() + " sections");
+                System.out.printf("World has a total of %d chunks and %d sections\n",
+                        StreamSupport.stream(world.storage().allChunks(), true).count(),
+                        StreamSupport.stream(world.storage().allSections(), true).count());
             }
         }
     }

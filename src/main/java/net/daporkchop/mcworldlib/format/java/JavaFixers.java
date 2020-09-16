@@ -23,7 +23,6 @@ package net.daporkchop.mcworldlib.format.java;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import net.daporkchop.mcworldlib.format.anvil.decoder.chunk.FlattenedChunkDecoder;
 import net.daporkchop.mcworldlib.format.anvil.decoder.chunk.LegacyChunkDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaChunkDecoder;
@@ -34,8 +33,9 @@ import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_13;
 import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_14;
 import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_8;
 import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_9;
-import net.daporkchop.mcworldlib.format.java.decoder.section.FlattenedSectionDecoder;
+import net.daporkchop.mcworldlib.format.java.decoder.section.PackedFlattenedSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.section.LegacySectionDecoder;
+import net.daporkchop.mcworldlib.format.java.decoder.section.PaddedFlattenedSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.tile.TileEntityDecoder1_8;
 import net.daporkchop.mcworldlib.format.java.decoder.tile.TileEntityDecoder1_9;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
@@ -73,7 +73,8 @@ public class JavaFixers {
                         .build(),
                 new MapBuilder<>(new TreeMap<JavaVersion, JavaSectionDecoder>())
                         .put(LegacySectionDecoder.VERSION, new LegacySectionDecoder())
-                        .put(FlattenedSectionDecoder.VERSION, new FlattenedSectionDecoder())
+                        .put(PackedFlattenedSectionDecoder.VERSION, new PackedFlattenedSectionDecoder())
+                        .put(PaddedFlattenedSectionDecoder.VERSION, new PaddedFlattenedSectionDecoder())
                         .build(),
                 new MapBuilder<>(new TreeMap<JavaVersion, JavaTileEntityDecoder>())
                         .put(JavaVersion.pre15w32a(), new TileEntityDecoder1_8())

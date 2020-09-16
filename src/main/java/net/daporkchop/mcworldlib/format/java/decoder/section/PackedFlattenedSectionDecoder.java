@@ -22,38 +22,36 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
+import net.daporkchop.lib.binary.bit.padded.PaddedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.nbt.tag.ByteArrayTag;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.BlockState;
-import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
-import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.format.common.section.flattened.SingleLayerFlattenedSection;
-import net.daporkchop.mcworldlib.format.common.section.legacy.DefaultLegacySection;
-import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
-import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.mcworldlib.world.section.Section;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
-import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
-import net.daporkchop.mcworldlib.util.palette.Palette;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.lib.nbt.tag.LongArrayTag;
 import net.daporkchop.lib.nbt.tag.StringTag;
 import net.daporkchop.lib.nbt.tag.Tag;
+import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.mcworldlib.block.BlockState;
+import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
+import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.format.common.section.flattened.SingleLayerFlattenedSection;
+import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
+import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
+import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.util.palette.ArrayPalette;
+import net.daporkchop.mcworldlib.util.palette.Palette;
+import net.daporkchop.mcworldlib.version.java.JavaVersion;
+import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 
 import java.util.Map;
 
 /**
  * @author DaPorkchop_
  */
-public class FlattenedSectionDecoder implements JavaSectionDecoder {
-    public static final JavaVersion VERSION = JavaVersion.latest();
+public class PackedFlattenedSectionDecoder implements JavaSectionDecoder {
+    public static final JavaVersion VERSION = JavaVersion.fromName("1.15.2");
 
     @Override
     public Section decode(@NonNull CompoundTag tag, @NonNull JavaVersion version, @NonNull World world, int x, int z) {
@@ -65,30 +63,24 @@ public class FlattenedSectionDecoder implements JavaSectionDecoder {
         return new SingleLayerFlattenedSection(x, y, z, blocks, blockLight, skyLight);
     }
 
-    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry blockRegistry) {
+    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry registry) {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
         LongArrayTag blockStatesTag = tag.getTag("BlockStates");
 
         int bits = Math.max(BinMath.getNumBitsNeededFor(paletteTag.size()), 4);
-        Palette palette = this.parseBlockPalette(bits, paletteTag, blockRegistry);
+        Palette palette = this.parseBlockPalette(bits, paletteTag, registry);
 
         if (blockStatesTag.handle() != null) {
             return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
         } else {
             return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
         }
-        //TODO: use block registries again...
-        /*if (blockStatesTag.handle() != null) {
-            return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
-        } else {
-            return new HeapPackedFlattenedBlockStorage(blockRegistry, new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
-        }*/
     }
 
-    protected Palette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag, @NonNull BlockRegistry blockRegistry) {
+    protected Palette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag, @NonNull BlockRegistry registry) {
         Palette palette = new ArrayPalette(bits);
         for (CompoundTag tag : paletteTag) {
-            BlockState state = blockRegistry.getDefaultState(Identifier.fromString(tag.getString("Name")));
+            BlockState state = registry.getDefaultState(Identifier.fromString(tag.getString("Name")));
 
             CompoundTag properties = tag.getCompound("Properties", null);
             if (properties != null) {

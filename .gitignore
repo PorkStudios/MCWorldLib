@@ -14,3 +14,5 @@ run/
 *.log
 
 test_out/
+
+/ignore/
