@@ -43,6 +43,6 @@ public class LegacyChunkDecoder implements JavaChunkDecoder {
         int x = level.getInt("xPos");
         int z = level.getInt("zPos");
 
-        return new VanillaChunk(x, z);
+        return new VanillaChunk(version, x, z);
     }
 }

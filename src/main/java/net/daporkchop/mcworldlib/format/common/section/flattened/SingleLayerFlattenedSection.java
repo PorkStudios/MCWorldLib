@@ -25,6 +25,7 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.AbstractSection;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.section.FlattenedSection;
 import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
@@ -34,8 +35,8 @@ import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 public class SingleLayerFlattenedSection extends AbstractSection implements FlattenedSection {
     protected final FlattenedBlockStorage blocks;
 
-    public SingleLayerFlattenedSection(int x, int y, int z, @NonNull FlattenedBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
-        super(x, y, z, blockLight, skyLight);
+    public SingleLayerFlattenedSection(MinecraftVersion version, int x, int y, int z, @NonNull FlattenedBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+        super(version, x, y, z, blockLight, skyLight);
 
         this.blocks = blocks;
     }

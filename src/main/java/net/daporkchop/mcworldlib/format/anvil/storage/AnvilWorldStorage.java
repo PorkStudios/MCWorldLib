@@ -104,11 +104,9 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     protected final Executor ioExecutor;
     protected final AnvilWorld world;
 
-    @Getter
-    protected final JavaVersion worldVersion;
     protected final File root;
 
-    public AnvilWorldStorage(@NonNull File root, @NonNull AnvilWorld world, @NonNull NBTOptions nbtOptions, JavaVersion worldVersion) {
+    public AnvilWorldStorage(@NonNull File root, @NonNull AnvilWorld world, @NonNull NBTOptions nbtOptions) {
         this.root = PFiles.ensureDirectoryExists(root);
         this.regionCache = new RegionFileCache(world.options(), new File(root, "region"));
 
@@ -117,7 +115,6 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
         this.fixers = this.options.get(AnvilSaveOptions.FIXERS);
         this.ioExecutor = this.options.get(SaveOptions.IO_EXECUTOR);
         this.nbtOptions = nbtOptions;
-        this.worldVersion = worldVersion;
         this.world = world;
 
         if (!this.readOnly) {

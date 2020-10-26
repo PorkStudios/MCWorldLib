@@ -29,8 +29,8 @@ import net.daporkchop.mcworldlib.version.MinecraftVersion;
  * @author DaPorkchop_
  */
 public class VanillaChunk extends AbstractChunk {
-    public VanillaChunk(int x, int z) {
-        super(x, z);
+    public VanillaChunk(MinecraftVersion version, int x, int z) {
+        super(version, x, z);
     }
 
     @Override

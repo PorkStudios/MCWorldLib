@@ -23,6 +23,7 @@ package net.daporkchop.mcworldlib.world;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.math.access.IntHolderXZ;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.section.Section;
 
 /**
@@ -34,6 +35,11 @@ import net.daporkchop.mcworldlib.world.section.Section;
  * @author DaPorkchop_
  */
 public interface Chunk extends IntHolderXZ, RefCounted {
+    /**
+     * @return the version of Minecraft that this chunk was last saved in
+     */
+    MinecraftVersion version();
+
     /**
      * @return this chunk's X coordinate
      */

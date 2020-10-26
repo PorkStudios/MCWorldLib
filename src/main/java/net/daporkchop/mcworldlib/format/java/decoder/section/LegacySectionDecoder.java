@@ -46,7 +46,7 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
 
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
-        return new DefaultLegacySection(x, y, z, blocks, blockLight, skyLight);
+        return new DefaultLegacySection(version, x, y, z, blocks, blockLight, skyLight);
     }
 
     protected LegacyBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {

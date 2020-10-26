@@ -23,13 +23,14 @@ package net.daporkchop.mcworldlib.format.vanilla;
 import net.daporkchop.mcworldlib.format.common.AbstractWorld;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 /**
  * Base implementation of {@link net.daporkchop.mcworldlib.world.World} for vanilla chunks with exactly 16 sections.
  *
  * @author DaPorkchop_
  */
-public abstract class VanillaWorld<S extends Save> extends AbstractWorld<S> {
+public abstract class VanillaWorld<S extends Save, V extends MinecraftVersion> extends AbstractWorld<S, V> {
     public VanillaWorld(S parent, Identifier id) {
         super(parent, id);
     }

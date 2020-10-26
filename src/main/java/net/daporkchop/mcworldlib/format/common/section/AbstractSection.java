@@ -30,6 +30,7 @@ import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.BlockAccess;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 
@@ -51,14 +52,16 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
 
     protected final IntObjMap<CompoundTag> tileEntities = new IntObjOpenHashMap<>();
 
+    protected final MinecraftVersion version;
     protected final int x;
     protected final int y;
     protected final int z;
 
-    public AbstractSection(int x, int y, int z, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+    public AbstractSection(@NonNull MinecraftVersion version, int x, int y, int z, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
         this.blockLight = blockLight;
         this.skyLight = skyLight;
 
+        this.version = version;
         this.x = x;
         this.y = y;
         this.z = z;

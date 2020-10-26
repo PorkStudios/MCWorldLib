@@ -27,6 +27,7 @@ import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.mcworldlib.world.WorldStorage;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
@@ -39,7 +40,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 @Getter
-public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted implements World {
+public abstract class AbstractWorld<S extends Save, V extends MinecraftVersion> extends AbstractRefCounted implements World {
     protected final S parent;
     protected final SaveOptions options;
     protected final Identifier id;
@@ -51,12 +52,14 @@ public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted i
     }
 
     protected WorldStorage storage;
+    protected V version;
 
     /**
      * Ensures that the implementation constructor has initialized all the required fields.
      */
     protected void validateState() {
         checkState(this.storage != null, "storage must be set!");
+        checkState(this.version != null, "version must be set!");
     }
 
     @Override

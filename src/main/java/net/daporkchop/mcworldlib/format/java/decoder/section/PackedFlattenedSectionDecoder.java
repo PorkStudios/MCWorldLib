@@ -60,7 +60,7 @@ public class PackedFlattenedSectionDecoder implements JavaSectionDecoder {
 
         NibbleArray blockLight = this.parseNibbleArray(tag, "BlockLight");
         NibbleArray skyLight = this.parseNibbleArray(tag, "SkyLight");
-        return new SingleLayerFlattenedSection(x, y, z, blocks, blockLight, skyLight);
+        return new SingleLayerFlattenedSection(version, x, y, z, blocks, blockLight, skyLight);
     }
 
     protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {

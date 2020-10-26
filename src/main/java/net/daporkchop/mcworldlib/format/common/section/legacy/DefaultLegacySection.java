@@ -25,6 +25,7 @@ import lombok.NonNull;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.AbstractSection;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 import net.daporkchop.mcworldlib.world.section.LegacySection;
 import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
@@ -35,8 +36,8 @@ import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 public class DefaultLegacySection extends AbstractSection implements LegacySection {
     protected final LegacyBlockStorage blocks;
 
-    public DefaultLegacySection(int x, int y, int z, @NonNull LegacyBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
-        super(x, y, z, blockLight, skyLight);
+    public DefaultLegacySection(MinecraftVersion version, int x, int y, int z, @NonNull LegacyBlockStorage blocks, @NonNull NibbleArray blockLight, NibbleArray skyLight) {
+        super(version, x, y, z, blockLight, skyLight);
 
         this.blocks = blocks;
     }

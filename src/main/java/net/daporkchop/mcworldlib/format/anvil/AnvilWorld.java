@@ -38,7 +38,7 @@ import java.io.File;
  *
  * @author DaPorkchop_
  */
-public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
+public class AnvilWorld extends VanillaWorld<AnvilSave, JavaVersion> implements WorldInfo {
     @Getter
     protected final Dimension dimension;
 
@@ -49,10 +49,9 @@ public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
 
         //anvil is implemented in a way that makes it a real pain to have their dimension be abstracted away from the individual worlds
         File root = dimension.legacyId() == 0 ? parent.root() : new File(parent.root(), "DIM" + dimension.legacyId());
-        JavaVersion worldVersion = this.options.get(SaveOptions.ACCESS) == WriteAccess.READ_ONLY
-                ? null //allow chunks in read-only worlds to be decoded using any implemented version for performance
-                : (JavaVersion) parent.version(); //force chunks in writable worlds to be upgraded to the world version
-        this.storage = new AnvilWorldStorage(root, this, parent.chunkNBTOptions(), worldVersion);
+        this.storage = new AnvilWorldStorage(root, this, parent.chunkNBTOptions());
+
+        this.version = parent.version();
 
         this.validateState();
     }

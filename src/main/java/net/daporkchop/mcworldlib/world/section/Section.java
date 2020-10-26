@@ -26,6 +26,7 @@ import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.LightAccess;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 import java.util.Collection;
 
@@ -37,6 +38,11 @@ import java.util.Collection;
  * @see FlattenedSection
  */
 public interface Section extends LightAccess, IntHolderXYZ, RefCounted {
+    /**
+     * @return the version of Minecraft that this section was last saved in
+     */
+    MinecraftVersion version();
+
     /**
      * @return this section's X coordinate
      */

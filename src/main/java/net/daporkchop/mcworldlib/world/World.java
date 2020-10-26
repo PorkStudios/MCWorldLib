@@ -24,6 +24,7 @@ import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
 /**
  * Representation of a Minecraft world, consisting of {@link Chunk}s identified by their integer X, Z coordinates.
@@ -42,6 +43,11 @@ public interface World extends RefCounted {
      * @return the {@link Identifier} used to identify this world in its parent {@link Save}
      */
     Identifier id();
+
+    /**
+     * @return the version of Minecraft that this world was last saved in
+     */
+    MinecraftVersion version();
 
     /**
      * @return the {@link WorldInfo} which describes this world
