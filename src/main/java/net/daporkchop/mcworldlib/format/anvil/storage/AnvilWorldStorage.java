@@ -35,6 +35,14 @@ import net.daporkchop.lib.compression.zlib.ZlibMode;
 import net.daporkchop.lib.compression.zlib.options.ZlibInflaterOptions;
 import net.daporkchop.lib.concurrent.PFuture;
 import net.daporkchop.lib.concurrent.PFutures;
+import net.daporkchop.lib.nbt.NBTFormat;
+import net.daporkchop.lib.nbt.NBTOptions;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.lib.primitive.lambda.LongObjObjFunction;
+import net.daporkchop.lib.primitive.map.LongObjMap;
+import net.daporkchop.lib.primitive.map.concurrent.LongObjConcurrentHashMap;
+import net.daporkchop.lib.unsafe.PUnsafe;
+import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveOptions;
 import net.daporkchop.mcworldlib.format.anvil.AnvilWorld;
 import net.daporkchop.mcworldlib.format.anvil.region.RawChunk;
@@ -47,21 +55,14 @@ import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.version.java.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.WorldStorage;
-import net.daporkchop.lib.nbt.NBTFormat;
-import net.daporkchop.lib.nbt.NBTOptions;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
-import net.daporkchop.lib.primitive.lambda.LongObjObjFunction;
-import net.daporkchop.lib.primitive.map.LongObjMap;
-import net.daporkchop.lib.primitive.map.concurrent.LongObjConcurrentHashMap;
-import net.daporkchop.lib.unsafe.PUnsafe;
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.world.section.Section;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Spliterator;
 import java.util.concurrent.Executor;
+import java.util.function.LongFunction;
 
 /**
  * Implementation of {@link WorldStorage} for the Anvil save format.
@@ -85,6 +86,14 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     }
 
     protected final LongObjMap<AnvilCachedChunk> cachedChunks = new LongObjConcurrentHashMap<>();
+    protected final LongFunction<AnvilCachedChunk> loadFunction = l -> {
+        try {
+            return this.load(BinMath.unpackX(l), BinMath.unpackY(l));
+        } catch (IOException e) {
+            PUnsafe.throwException(e);
+            throw new RuntimeException(e);
+        }
+    };
     protected final RegionFile regionCache;
 
     protected final boolean readOnly;
@@ -110,32 +119,20 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
         this.nbtOptions = nbtOptions;
         this.worldVersion = worldVersion;
         this.world = world;
+
+        if (!this.readOnly) {
+            throw new UnsupportedOperationException("Anvil read/write mode is not implemented!");
+        }
     }
 
     @Override
-    public Chunk loadChunk(int _x, int _z) throws IOException {
-        Chunk[] ref = new Chunk[1]; //TODO: reuse this
-        this.cachedChunks.compute(BinMath.packXY(_x, _z), (ChunkUpdater) (x, z, cached) -> {
-            if (cached == null) {
-                cached = this.load(x, z);
-            }
-            ref[0] = cached.chunk();
-            return cached;
-        });
-        return ref[0];
+    public Chunk loadChunk(int x, int z) throws IOException {
+        return this.cachedChunks.computeIfAbsent(BinMath.packXY(x, z), this.loadFunction).chunk();
     }
 
     @Override
-    public Section loadSection(int _x, int _y, int _z) throws IOException {
-        Section[] ref = new Section[1]; //TODO: reuse this
-        this.cachedChunks.compute(BinMath.packXY(_x, _z), (ChunkUpdater) (x, z, cached) -> {
-            if (cached == null) {
-                cached = this.load(x, z);
-            }
-            ref[0] = cached.section(_y);
-            return cached;
-        });
-        return ref[0];
+    public Section loadSection(int x, int y, int z) throws IOException {
+        return this.cachedChunks.computeIfAbsent(BinMath.packXY(x, z), this.loadFunction).section(y);
     }
 
     @Override
@@ -170,15 +167,15 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     @Override
     public Spliterator<Chunk> allChunks() throws IOException {
         return this.readOnly && this.options.get(SaveOptions.SPLITERATOR_CACHE)
-        ? new CachedAnvilSpliterator.OfChunk(this)
-        : new UncachedAnvilSpliterator.OfChunk(this);
+                ? new CachedAnvilSpliterator.OfChunk(this)
+                : new UncachedAnvilSpliterator.OfChunk(this);
     }
 
     @Override
     public Spliterator<Section> allSections() throws IOException {
         return this.readOnly && this.options.get(SaveOptions.SPLITERATOR_CACHE)
-               ? new CachedAnvilSpliterator.OfSection(this)
-               : new UncachedAnvilSpliterator.OfSection(this);
+                ? new CachedAnvilSpliterator.OfSection(this)
+                : new UncachedAnvilSpliterator.OfSection(this);
     }
 
     @Override
@@ -216,15 +213,8 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
         return this.load(this.regionCache, x, z);
     }
 
-    protected boolean prefetch(int x, int z) throws IOException  {
-        return this.cachedChunks.computeIfAbsent(BinMath.packXY(x, z), l -> {
-            try {
-                return this.load(BinMath.unpackX(l), BinMath.unpackY(l));
-            } catch (IOException e) {
-                PUnsafe.throwException(e);
-                throw new RuntimeException(e); //unreachable
-            }
-        }) != null;
+    protected boolean prefetch(int x, int z) throws IOException {
+        return this.cachedChunks.computeIfAbsent(BinMath.packXY(x, z), this.loadFunction) != null;
     }
 
     protected AnvilCachedChunk load(@NonNull RegionFile region, int x, int z) throws IOException {
@@ -250,8 +240,8 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
             int dataVersion = tag.getInt("DataVersion", 0);
             JavaVersion version = dataVersion < DataVersion.DATA_15w32a ? JavaVersion.pre15w32a() : JavaVersion.fromDataVersion(dataVersion);
             return this.readOnly
-                   ? new AnvilCachedChunk.ReadOnly(tag, version, this.fixers, this.world)
-                   : null; //TODO
+                    ? new AnvilCachedChunk.ReadOnly(tag, version, this.fixers, this.world)
+                    : null; //TODO
         } finally {
             if (tag != null) {
                 tag.release();

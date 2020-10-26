@@ -22,6 +22,7 @@ package net.daporkchop.mcworldlib.format.java.decoder.tile;
 
 import lombok.NonNull;
 import net.daporkchop.lib.logging.format.component.TextComponent;
+import net.daporkchop.lib.minecraft.text.parser.AutoMCFormatParser;
 import net.daporkchop.mcworldlib.format.java.JavaSaveOptions;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaItemDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
@@ -73,10 +74,10 @@ public class TileEntityDecoder1_8 implements JavaTileEntityDecoder {
         TileEntityDecoder sign = (tile, tag) -> {
             if (!tile.has(SIGN_TEXT)) {
                 tile.put(SIGN_TEXT, new TextComponent[]{
-                        MCFormatParser.DEFAULT.parse(tag.getString("Text1", "\"\"")),
-                        MCFormatParser.DEFAULT.parse(tag.getString("Text2", "\"\"")),
-                        MCFormatParser.DEFAULT.parse(tag.getString("Text3", "\"\"")),
-                        MCFormatParser.DEFAULT.parse(tag.getString("Text4", "\"\""))
+                        AutoMCFormatParser.DEFAULT.parse(tag.getString("Text1", "\"\"")),
+                        AutoMCFormatParser.DEFAULT.parse(tag.getString("Text2", "\"\"")),
+                        AutoMCFormatParser.DEFAULT.parse(tag.getString("Text3", "\"\"")),
+                        AutoMCFormatParser.DEFAULT.parse(tag.getString("Text4", "\"\""))
                 });
             }
         };

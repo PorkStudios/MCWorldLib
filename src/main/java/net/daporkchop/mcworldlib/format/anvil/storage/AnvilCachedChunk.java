@@ -21,16 +21,14 @@
 package net.daporkchop.mcworldlib.format.anvil.storage;
 
 import lombok.NonNull;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
-import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
-import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
-import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.mcworldlib.world.section.Section;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
@@ -63,14 +61,15 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
                 this.sections[section.y()] = section;
             }
 
-            JavaTileEntityDecoder tileEntityDecoder = fixers.tileEntity().ceilingEntry(version).getValue();
+            //TODO
+            /*JavaTileEntityDecoder tileEntityDecoder = fixers.tileEntity().ceilingEntry(version).getValue();
             for (CompoundTag tileEntityTag : levelTag.getList("TileEntities", CompoundTag.class)) {
                 int x = tileEntityTag.getInt("x");
                 int y = tileEntityTag.getInt("y");
                 int z = tileEntityTag.getInt("z");
                 TileEntity tileEntity = tileEntityDecoder.decode(tileEntityTag, version, world);
                 this.sections[y >> 4].setTileEntity(x & 0xF, y & 0xF, z & 0xF, tileEntity);
-            }
+            }*/
         }
 
         @Override

@@ -22,7 +22,6 @@ package net.daporkchop.mcworldlib.format.anvil;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.experimental.Accessors;
 import net.daporkchop.mcworldlib.format.anvil.storage.AnvilWorldStorage;
 import net.daporkchop.mcworldlib.format.vanilla.VanillaWorld;
 import net.daporkchop.mcworldlib.save.SaveOptions;
@@ -48,13 +47,11 @@ public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
 
         this.dimension = dimension;
 
-        this.blockRegistry = parent.blockRegistry();
-
         //anvil is implemented in a way that makes it a real pain to have their dimension be abstracted away from the individual worlds
         File root = dimension.legacyId() == 0 ? parent.root() : new File(parent.root(), "DIM" + dimension.legacyId());
         JavaVersion worldVersion = this.options.get(SaveOptions.ACCESS) == WriteAccess.READ_ONLY
-                                   ? null //allow chunks in read-only worlds to be decoded using any implemented version for performance
-                                   : (JavaVersion) parent.version(); //force chunks in writable worlds to be upgraded to the world version
+                ? null //allow chunks in read-only worlds to be decoded using any implemented version for performance
+                : (JavaVersion) parent.version(); //force chunks in writable worlds to be upgraded to the world version
         this.storage = new AnvilWorldStorage(root, this, parent.chunkNBTOptions(), worldVersion);
 
         this.validateState();
@@ -63,11 +60,6 @@ public class AnvilWorld extends VanillaWorld<AnvilSave> implements WorldInfo {
     @Override
     public WorldInfo info() {
         return this;
-    }
-
-    @Override
-    public int layers() {
-        return 1; //anvil only supports a single block layer
     }
 
     @Override

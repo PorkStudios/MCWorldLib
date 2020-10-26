@@ -29,12 +29,11 @@ import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
  */
 public interface FlattenedSection extends FlattenedBlockAccess, Section {
     /**
-     * Gets the {@link FlattenedBlockStorage} used by this section for storing block data at the given layer.
+     * Gets the {@link FlattenedBlockStorage} used by this section for storing block data.
      *
-     * @param layer the layer of the {@link FlattenedBlockStorage} to get
-     * @return the {@link FlattenedBlockStorage} used by this section for storing block data at the given layer
+     * @return the {@link FlattenedBlockStorage} used by this section for storing block data
      */
-    FlattenedBlockStorage blockStorage(int layer);
+    FlattenedBlockStorage blockStorage();
 
     @Override
     FlattenedSection retain() throws AlreadyReleasedException;

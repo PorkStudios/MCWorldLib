@@ -20,8 +20,6 @@
 
 package net.daporkchop.mcworldlib.world;
 
-import net.daporkchop.mcworldlib.block.access.LayeredBlockAccess;
-
 /**
  * Additional information used to describe a {@link World}.
  *
@@ -32,11 +30,6 @@ public interface WorldInfo {
      * @return the dimension used by the world
      */
     Dimension dimension();
-
-    /**
-     * @see LayeredBlockAccess#layers()
-     */
-    int layers();
 
     /**
      * @return whether or not this dimension has sky light

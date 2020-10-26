@@ -23,7 +23,6 @@ package net.daporkchop.mcworldlib.world.storage;
 import net.daporkchop.lib.common.misc.Cloneable;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
 
@@ -31,7 +30,6 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * A 16³ array of block states.
  *
  * @author DaPorkchop_
- * @see BlockRegistry
  */
 public interface BlockStorage extends Cloneable<BlockStorage>, RefCounted {
     /**

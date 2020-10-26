@@ -21,7 +21,7 @@
 package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
+import net.daporkchop.lib.minecraft.text.parser.AutoMCFormatParser;
 import net.daporkchop.mcworldlib.format.java.JavaSaveOptions;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaItemDecoder;
 import net.daporkchop.mcworldlib.item.FireworkExplosion;
@@ -73,20 +73,23 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
 
         this.map.put("ench", (AdvancedItemMetaDecoder) (meta, tag, stack, version, world) -> {
             ObjIntMap<Identifier> map = new ObjIntOpenHashMap<>();
-            Registry enchantmentRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:enchantment"));
+            //TODO
+            /*Registry enchantmentRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:enchantment"));
             tag.getList("ench", CompoundTag.class).forEach(enchantment -> map.put(enchantmentRegistry.get(enchantment.getShort("id")), enchantment.getShort("lvl")));
-            meta.put(ENCHANTMENTS, map);
+            meta.put(ENCHANTMENTS, map);*/
         });
         this.map.put("StoredEnchantments", (AdvancedItemMetaDecoder) (meta, tag, stack, version, world) -> {
             ObjIntMap<Identifier> map = new ObjIntOpenHashMap<>();
-            Registry enchantmentRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:enchantment"));
+            //TODO
+            /*Registry enchantmentRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:enchantment"));
             tag.getList("StoredEnchantments", CompoundTag.class).forEach(enchantment -> map.put(enchantmentRegistry.get(enchantment.getShort("id")), enchantment.getShort("lvl")));
-            meta.put(STORED_ENCHANTMENTS, map);
+            meta.put(STORED_ENCHANTMENTS, map);*/
         });
         this.map.put("RepairCost", (meta, tag) -> meta.put(REPAIR_COST, tag.getInt("RepairCost")));
 
         this.map.put("CustomPotionEffects", (AdvancedItemMetaDecoder) (meta, tag, stack, version, world) -> {
-            Registry potionEffectRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:mob_effect"));
+            //TODO
+            /*Registry potionEffectRegistry = world.parent().registriesFor(version).get(Identifier.fromString("minecraft:mob_effect"));
             meta.put(POTION_CUSTOM_EFFECTS, tag.getList("CustomPotionEffects", CompoundTag.class).stream()
                     .map(potionEffect -> new PotionEffect(potionEffectRegistry.get(potionEffect.getByte("Id")))
                             .amplifier(potionEffect.getByte("Amplifier", (byte) 1))
@@ -94,7 +97,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
                             .ambient(potionEffect.getBoolean("Ambient", false))
                             .showParticles(potionEffect.getBoolean("ShowParticles", true))
                             .showIcon(potionEffect.getBoolean("ShowIcon", true)))
-                    .collect(Collectors.toList()));
+                    .collect(Collectors.toList()));*/
         });
         this.map.put("CustomPotionColor", (meta, tag) -> meta.put(POTION_CUSTOM_COLOR, new Color(tag.getInt("CustomPotionColor"))));
 
@@ -102,12 +105,12 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
             CompoundTag display = tag.getCompound("display");
             String name = display.getString("Name", null);
             if (name != null) {
-                meta.put(DISPLAY_NAME, MCFormatParser.DEFAULT.parse(name));
+                meta.put(DISPLAY_NAME, AutoMCFormatParser.DEFAULT.parse(name));
             }
 
             ListTag<StringTag> lore = display.getList("Lore", StringTag.class, null);
             if (lore != null) {
-                meta.put(DISPLAY_LORE, lore.stream().map(StringTag::value).map(MCFormatParser.DEFAULT::parse).collect(Collectors.toList()));
+                meta.put(DISPLAY_LORE, lore.stream().map(StringTag::value).map(AutoMCFormatParser.DEFAULT::parse).collect(Collectors.toList()));
             }
 
             if (display.contains("color")) {
@@ -122,7 +125,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
         this.map.put("title", (meta, tag) -> meta.put(BOOK_TITLE, tag.getString("title")));
         this.map.put("pages", (AdvancedItemMetaDecoder) (meta, tag, stack, version, world) -> {
             if (stack.id().toString() == "minecraft:written_book") {
-                meta.put(BOOK_PAGES, tag.getList("pages", StringTag.class).stream().map(StringTag::value).map(MCFormatParser.DEFAULT::parse).collect(Collectors.toList()));
+                meta.put(BOOK_PAGES, tag.getList("pages", StringTag.class).stream().map(StringTag::value).map(AutoMCFormatParser.DEFAULT::parse).collect(Collectors.toList()));
             } else/* if (stack.id().toString() == "minecraft:writable_book")*/ { //actually just do this for all items
                 meta.put(BOOK_PAGES_EDITABLE, tag.getList("pages", StringTag.class).stream().map(StringTag::value).collect(Collectors.toList()));
             }
@@ -216,7 +219,8 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
     protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
         int damage = root.getShort("Damage", (short) 0);
 
-        BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
+        //TODO
+        /*BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
         if (blockRegistry.containsBlockId(stack.id())) {
             cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
         } else if (stack.id().toString() == "minecraft:potion") { //decode legacy potion damage
@@ -229,7 +233,7 @@ public class ItemDecoder1_8 implements JavaItemDecoder {
             cache.meta.put(MAP_ID, damage);
         } else {
             cache.meta.put(DAMAGE, damage);
-        }
+        }*/
     }
 
     protected void mainDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {

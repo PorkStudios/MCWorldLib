@@ -28,8 +28,6 @@ import net.daporkchop.mcworldlib.format.common.section.AbstractSection;
 import net.daporkchop.mcworldlib.world.section.FlattenedSection;
 import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
-import static net.daporkchop.lib.common.util.PValidation.*;
-
 /**
  * @author DaPorkchop_
  */
@@ -56,8 +54,7 @@ public class SingleLayerFlattenedSection extends AbstractSection implements Flat
     }
 
     @Override
-    public FlattenedBlockStorage blockStorage(int layer) {
-        checkIndex(layer == 0, layer);
+    public FlattenedBlockStorage blockStorage() {
         return this.blocks;
     }
 

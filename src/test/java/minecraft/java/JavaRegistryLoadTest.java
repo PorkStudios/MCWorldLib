@@ -20,8 +20,6 @@
 
 package minecraft.java;
 
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.java.JavaBlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
@@ -39,7 +37,7 @@ public class JavaRegistryLoadTest {
 
     @Test
     public void testBlockRegistry1_15_2() {
-        BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
-        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());
+        /*BlockRegistry registry = JavaBlockRegistry.forVersion(JavaVersion.fromName("1.15.2"));
+        System.out.printf("blocks: %d, states: %d\n", registry.blocks(), registry.states());*/
     }
 }

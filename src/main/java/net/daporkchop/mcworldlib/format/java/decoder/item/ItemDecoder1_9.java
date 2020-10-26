@@ -21,7 +21,6 @@
 package net.daporkchop.mcworldlib.format.java.decoder.item;
 
 import lombok.NonNull;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.item.ItemMeta;
 import net.daporkchop.mcworldlib.item.ItemStack;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
@@ -46,11 +45,12 @@ public class ItemDecoder1_9 extends ItemDecoder1_8 {
     protected void initialDecode(@NonNull ItemStack stack, @NonNull Cache cache, @NonNull CompoundTag root, CompoundTag tag, @NonNull JavaVersion version, @NonNull World world) {
         int damage = root.getShort("Damage", (short) 0);
 
-        BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
+        //TODO
+        /*BlockRegistry blockRegistry = world.parent().blockRegistryFor(version);
         if (blockRegistry.containsBlockId(stack.id())) {
             cache.meta.put(BLOCK_STATE, blockRegistry.getState(stack.id(), damage));
         } else {
             cache.meta.put(DAMAGE, damage);
-        }
+        }*/
     }
 }

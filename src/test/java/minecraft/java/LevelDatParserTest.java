@@ -102,7 +102,7 @@ public class LevelDatParserTest {
                         if (section instanceof LegacySection)  {
                             System.out.printf("legacy ID: %d#%d\n", ((LegacySection) section).getBlockLegacyId(0, 0, 0), ((LegacySection) section).getBlockMeta(0, 0, 0));
                         } else if (section instanceof FlattenedSection) {
-                            System.out.printf("runtime ID: %d\n", ((FlattenedSection) section).getBlockRuntimeId(0, 0, 0));
+                            System.out.printf("state: %s\n", ((FlattenedSection) section).getBlockState(0, 0, 0));
                         }
                     }
                 }

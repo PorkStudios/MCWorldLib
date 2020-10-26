@@ -23,18 +23,14 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 import lombok.NonNull;
 import net.daporkchop.lib.nbt.tag.ByteArrayTag;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.block.RegistryConverter;
-import net.daporkchop.mcworldlib.block.FluidRegistry;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.legacy.DefaultLegacySection;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 
 /**

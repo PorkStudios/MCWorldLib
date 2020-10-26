@@ -23,6 +23,7 @@ package net.daporkchop.mcworldlib.block;
 import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.Tuple;
+import net.daporkchop.lib.common.pool.handle.Handle;
 import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.util.Identifier;
 
@@ -40,27 +41,6 @@ import static net.daporkchop.lib.common.math.PMath.*;
 public final class BlockState {
     private static final Map<Tuple<Identifier, Map<String, String>>, BlockState> VALUES = new ConcurrentHashMap<>();
 
-    protected final Identifier id;
-    protected final Map<String, Object> properties;
-
-    private final transient int hashCode;
-
-    private BlockState(Identifier id, Map<String, String> properties) {
-        this.id = id;
-        this.properties = Collections.unmodifiableMap(properties);
-
-        this.hashCode = mix32(properties.entrySet().stream()
-                .mapToLong(entry -> mix64(entry.getKey().hashCode()) + entry.getValue().hashCode())
-                .reduce(id.hashCode(), (a, b) -> mix64(a + b)));
-    }
-
-    private BlockState(Identifier id) {
-        this.id = id;
-        this.properties = Collections.emptyMap();
-
-        this.hashCode = id.hashCode();
-    }
-
     public static BlockState of(@NonNull Identifier id, @NonNull Map<String, String> properties) {
         BlockState state = VALUES.get(new Tuple<>(id, properties));
         if (state == null) { //need to register new state
@@ -77,8 +57,50 @@ public final class BlockState {
         return state;
     }
 
+    protected final Identifier id;
+    protected final Map<String, String> properties;
+
+    private final transient String toString;
+    private final transient int hashCode;
+
+    private BlockState(Identifier id, Map<String, String> properties) {
+        this.id = id;
+        this.properties = Collections.unmodifiableMap(properties);
+
+        this.toString = this.computeToString();
+        this.hashCode = mix32(properties.entrySet().stream()
+                .mapToLong(entry -> mix64(entry.getKey().hashCode()) + entry.getValue().hashCode())
+                .reduce(id.hashCode(), (a, b) -> mix64(a + b)));
+    }
+
+    private BlockState(Identifier id) {
+        this.id = id;
+        this.properties = Collections.emptyMap();
+
+        this.toString = this.computeToString();
+        this.hashCode = id.hashCode();
+    }
+
     @Override
     public boolean equals(Object obj) {
         return this == obj;
+    }
+
+    private String computeToString() {
+        try (Handle<StringBuilder> handle = PorkUtil.STRINGBUILDER_POOL.get()) {
+            StringBuilder builder = handle.get();
+            builder.setLength(0);
+
+            builder.append(this.id);
+            if (!this.properties.isEmpty()) {
+                builder.append('{');
+                this.properties.entrySet().stream()
+                        .sorted(Map.Entry.comparingByKey())
+                        .forEach(e -> builder.append(e.getKey()).append(", ").append(e.getValue()));
+                builder.setLength(builder.length() - 1);
+                builder.setCharAt(builder.length() - 1, '}');
+            }
+            return builder.toString();
+        }
     }
 }

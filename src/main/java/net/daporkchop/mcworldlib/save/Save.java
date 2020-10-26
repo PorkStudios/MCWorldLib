@@ -22,7 +22,6 @@ package net.daporkchop.mcworldlib.save;
 
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
@@ -55,32 +54,6 @@ public interface Save extends RefCounted {
      * @return the {@link SaveOptions} that this save was opened with
      */
     SaveOptions options();
-
-    /**
-     * @return any additional registries used by this save
-     */
-    Registries registries();
-
-    /**
-     * @return the {@link BlockRegistry} used by this save
-     */
-    BlockRegistry blockRegistry();
-
-    /**
-     * Gets any additional registries used by this save when reading data at the given version.
-     *
-     * @param version the {@link MinecraftVersion} of the additional registries to get
-     * @return any additional registries used by this save when reading data at the given version
-     */
-    Registries registriesFor(@NonNull MinecraftVersion version);
-
-    /**
-     * Gets the {@link BlockRegistry} used by this save when reading data at the given version.
-     *
-     * @param version the {@link MinecraftVersion} of the {@link BlockRegistry} to get
-     * @return the {@link BlockRegistry} used by this save when reading data at the given version
-     */
-    BlockRegistry blockRegistryFor(@NonNull MinecraftVersion version);
 
     //TODO: move registries to some sort of context class
 

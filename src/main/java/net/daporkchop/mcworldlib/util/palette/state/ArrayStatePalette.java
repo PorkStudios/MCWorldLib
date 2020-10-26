@@ -67,4 +67,9 @@ public class ArrayStatePalette implements StatePalette {
             return null;
         }
     }
+
+    @Override
+    public int size() {
+        return this.nextId;
+    }
 }

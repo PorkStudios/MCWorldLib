@@ -24,7 +24,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
@@ -51,14 +50,12 @@ public abstract class AbstractWorld<S extends Save> extends AbstractRefCounted i
         this.id = id;
     }
 
-    protected BlockRegistry blockRegistry;
     protected WorldStorage storage;
 
     /**
      * Ensures that the implementation constructor has initialized all the required fields.
      */
     protected void validateState() {
-        checkState(this.blockRegistry != null, "blockRegistry must be set!");
         checkState(this.storage != null, "storage must be set!");
     }
 
