@@ -18,34 +18,12 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.common.storage.flattened;
-
-import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
-import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
+package map;
 
 /**
  * @author DaPorkchop_
  */
-public abstract class AbstractFlattenedBlockStorage extends AbstractBlockStorage implements FlattenedBlockStorage {
-    protected static int index(int x, int y, int z) {
-        BlockStorage.checkCoords(x, y, z);
-        return (y << 8) | (z << 4) | x;
+public class Mapper {
+    public static void main(String... args) {
     }
-
-    @Override
-    public UniversalBlockStorage toUniversal(boolean preferView) {
-        throw new UnsupportedOperationException(); //TODO: implement this
-    }
-
-    @Override
-    public FlattenedBlockStorage retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
-
-    @Override
-    public abstract FlattenedBlockStorage clone();
 }

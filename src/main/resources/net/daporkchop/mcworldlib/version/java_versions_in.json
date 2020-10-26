@@ -2,6 +2,14 @@
 //formatted using regex subsitution
 //regex: ^Java Edition (.*?)\s+(\d{2,})\s+(\d{3,})$
 {
+  "1.16.3": {
+    "protocol": 753,
+    "data": 2580
+  },
+  "1.16.2": {
+    "protocol": 751,
+    "data": 2578
+  },
   "1.16.1": {
     "protocol": 736,
     "data": 2567

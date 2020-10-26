@@ -34,6 +34,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static net.daporkchop.lib.common.math.PMath.*;
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
@@ -75,7 +76,7 @@ public final class Identifier implements Comparable<Identifier> {
         this.fullName = fullName.intern();
 
         //dig my epic hash distribution
-        this.hashCode = PMath.mix32(fullName.chars().asLongStream().reduce(0L, (a, b) -> PMath.mix64(a + b)));
+        this.hashCode = mix32(fullName.chars().asLongStream().reduce(0L, (a, b) -> mix64(a + b)));
     }
 
     public static Identifier fromString(@NonNull String identifier) {
@@ -119,11 +120,6 @@ public final class Identifier implements Comparable<Identifier> {
             }
         }
         return id;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode;
     }
 
     @Override

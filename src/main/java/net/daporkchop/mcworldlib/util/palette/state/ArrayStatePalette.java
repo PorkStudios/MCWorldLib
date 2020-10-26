@@ -18,40 +18,53 @@
  *
  */
 
-package net.daporkchop.mcworldlib.util.palette;
+package net.daporkchop.mcworldlib.util.palette.state;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
-
-import java.util.function.IntBinaryOperator;
+import net.daporkchop.mcworldlib.block.BlockState;
 
 /**
- * Trivial implementation of {@link Palette} which always returns the input value.
- *
  * @author DaPorkchop_
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class IdentityPalette implements Palette {
-    public static final IdentityPalette INSTANCE = new IdentityPalette();
+public class ArrayStatePalette implements StatePalette {
+    protected final BlockState[] values;
+    protected int nextId;
 
-    @Override
-    public boolean contains(int value) {
-        return value >= 0;
+    public ArrayStatePalette(int capacity) {
+        this.values = new BlockState[capacity];
+        this.nextId = 0;
+    }
+
+    public ArrayStatePalette(int capacity, @NonNull Iterable<BlockState> initialContents) {
+        this(capacity);
+
+        for (BlockState state : initialContents) {
+            this.values[this.nextId++] = state;
+        }
     }
 
     @Override
-    public int get(int value) {
-        return value >= 0 ? value : -1;
+    public int stateToId(@NonNull BlockState state) {
+        for (int i = 0; i < this.nextId; i++) {
+            if (this.values[i] == state) {
+                return i;
+            }
+        }
+
+        if (this.values.length > this.nextId) {
+            int id = this.nextId++;
+            this.values[id] = state;
+            return id;
+        }
+        return -1;
     }
 
     @Override
-    public int getReverse(int id) {
-        return id >= 0 ? id : -1;
-    }
-
-    @Override
-    public Palette setResizeCallback(@NonNull IntBinaryOperator resizeCallback) {
-        return this; //no-op
+    public BlockState idToState(int id) {
+        if (id >= 0 && id < this.values.length) {
+            return this.values[id];
+        } else {
+            return null;
+        }
     }
 }

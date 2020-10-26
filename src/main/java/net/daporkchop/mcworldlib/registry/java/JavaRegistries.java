@@ -32,7 +32,7 @@ import net.daporkchop.mcworldlib.registry.DefaultRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
-import net.daporkchop.mcworldlib.version.DataVersion;
+import net.daporkchop.mcworldlib.version.java.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.lib.reflection.type.PTypes;

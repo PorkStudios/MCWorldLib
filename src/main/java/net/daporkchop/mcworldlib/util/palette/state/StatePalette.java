@@ -18,30 +18,37 @@
  *
  */
 
-package net.daporkchop.mcworldlib.block;
+package net.daporkchop.mcworldlib.util.palette.state;
+
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.block.BlockState;
 
 /**
- * Bi-directional lookup for converting block runtime IDs between a given block registry and the global block registry.
- * <p>
- * Note that the conversion operation may be lossy. Generally, a lookup for an unknown ID or an ID with no decent equivalent in the other version
- * will return {@code 0} (air).
+ * A mapping of block states to sequential IDs.
  *
  * @author DaPorkchop_
  */
-public interface RegistryConverter {
+public interface StatePalette {
     /**
-     * Converts the given ID to the global block registry.
+     * Gets the ID mapped to the given block state.
+     * <p>
+     * If the given block state is not known, it will be added if possible.
      *
-     * @param id the ID to convert
-     * @return the converted ID
+     * @param state the block state
+     * @return the ID, or {@code -1} if the palette does not have any space remaining
      */
-    int toGlobal(int id);
+    int stateToId(@NonNull BlockState state);
 
     /**
-     * Converts the given ID from the global block registry.
+     * Gets the block state mapped to the given ID.
      *
-     * @param id the ID to convert
-     * @return the converted ID
+     * @param id the ID
+     * @return the block state, or {@code null} if it is not known
      */
-    int fromGlobal(int id);
+    BlockState idToState(int id);
+
+    /**
+     * @return the current size of the palette
+     */
+    int size();
 }

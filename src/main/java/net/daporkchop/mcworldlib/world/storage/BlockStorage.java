@@ -45,16 +45,6 @@ public interface BlockStorage extends Cloneable<BlockStorage>, RefCounted {
         checkIndex(z >= 0 && z < 16, "z");
     }
 
-    /**
-     * Gets this {@link BlockStorage} using the universal registry.
-     * <p>
-     * WARNING! After calling this method, this {@link BlockStorage} is implicitly released. Do not use this for shared instances!
-     *
-     * @param preferView hints to the implementation that a view would be preferred over a copy
-     * @return this {@link BlockStorage} in the universal registry
-     */
-    UniversalBlockStorage toUniversal(boolean preferView);
-
     @Override
     BlockStorage retain() throws AlreadyReleasedException;
 }

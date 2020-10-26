@@ -20,6 +20,8 @@
 
 package net.daporkchop.mcworldlib.block.access;
 
+import net.daporkchop.mcworldlib.block.BlockState;
+
 /**
  * Provides access to flattened block data at given coordinates.
  *
@@ -33,14 +35,14 @@ public interface FlattenedBlockAccess {
     //
 
     /**
-     * Gets the runtime ID of the block at the given coordinates in the default layer.
+     * Gets the block state at the given coordinates in the default layer.
      *
      * @param x the X coordinate of the block to get
      * @param y the Y coordinate of the block to get
      * @param z the Z coordinate of the block to get
-     * @return the runtime ID of the block
+     * @return the block state
      */
-    int getBlockRuntimeId(int x, int y, int z);
+    BlockState getBlockState(int x, int y, int z);
 
     //
     //
@@ -49,12 +51,12 @@ public interface FlattenedBlockAccess {
     //
 
     /**
-     * Sets the runtime ID of the block at the given coordinates in the default layer.
+     * Sets the block state at the given coordinates in the default layer.
      *
-     * @param x         the X coordinate of the block to set
-     * @param y         the Y coordinate of the block to set
-     * @param z         the Z coordinate of the block to set
-     * @param runtimeId the new runtime ID
+     * @param x     the X coordinate of the block to set
+     * @param y     the Y coordinate of the block to set
+     * @param z     the Z coordinate of the block to set
+     * @param state the new block state
      */
-    void setBlockRuntimeId(int x, int y, int z, int runtimeId);
+    void setBlockState(int x, int y, int z, BlockState state);
 }

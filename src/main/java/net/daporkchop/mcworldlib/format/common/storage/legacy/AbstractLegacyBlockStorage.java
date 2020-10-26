@@ -24,7 +24,6 @@ import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.format.common.storage.AbstractBlockStorage;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
  * Base implementation of {@link BlockStorage} for the legacy block format used in Anvil chunk sections prior to The Flatting™️.
@@ -35,11 +34,6 @@ public abstract class AbstractLegacyBlockStorage extends AbstractBlockStorage im
     protected static int index(int x, int y, int z) {
         BlockStorage.checkCoords(x, y, z);
         return (y << 8) | (z << 4) | x;
-    }
-
-    @Override
-    public UniversalBlockStorage toUniversal(boolean preferView) {
-        throw new UnsupportedOperationException(); //TODO: implement this
     }
 
     @Override

@@ -18,7 +18,7 @@
  *
  */
 
-package net.daporkchop.mcworldlib.version;
+package net.daporkchop.mcworldlib.version.java;
 
 import lombok.experimental.UtilityClass;
 
@@ -29,6 +29,10 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class DataVersion {
+    public static final int DATA_1_16_3 = 2230;
+    public static final int DATA_1_16_2 = 2230;
+    public static final int DATA_1_16_1 = 2227;
+    public static final int DATA_1_16 = 2566;
     public static final int DATA_1_15_2 = 2230;
     public static final int DATA_1_15_1 = 2227;
     public static final int DATA_1_15 = 2225;

@@ -23,7 +23,6 @@ package net.daporkchop.mcworldlib.world.section;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.LegacyBlockAccess;
 import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.UniversalBlockStorage;
 
 /**
  * A {@link Section} using the legacy registry (for Java Edition ≤ 1.12.2).

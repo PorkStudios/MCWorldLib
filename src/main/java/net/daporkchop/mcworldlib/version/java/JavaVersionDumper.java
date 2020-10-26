@@ -56,8 +56,8 @@ import java.util.stream.StreamSupport;
  */
 final class JavaVersionDumper {
     public static final String VERSION_MANIFEST_URL = "https://launchermeta.mojang.com/mc/game/version_manifest.json";
-    public static final File IN = new File("/media/daporkchop/TooMuchStuff/PortableIDE/PorkLib/minecraft/src/main/resources/net/daporkchop/lib/minecraft/version/java_versions_in.json");
-    public static final File OUT_ROOT = new File("/media/daporkchop/TooMuchStuff/PortableIDE/PorkLib/minecraft/src/main/resources/net/daporkchop/lib/minecraft/version/java");
+    public static final File IN = new File("/media/daporkchop/PortableIDE/Minecraft/MCWorldLib/src/main/resources/net/daporkchop/mcworldlib/version/java_versions_in.json");
+    public static final File OUT_ROOT = new File("/media/daporkchop/PortableIDE/Minecraft/MCWorldLib/src/main/resources/net/daporkchop/mcworldlib/version/java");
     public static final JsonParser JSON_PARSER = new JsonParser();
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 

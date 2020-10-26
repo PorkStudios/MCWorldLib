@@ -22,7 +22,7 @@ package net.daporkchop.mcworldlib.format.common.storage.flattened;
 
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.BitArray;
-import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
+import net.daporkchop.lib.binary.bit.padded.PaddedBitArray;
 import net.daporkchop.lib.common.math.PMath;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.mcworldlib.util.palette.state.StatePalette;
@@ -36,28 +36,28 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-public class HeapPackedFlattenedBlockStorage extends AbstractHeapFlattenedBlockStorage {
-    public HeapPackedFlattenedBlockStorage() {
+public class HeapPaddedFlattenedBlockStorage extends AbstractHeapFlattenedBlockStorage {
+    public HeapPaddedFlattenedBlockStorage() {
         super();
     }
 
-    public HeapPackedFlattenedBlockStorage(ArrayAllocator<long[]> alloc) {
+    public HeapPaddedFlattenedBlockStorage(ArrayAllocator<long[]> alloc) {
         super(alloc);
     }
 
-    public HeapPackedFlattenedBlockStorage(@NonNull PackedBitArray array, @NonNull StatePalette palette) {
+    public HeapPaddedFlattenedBlockStorage(@NonNull PaddedBitArray array, @NonNull StatePalette palette) {
         super(array, palette);
     }
 
-    public HeapPackedFlattenedBlockStorage(ArrayAllocator<long[]> alloc, @NonNull PackedBitArray array, @NonNull StatePalette palette) {
+    public HeapPaddedFlattenedBlockStorage(ArrayAllocator<long[]> alloc, @NonNull PaddedBitArray array, @NonNull StatePalette palette) {
         super(alloc, array, palette);
     }
 
     @Override
     protected BitArray createArray() {
         return this.alloc != null
-                ? new PackedBitArray(this.bits, 4096, this.alloc.atLeast(toInt(PMath.roundUp(4096L * (long) this.bits, 64L) >>> 6L)))
-                : new PackedBitArray(this.bits, 4096);
+                ? new PaddedBitArray(this.bits, 4096, this.alloc.atLeast(toInt(PMath.roundUp(4096L * (long) this.bits, 64L) >>> 6L)))
+                : new PaddedBitArray(this.bits, 4096);
     }
 
     @Override

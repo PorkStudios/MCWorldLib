@@ -52,6 +52,17 @@ repositories {
     }
 }
 
+sourceSets {
+    example {
+        java {
+            compileClasspath += main.output
+            compileClasspath += main.compileClasspath
+            runtimeClasspath += main.output
+            runtimeClasspath += main.runtimeClasspath
+        }
+    }
+}
+
 dependencies {
     compile "net.daporkchop.lib:binary:$porklibVersion"
     compile "net.daporkchop.lib:collections:$porklibVersion"

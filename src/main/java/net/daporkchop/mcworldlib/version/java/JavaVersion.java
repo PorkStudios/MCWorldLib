@@ -32,7 +32,6 @@ import net.daporkchop.lib.primitive.map.concurrent.IntObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
 import net.daporkchop.mcworldlib.util.Util;
-import net.daporkchop.mcworldlib.version.DataVersion;
 import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 

@@ -26,9 +26,8 @@ import net.daporkchop.lib.common.math.BinMath;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.lib.nbt.tag.LongArrayTag;
-import net.daporkchop.mcworldlib.block.BlockRegistry;
-import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
-import net.daporkchop.mcworldlib.util.palette.Palette;
+import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPaddedFlattenedBlockStorage;
+import net.daporkchop.mcworldlib.util.palette.state.StatePalette;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
@@ -39,17 +38,17 @@ public class PaddedFlattenedSectionDecoder extends PackedFlattenedSectionDecoder
     public static final JavaVersion VERSION = JavaVersion.latest();
 
     @Override
-    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag, @NonNull BlockRegistry registry) {
+    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
         LongArrayTag blockStatesTag = tag.getTag("BlockStates");
 
         int bits = Math.max(BinMath.getNumBitsNeededFor(paletteTag.size()), 4);
-        Palette palette = this.parseBlockPalette(bits, paletteTag, registry);
+        StatePalette palette = this.parseBlockPalette(bits, paletteTag);
 
         if (blockStatesTag.handle() != null) {
-            return new HeapPackedFlattenedBlockStorage(new PaddedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
+            return new HeapPaddedFlattenedBlockStorage(new PaddedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
         } else {
-            return new HeapPackedFlattenedBlockStorage(new PaddedBitArray(bits, 4096, blockStatesTag.value()), palette);
+            return new HeapPaddedFlattenedBlockStorage(new PaddedBitArray(bits, 4096, blockStatesTag.value()), palette);
         }
     }
 }

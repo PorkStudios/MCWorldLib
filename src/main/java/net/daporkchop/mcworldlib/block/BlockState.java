@@ -20,187 +20,65 @@
 
 package net.daporkchop.mcworldlib.block;
 
+import lombok.Getter;
 import lombok.NonNull;
+import net.daporkchop.lib.common.misc.Tuple;
+import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.util.Identifier;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
-import static net.daporkchop.lib.common.util.PorkUtil.*;
+import static net.daporkchop.lib.common.math.PMath.*;
 
 /**
- * Represents a block state: the storage's {@link Identifier} combined with a metadata value.
- *
  * @author DaPorkchop_
- * @see BlockRegistry for an explanation of what all the values mean
  */
-public interface BlockState {
-    /**
-     * @return the {@link BlockRegistry} that this block state belongs to
-     */
-    BlockRegistry registry();
+@Getter
+public final class BlockState {
+    private static final Map<Tuple<Identifier, Map<String, String>>, BlockState> VALUES = new ConcurrentHashMap<>();
 
-    /**
-     * @return the block's {@link Identifier}
-     */
-    Identifier id();
+    protected final Identifier id;
+    protected final Map<String, Object> properties;
 
-    /**
-     * @return whether or not the block has a legacy ID
-     * @see #legacyId()
-     */
-    boolean hasLegacyId();
+    private final transient int hashCode;
 
-    /**
-     * @return the block's legacy ID, or {@code -1} if the block does not have a legacy ID_CHEST
-     * @see #hasLegacyId()
-     */
-    int legacyId();
+    private BlockState(Identifier id, Map<String, String> properties) {
+        this.id = id;
+        this.properties = Collections.unmodifiableMap(properties);
 
-    /**
-     * @return the block state's metadata value
-     */
-    int meta();
-
-    /**
-     * @return the block state's runtime ID
-     */
-    int runtimeId();
-
-    /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given metadata value.
-     *
-     * @param meta the new metadata value
-     * @return a {@link BlockState} with the given metadata value
-     * @throws IllegalArgumentException if a state with the given metadata value was not registered for the block
-     */
-    BlockState withMeta(int meta);
-
-    /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link Property} set to the given value.
-     *
-     * @param property the {@link Property} key to change
-     * @param value    the new property value
-     * @param <V>      the property's value type
-     * @return a {@link BlockState} with the given {@link Property} set to the given value
-     * @throws IllegalArgumentException if the given {@link Property} was not registered for the block
-     * @throws IllegalArgumentException if the given {@link Property} cannot store the given value
-     * @see #withProperty(Property.Int, int)
-     * @see #withProperty(Property.Boolean, boolean)
-     */
-    <V> BlockState withProperty(@NonNull Property<V> property, @NonNull V value);
-
-    /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link Property.Int} set to the given value.
-     *
-     * @param property the {@link Property.Int} key to change
-     * @param value    the new property value
-     * @return a {@link BlockState} with the given {@link Property.Int} set to the given value
-     * @throws IllegalArgumentException if the given {@link Property.Int} was not registered for the block
-     * @throws IllegalArgumentException if the given {@link Property.Int} cannot store the given value
-     */
-    BlockState withProperty(@NonNull Property.Int property, int value);
-
-    /**
-     * Gets a {@link BlockState} with the same block {@link Identifier} and the given {@link Property.Boolean} set to the given value.
-     *
-     * @param property the {@link Property.Boolean} key to change
-     * @param value    the new property value
-     * @return a {@link BlockState} with the given {@link Property.Boolean} set to the given value
-     * @throws IllegalArgumentException if the given {@link Property.Boolean} was not registered for the block
-     */
-    BlockState withProperty(@NonNull Property.Boolean property, boolean value);
-
-    /**
-     * Convenience method, gets a {@link BlockState} with the same block {@link Identifier} and the property with the given name set to the given value.
-     *
-     * @param property the property name
-     * @param value    the {@link String} representation of the new property value
-     * @return a {@link BlockState} with the same block {@link Identifier} and the property with the given name set to the given value
-     * @throws IllegalArgumentException if the a property with the given name was not registered for the block
-     * @throws IllegalArgumentException if the property with the given name cannot parse or store the given value
-     */
-    default BlockState withProperty(@NonNull String property, @NonNull String value) {
-        Property<?> prop = this.property(property);
-        return this.withProperty(prop, uncheckedCast(prop.decodeValue(value)));
+        this.hashCode = mix32(properties.entrySet().stream()
+                .mapToLong(entry -> mix64(entry.getKey().hashCode()) + entry.getValue().hashCode())
+                .reduce(id.hashCode(), (a, b) -> mix64(a + b)));
     }
 
-    /**
-     * @return all properties supported by the block
-     */
-    Collection<Property<?>> properties();
+    private BlockState(Identifier id) {
+        this.id = id;
+        this.properties = Collections.emptyMap();
 
-    /**
-     * Gets the value associated with the given property.
-     *
-     * @param property the property to get the value for
-     * @param <T>      the property's value type
-     * @return the property's value
-     * @throws IllegalArgumentException if the given {@link Property} was not registered for the block
-     */
-    <T> T propertyValue(@NonNull Property<T> property);
-
-    /**
-     * Gets the {@link Property} with the given name.
-     *
-     * @param name the name of the property to get
-     * @param <T>  the property's value type
-     * @return the {@link Property} with the given name
-     * @throws IllegalArgumentException if the block does not have any properties with the given name
-     */
-    <T> Property<T> property(@NonNull String name);
-
-    /**
-     * Gets the {@link Property.Int} with the given name.
-     *
-     * @param name the name of the property to get
-     * @return the {@link Property.Int} with the given name
-     * @throws IllegalArgumentException if the block does not have any properties with the given name
-     * @throws ClassCastException       if the property is not a {@link Property.Int}
-     */
-    default Property.Int propertyInt(@NonNull String name) {
-        return uncheckedCast(this.property(name));
+        this.hashCode = id.hashCode();
     }
 
-    /**
-     * Gets the {@link Property.Boolean} with the given name.
-     *
-     * @param name the name of the property to get
-     * @return the {@link Property.Boolean} with the given name
-     * @throws IllegalArgumentException if the block does not have any properties with the given name
-     * @throws ClassCastException       if the property is not a {@link Property.Boolean}
-     */
-    default Property.Boolean propertyBoolean(@NonNull String name) {
-        return uncheckedCast(this.property(name));
+    public static BlockState of(@NonNull Identifier id, @NonNull Map<String, String> properties) {
+        BlockState state = VALUES.get(new Tuple<>(id, properties));
+        if (state == null) { //need to register new state
+            if (properties.isEmpty()) {
+                properties = Collections.emptyMap();
+                state = new BlockState(id);
+            } else {
+                properties = properties.entrySet().stream()
+                        .collect(Collectors.toMap(e -> e.getKey().intern(), e -> e.getValue().intern()));
+                state = new BlockState(id, properties);
+            }
+            state = PorkUtil.fallbackIfNull(VALUES.putIfAbsent(new Tuple<>(id, properties), state), state);
+        }
+        return state;
     }
 
-    /**
-     * Gets the {@link Property} with the given name.
-     *
-     * @param name the name of the property to get
-     * @param <T>  the property's value type
-     * @return the {@link Property} with the given name, or {@code null} if the block does not have any properties with the given name
-     */
-    <T> Property<T> tryProperty(@NonNull String name);
-
-    /**
-     * Gets the {@link Property.Int} with the given name.
-     *
-     * @param name the name of the property to get
-     * @return the {@link Property.Int} with the given name, or {@code null} if the block does not have any properties with the given name
-     * @throws ClassCastException if the property is not a {@link Property.Int}
-     */
-    default Property.Int tryPropertyInt(@NonNull String name) {
-        return uncheckedCast(this.tryProperty(name));
-    }
-
-    /**
-     * Gets the {@link Property.Boolean} with the given name.
-     *
-     * @param name the name of the property to get
-     * @return the {@link Property.Boolean} with the given name, or {@code null} if the block does not have any properties with the given name
-     * @throws ClassCastException if the property is not a {@link Property.Boolean}
-     */
-    default Property.Boolean tryPropertyBoolean(@NonNull String name) {
-        return uncheckedCast(this.tryProperty(name));
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj;
     }
 }

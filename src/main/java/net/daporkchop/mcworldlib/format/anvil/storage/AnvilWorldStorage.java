@@ -44,7 +44,7 @@ import net.daporkchop.mcworldlib.format.anvil.region.RegionFileCache;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
-import net.daporkchop.mcworldlib.version.DataVersion;
+import net.daporkchop.mcworldlib.version.java.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.section.Section;

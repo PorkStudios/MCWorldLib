@@ -22,10 +22,10 @@ package net.daporkchop.mcworldlib.format.common.section.flattened;
 
 import lombok.NonNull;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
+import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.AbstractSection;
 import net.daporkchop.mcworldlib.world.section.FlattenedSection;
-import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
 
 import static net.daporkchop.lib.common.util.PValidation.*;
@@ -62,12 +62,12 @@ public class SingleLayerFlattenedSection extends AbstractSection implements Flat
     }
 
     @Override
-    public int getBlockRuntimeId(int x, int y, int z) {
-        return this.blocks.getBlockRuntimeId(x, y, z);
+    public BlockState getBlockState(int x, int y, int z) {
+        return this.blocks.getBlockState(x, y, z);
     }
 
     @Override
-    public void setBlockRuntimeId(int x, int y, int z, int runtimeId) {
-        this.blocks.setBlockRuntimeId(x, y, z, runtimeId);
+    public void setBlockState(int x, int y, int z, BlockState state) {
+        this.blocks.setBlockState(x, y, z, state);
     }
 }
