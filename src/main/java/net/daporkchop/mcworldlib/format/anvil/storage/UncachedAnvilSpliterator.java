@@ -154,14 +154,18 @@ public abstract class UncachedAnvilSpliterator<T> implements Spliterator<T> {
 
         @Override
         public boolean tryAdvance(@NonNull Consumer<? super Chunk> action) {
-            try (AnvilCachedChunk cachedChunk = this.next())  {
-                if (cachedChunk == null)  {
-                    return false;
+            while (true) {
+                try (AnvilCachedChunk cachedChunk = this.next()) {
+                    if (cachedChunk == null) {
+                        return false;
+                    }
+                    try (Chunk chunk = cachedChunk.chunk()) {
+                        if (chunk != null) {
+                            action.accept(chunk);
+                            return true;
+                        }
+                    }
                 }
-                try (Chunk chunk = cachedChunk.chunk()) {
-                    action.accept(chunk);
-                }
-                return true;
             }
         }
 

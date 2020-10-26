@@ -149,16 +149,20 @@ public abstract class CachedAnvilSpliterator<T> implements Spliterator<T> {
 
         @Override
         public boolean tryAdvance(@NonNull Consumer<? super Chunk> action) {
-            Vec2i chunkPos = this.next();
-            if (chunkPos == null) {
-                return false;
-            }
-            try (Chunk chunk = this.storage.loadChunk(chunkPos.getX(), chunkPos.getY())) {
-                action.accept(chunk);
-                return true;
-            } catch (IOException e) {
-                PUnsafe.throwException(e);
-                throw new RuntimeException(e);
+            while (true) {
+                Vec2i chunkPos = this.next();
+                if (chunkPos == null) {
+                    return false;
+                }
+                try (Chunk chunk = this.storage.loadChunk(chunkPos.getX(), chunkPos.getY())) {
+                    if (chunk != null) {
+                        action.accept(chunk);
+                        return true;
+                    }
+                } catch (IOException e) {
+                    PUnsafe.throwException(e);
+                    throw new RuntimeException(e);
+                }
             }
         }
 

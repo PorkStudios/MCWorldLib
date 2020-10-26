@@ -26,18 +26,10 @@ import lombok.RequiredArgsConstructor;
 import net.daporkchop.mcworldlib.format.anvil.decoder.chunk.FlattenedChunkDecoder;
 import net.daporkchop.mcworldlib.format.anvil.decoder.chunk.LegacyChunkDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaChunkDecoder;
-import net.daporkchop.mcworldlib.format.java.decoder.JavaItemDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
-import net.daporkchop.mcworldlib.format.java.decoder.JavaTileEntityDecoder;
-import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_13;
-import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_14;
-import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_8;
-import net.daporkchop.mcworldlib.format.java.decoder.item.ItemDecoder1_9;
-import net.daporkchop.mcworldlib.format.java.decoder.section.PackedFlattenedSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.section.LegacySectionDecoder;
+import net.daporkchop.mcworldlib.format.java.decoder.section.PackedFlattenedSectionDecoder;
 import net.daporkchop.mcworldlib.format.java.decoder.section.PaddedFlattenedSectionDecoder;
-import net.daporkchop.mcworldlib.format.java.decoder.tile.TileEntityDecoder1_8;
-import net.daporkchop.mcworldlib.format.java.decoder.tile.TileEntityDecoder1_9;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 
 import java.util.Map;
@@ -50,6 +42,18 @@ import java.util.TreeMap;
 @RequiredArgsConstructor
 @Getter
 public class JavaFixers {
+    /**
+     * @return the default {@link JavaFixers}
+     */
+    public static JavaFixers defaultFixers() {
+        return Default.DEFAULT_JAVA_FIXERS;
+    }
+
+    @NonNull
+    protected final NavigableMap<JavaVersion, JavaChunkDecoder> chunk;
+    @NonNull
+    protected final NavigableMap<JavaVersion, JavaSectionDecoder> section;
+
     @RequiredArgsConstructor
     public static final class MapBuilder<K, V, M extends Map<K, V>> {
         @NonNull
@@ -75,35 +79,6 @@ public class JavaFixers {
                         .put(LegacySectionDecoder.VERSION, new LegacySectionDecoder())
                         .put(PackedFlattenedSectionDecoder.VERSION, new PackedFlattenedSectionDecoder())
                         .put(PaddedFlattenedSectionDecoder.VERSION, new PaddedFlattenedSectionDecoder())
-                        .build(),
-                new MapBuilder<>(new TreeMap<JavaVersion, JavaTileEntityDecoder>())
-                        .put(JavaVersion.pre15w32a(), new TileEntityDecoder1_8())
-                        .put(JavaVersion.latest(), new TileEntityDecoder1_9())
-                        .build(),
-                new MapBuilder<>(new TreeMap<JavaVersion, JavaItemDecoder>())
-                        .put(JavaVersion.pre15w32a(), new ItemDecoder1_8())
-                        .put(JavaVersion.fromName("1.12.2"), new ItemDecoder1_9())
-                        .put(JavaVersion.fromName("1.14.4"), new ItemDecoder1_13())
-                        .put(JavaVersion.latest(), new ItemDecoder1_14())
                         .build());
     }
-
-    /**
-     * @return the default {@link JavaFixers}
-     */
-    public static JavaFixers defaultFixers() {
-        return Default.DEFAULT_JAVA_FIXERS;
-    }
-
-    @NonNull
-    protected final NavigableMap<JavaVersion, JavaChunkDecoder> chunk;
-
-    @NonNull
-    protected final NavigableMap<JavaVersion, JavaSectionDecoder> section;
-
-    @NonNull
-    protected final NavigableMap<JavaVersion, JavaTileEntityDecoder> tileEntity;
-
-    @NonNull
-    protected final NavigableMap<JavaVersion, JavaItemDecoder> item;
 }

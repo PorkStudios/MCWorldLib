@@ -23,11 +23,9 @@ package net.daporkchop.mcworldlib.util.property;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
-import net.daporkchop.mcworldlib.item.ItemMeta;
 
 /**
- * A key used to identify an {@link ItemMeta} value.
+ * A key used to identify a property value.
  *
  * @param <T> the type of value referenced by this key
  * @author DaPorkchop_

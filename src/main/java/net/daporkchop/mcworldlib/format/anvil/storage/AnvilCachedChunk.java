@@ -22,6 +22,7 @@ package net.daporkchop.mcworldlib.format.anvil.storage;
 
 import lombok.NonNull;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
@@ -44,6 +45,23 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
 
     public abstract Section section(int y);
 
+    public static class ReadOnlyEmpty extends AnvilCachedChunk {
+        @Override
+        public Chunk chunk() {
+            return null;
+        }
+
+        @Override
+        public Section section(int y) {
+            return null;
+        }
+
+        @Override
+        protected void doRelease() {
+            //no-op
+        }
+    }
+
     public static class ReadOnly extends AnvilCachedChunk {
         protected final Chunk chunk;
         protected final Section[] sections = new Section[16];
@@ -61,15 +79,14 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
                 this.sections[section.y()] = section;
             }
 
-            //TODO
-            /*JavaTileEntityDecoder tileEntityDecoder = fixers.tileEntity().ceilingEntry(version).getValue();
-            for (CompoundTag tileEntityTag : levelTag.getList("TileEntities", CompoundTag.class)) {
-                int x = tileEntityTag.getInt("x");
-                int y = tileEntityTag.getInt("y");
-                int z = tileEntityTag.getInt("z");
-                TileEntity tileEntity = tileEntityDecoder.decode(tileEntityTag, version, world);
+            ListTag<CompoundTag> tileEntities = levelTag.getList("TileEntities", CompoundTag.class);
+            for (CompoundTag tileEntity : tileEntities) {
+                int x = tileEntity.getInt("x");
+                int y = tileEntity.getInt("y");
+                int z = tileEntity.getInt("z");
                 this.sections[y >> 4].setTileEntity(x & 0xF, y & 0xF, z & 0xF, tileEntity);
-            }*/
+            }
+            tileEntities.list().clear();
         }
 
         @Override

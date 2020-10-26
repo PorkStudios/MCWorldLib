@@ -22,11 +22,10 @@ package net.daporkchop.mcworldlib.world.section;
 
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.math.access.IntHolderXYZ;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.LightAccess;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.tileentity.TileEntity;
 
 import java.util.Collection;
 
@@ -70,13 +69,12 @@ public interface Section extends LightAccess, IntHolderXYZ, RefCounted {
     /**
      * Gets the tile entity at the given coordinates.
      *
-     * @param x   the X coordinate of the tile entity to get
-     * @param y   the Y coordinate of the tile entity to get
-     * @param z   the Z coordinate of the tile entity to get
-     * @param <T> the type of the tile entity to get
+     * @param x the X coordinate of the tile entity to get
+     * @param y the Y coordinate of the tile entity to get
+     * @param z the Z coordinate of the tile entity to get
      * @return the tile entity at the given coordinates, or {@code null} if there is none present
      */
-    <T extends TileEntity> T getTileEntity(int x, int y, int z);
+    CompoundTag getTileEntity(int x, int y, int z);
 
     /**
      * Sets the tile entity at the given coordinates.
@@ -86,12 +84,12 @@ public interface Section extends LightAccess, IntHolderXYZ, RefCounted {
      * @param z          the Z coordinate of the tile entity to set
      * @param tileEntity the new tile entity. If {@code null}, the tile entity will be removed
      */
-    void setTileEntity(int x, int y, int z, TileEntity tileEntity);
+    void setTileEntity(int x, int y, int z, CompoundTag tileEntity);
 
     /**
      * @return a view of the tile entities in this section
      */
-    Collection<TileEntity> tileEntities();
+    Collection<CompoundTag> tileEntities();
 
     @Override
     Section retain() throws AlreadyReleasedException;

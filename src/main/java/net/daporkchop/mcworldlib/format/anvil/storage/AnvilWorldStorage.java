@@ -224,7 +224,9 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
             try {
                 try (RawChunk chunk = region.read(x, z)) {
                     if (chunk == null) { //chunk doesn't exist on disk
-                        return null;
+                        return this.readOnly
+                                ? new AnvilCachedChunk.ReadOnlyEmpty()
+                                : null; //TODO
                     }
                     uncompressed = this.options.get(SaveOptions.NETTY_ALLOC).ioBuffer(1 << 18); //256 KiB
                     try (Handle<PInflater> handle = inflater(chunk.data().readByte() & 0xFF)) {

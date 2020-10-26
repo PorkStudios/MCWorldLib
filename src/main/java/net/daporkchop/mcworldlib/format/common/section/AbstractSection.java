@@ -24,16 +24,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.BlockAccess;
-import net.daporkchop.mcworldlib.block.BlockState;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
-import net.daporkchop.mcworldlib.world.storage.BlockStorage;
-import net.daporkchop.mcworldlib.tileentity.TileEntity;
-import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.world.section.Section;
+import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 
 import java.util.Collection;
 
@@ -51,7 +49,7 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
     @Getter(AccessLevel.NONE)
     protected final NibbleArray skyLight;
 
-    protected final IntObjMap<TileEntity> tileEntities = new IntObjOpenHashMap<>();
+    protected final IntObjMap<CompoundTag> tileEntities = new IntObjOpenHashMap<>();
 
     protected final int x;
     protected final int y;
@@ -81,13 +79,13 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
     }
 
     @Override
-    public <T extends TileEntity> T getTileEntity(int x, int y, int z) {
+    public CompoundTag getTileEntity(int x, int y, int z) {
         BlockStorage.checkCoords(x, y, z);
         return uncheckedCast(this.tileEntities.get((x << 8) | (y << 4) | z));
     }
 
     @Override
-    public void setTileEntity(int x, int y, int z, TileEntity tileEntity) {
+    public void setTileEntity(int x, int y, int z, CompoundTag tileEntity) {
         BlockStorage.checkCoords(x, y, z);
         if (tileEntity == null) {
             this.tileEntities.remove((x << 8) | (y << 4) | z);
@@ -97,7 +95,7 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
     }
 
     @Override
-    public Collection<TileEntity> tileEntities() {
+    public Collection<CompoundTag> tileEntities() {
         return this.tileEntities.values();
     }
 
