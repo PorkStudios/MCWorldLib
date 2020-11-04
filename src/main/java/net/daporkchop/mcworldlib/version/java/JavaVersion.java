@@ -20,24 +20,21 @@
 
 package net.daporkchop.mcworldlib.version.java;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
-import net.daporkchop.lib.common.misc.InstancePool;
 import net.daporkchop.lib.primitive.map.IntObjMap;
-import net.daporkchop.lib.primitive.map.concurrent.IntObjConcurrentHashMap;
-import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
 import net.daporkchop.mcworldlib.util.Util;
 import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
+
+import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
  * A version of Minecraft: Java Edition.
@@ -46,29 +43,27 @@ import java.util.Map;
  */
 @Getter
 public final class JavaVersion extends MinecraftVersion {
-    private static final Map<String, JavaVersion> NAME_CACHE = new ObjObjConcurrentHashMap<>(); //fast computeIfAbsent
-    private static final IntObjMap<JavaVersion> DATA_VERSION_CACHE = new IntObjConcurrentHashMap<>();
+    private static final Map<String, JavaVersion> NAME_CACHE = new HashMap<>();
+    private static final IntObjMap<JavaVersion> DATA_VERSION_CACHE = new IntObjOpenHashMap<>();
 
-    public static JavaVersion fromName(@NonNull String nameIn) {
-        return NAME_CACHE.computeIfAbsent(nameIn.intern(), name -> {
-            try (InputStream in = JavaVersion.class.getResourceAsStream("by_id/" + name + ".json")) {
-                if (in == null) { //file wasn't found on disk
-                    return new JavaVersion(name, -1L, -1, -1);
-                } else {
-                    ObjectNode obj = InstancePool.getInstance(JsonMapper.class).readTree(in).require();
-                    return new JavaVersion(name, obj.findPath("releaseTime").require().asLong(), obj.findPath("protocolVersion").asInt(-1), obj.findPath("dataVersion").asInt(-1));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    static {
+        JavaVersion[] versions = Util.parseJson(JavaVersion[].class, "versions.json");
+        for (JavaVersion version : versions) {
+            checkState(NAME_CACHE.putIfAbsent(version.name, version) == null, "duplicate version name: %s", version.name);
+
+            //the list is sorted from newest to oldest, using putIfAbsent ensures that data versions shared by multiple game versions will always show up as the latest
+            DATA_VERSION_CACHE.putIfAbsent(version.data, version);
+        }
     }
 
-    public static JavaVersion fromDataVersion(int _dataVersion) {
-        return DATA_VERSION_CACHE.computeIfAbsent(_dataVersion, dataVersion -> {
-            String name = DataVersionToId.INSTANCE.get(dataVersion);
-            return name != null ? fromName(name) : new JavaVersion(null, -1L, -1, dataVersion);
-        });
+    public static JavaVersion fromName(@NonNull String nameIn) {
+        return NAME_CACHE.getOrDefault(nameIn, pre15w32a());
+    }
+
+    public static JavaVersion fromDataVersion(int dataVersion) {
+        JavaVersion version = DATA_VERSION_CACHE.get(dataVersion);
+        checkArg(version != null, "unsupported data version: %d", dataVersion);
+        return version;
     }
 
     /**
@@ -89,12 +84,9 @@ public final class JavaVersion extends MinecraftVersion {
     protected final int data;
     protected final String toString;
 
-    protected JavaVersion(String name, long releaseTime) {
-        this(name, releaseTime, -1, -1);
-    }
-
-    protected JavaVersion(String name, long releaseTime, int protocol, int data) {
-        super(MinecraftEdition.JAVA, name != null ? name : "", releaseTime);
+    @JsonCreator
+    protected JavaVersion(@JsonProperty("name") String name, @JsonProperty("protocol") int protocol, @JsonProperty("data") int data) {
+        super(MinecraftEdition.JAVA, name);
 
         this.protocol = protocol;
         this.data = data;
@@ -114,7 +106,7 @@ public final class JavaVersion extends MinecraftVersion {
     public int compareTo(MinecraftVersion o) {
         if (o instanceof JavaVersion) {
             JavaVersion j = (JavaVersion) o;
-            if (this.data >= DataVersion.DATA_15w32a && j.data >= DataVersion.DATA_15w32a) { //compare by data version rather than by name
+            if (this.data != j.data) { //compare by data version rather than by name where possible
                 return this.data - j.data;
             }
         }
@@ -123,20 +115,11 @@ public final class JavaVersion extends MinecraftVersion {
 
     @UtilityClass
     private static class OldVersion {
-        private final JavaVersion OLD = new JavaVersion("[unknown] (≤ 1.8.9)", fromName("1.8.9").releaseTime + 1L, -1, -1);
+        private final JavaVersion OLD = new JavaVersion("[unknown] (≤ 1.8.9)", -1, -1);
     }
 
     @UtilityClass
     private static class LatestVersion {
         private final JavaVersion LATEST = fromName("1.16.1");
-    }
-
-    private static class DataVersionToId extends IntObjOpenHashMap<String> {
-        private static final DataVersionToId INSTANCE = Util.parseJson(DataVersionToId.class, "data_version_to_id.json");
-
-        @JsonAnySetter
-        private void add(@NonNull String dataVersion, @NonNull String version) {
-            this.put(Integer.parseUnsignedInt(dataVersion), version.intern());
-        }
     }
 }

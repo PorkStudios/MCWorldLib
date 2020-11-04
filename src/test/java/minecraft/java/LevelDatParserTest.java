@@ -24,26 +24,22 @@ import lombok.NonNull;
 import net.daporkchop.lib.binary.stream.DataIn;
 import net.daporkchop.lib.binary.stream.DataOut;
 import net.daporkchop.lib.common.misc.file.PFiles;
-import net.daporkchop.lib.common.pool.array.ArrayAllocator;
-import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveFormat;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.tileentity.TileEntity;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.mcworldlib.world.section.FlattenedSection;
 import net.daporkchop.mcworldlib.world.section.LegacySection;
 import net.daporkchop.mcworldlib.world.section.Section;
-import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
-import net.daporkchop.mcworldlib.world.storage.LegacyBlockStorage;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
@@ -99,7 +95,7 @@ public class LevelDatParserTest {
                 try (World world = save.world(Identifier.fromString("overworld"))) {
                     try (Section section = world.storage().loadSection(0, 0, 0)) {
                         System.out.println(className(section));
-                        if (section instanceof LegacySection)  {
+                        if (section instanceof LegacySection) {
                             System.out.printf("legacy ID: %d#%d\n", ((LegacySection) section).getBlockLegacyId(0, 0, 0), ((LegacySection) section).getBlockMeta(0, 0, 0));
                         } else if (section instanceof FlattenedSection) {
                             System.out.printf("state: %s\n", ((FlattenedSection) section).getBlockState(0, 0, 0));
@@ -129,7 +125,7 @@ public class LevelDatParserTest {
             try (World world = save.world(Identifier.fromString("minecraft:overworld"))) {
                 try (Section section = world.storage().loadSection(0, 4, 0)) {
                     System.out.println("Printing all tile entities in section:");
-                    section.tileEntities().stream().map(TileEntity::toString).map("  "::concat).forEach(System.out::println);
+                    section.tileEntities().stream().map(Objects::toString).map("  "::concat).forEach(System.out::println);
                 }
 
                 System.out.printf("World has a total of %d chunks and %d sections\n",

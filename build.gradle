@@ -30,7 +30,6 @@ ext {
     jacksonVersion = "2.11.2"
     junitVersion = "4.12"
     lombokVersion = "1.16.20"
-    gsonVersion = "2.8.5"
     porklibVersion = "0.5.5-SNAPSHOT"
 }
 
@@ -73,8 +72,6 @@ dependencies {
     compile "net.daporkchop.lib:primitive:$porklibVersion"
     compile "net.daporkchop.lib:random:$porklibVersion"
     compile "net.daporkchop.lib:reflection:$porklibVersion"
-
-    compile "com.google.code.gson:gson:$gsonVersion"
 
     compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 

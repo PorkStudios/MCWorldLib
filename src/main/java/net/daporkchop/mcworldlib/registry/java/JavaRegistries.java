@@ -20,27 +20,24 @@
 
 package net.daporkchop.mcworldlib.registry.java;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.annotations.SerializedName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.daporkchop.lib.common.function.io.IOFunction;
-import net.daporkchop.lib.common.misc.InstancePool;
+import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
 import net.daporkchop.mcworldlib.registry.DefaultRegistry;
 import net.daporkchop.mcworldlib.registry.Registries;
 import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.util.Util;
 import net.daporkchop.mcworldlib.version.java.DataVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.lib.primitive.map.concurrent.ObjObjConcurrentHashMap;
-import net.daporkchop.lib.reflection.type.PTypes;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -57,18 +54,13 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JavaRegistries implements Registries {
     private static final Map<String, Registries> CACHE = new ObjObjConcurrentHashMap<>(); //this has a faster computeIfAbsent implementation
-    private static final Type REGISTRY_MAP_TYPE = PTypes.parameterized(Map.class, String.class, JsonRegistry.class);
 
     public static Registries forVersion(@NonNull JavaVersion versionIn) {
         if (versionIn.data() < DataVersion.DATA_1_12_2) {
             versionIn = JavaVersion.fromName("1.12.2"); //1.12.2 is used as an intermediate translation point for all previous versions
         }
         return CACHE.computeIfAbsent(versionIn.name(), (IOFunction<String, Registries>) version -> {
-            Map<String, JsonRegistry> map;
-            try (InputStream in = JavaRegistries.class.getResourceAsStream(version + ".json")) {
-                checkArg(in != null, "no registry stored for version: %s", version);
-                map = InstancePool.getInstance(Gson.class).fromJson(new InputStreamReader(in, StandardCharsets.UTF_8), REGISTRY_MAP_TYPE);
-            }
+            Map<String, JsonRegistry> map = Util.parseJson(JavaRegistries.class, new TypeReference<Map<String, JsonRegistry>>() {}, version + ".json");
 
             Map<Identifier, Registry> registries = new HashMap<>();
             map.forEach((name, registry) -> {
@@ -117,13 +109,22 @@ public final class JavaRegistries implements Registries {
     }
 
     private static class JsonRegistry {
-        @SerializedName("default")
-        public String def;
-        public Map<String, JsonRegistryEntry> entries;
+        public final String def;
+        public final Map<String, JsonRegistryEntry> entries;
+
+        @JsonCreator
+        public JsonRegistry(@JsonProperty("default") String def, @JsonProperty("entries") Map<String, JsonRegistryEntry> entries, @JsonProperty("protocol_id") int protocol_id) {
+            this.def = def;
+            this.entries = entries;
+        }
     }
 
-    @AllArgsConstructor
     private static class JsonRegistryEntry {
-        public int protocol_id;
+        public final int protocol_id;
+
+        @JsonCreator
+        public JsonRegistryEntry(@JsonProperty("protocol_id") int protocol_id) {
+            this.protocol_id = protocol_id;
+        }
     }
 }

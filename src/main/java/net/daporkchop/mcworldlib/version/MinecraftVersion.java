@@ -38,14 +38,11 @@ public abstract class MinecraftVersion implements Comparable<MinecraftVersion> {
     protected final MinecraftEdition edition;
     @NonNull
     protected final String name;
-    protected final long releaseTime;
 
     @Override
     public int compareTo(MinecraftVersion o) {
         if (this.edition != o.edition)  {
             return this.edition.ordinal() - o.edition.ordinal();
-        } else if (this.releaseTime > 0L && o.releaseTime > 0L) {
-            return Long.compareUnsigned(this.releaseTime, o.releaseTime);
         } else {
             return this.name.compareTo(o.name);
         }

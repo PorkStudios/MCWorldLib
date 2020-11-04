@@ -29,9 +29,10 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class DataVersion {
-    public static final int DATA_1_16_3 = 2230;
-    public static final int DATA_1_16_2 = 2230;
-    public static final int DATA_1_16_1 = 2227;
+    public static final int DATA_1_16_4 = 2584;
+    public static final int DATA_1_16_3 = 2580;
+    public static final int DATA_1_16_2 = 2578;
+    public static final int DATA_1_16_1 = 2567;
     public static final int DATA_1_16 = 2566;
     public static final int DATA_1_15_2 = 2230;
     public static final int DATA_1_15_1 = 2227;

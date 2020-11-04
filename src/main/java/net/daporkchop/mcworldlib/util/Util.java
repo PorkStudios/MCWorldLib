@@ -20,6 +20,7 @@
 
 package net.daporkchop.mcworldlib.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
@@ -61,6 +62,10 @@ public class Util {
     }
 
     public <T> T parseJson(@NonNull Class<?> fromClass, @NonNull Class<T> type, @NonNull String name) {
+        return doWithResourceThrowing(fromClass, name, in -> InstancePool.getInstance(JsonMapper.class).readValue(in, type));
+    }
+
+    public <T> T parseJson(@NonNull Class<?> fromClass, @NonNull TypeReference<T> type, @NonNull String name) {
         return doWithResourceThrowing(fromClass, name, in -> InstancePool.getInstance(JsonMapper.class).readValue(in, type));
     }
 }

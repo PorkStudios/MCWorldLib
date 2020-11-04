@@ -1,0 +1,2 @@
+copied from https://minecraft.gamepedia.com/Data_version#List_of_data_versions
+regex: s/Java Edition (.*?)\s+(\d{2,})\s+(\d{3,})$/"$1": {"name":"$1","protocol":$2,"data":$3},/g
