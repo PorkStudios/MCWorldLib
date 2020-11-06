@@ -27,6 +27,8 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.daporkchop.lib.primitive.map.IntObjMap;
 import net.daporkchop.lib.primitive.map.open.IntObjOpenHashMap;
+import net.daporkchop.mcworldlib.registry.Registries;
+import net.daporkchop.mcworldlib.registry.java.JavaRegistries;
 import net.daporkchop.mcworldlib.util.Util;
 import net.daporkchop.mcworldlib.version.MinecraftEdition;
 import net.daporkchop.mcworldlib.version.MinecraftVersion;
@@ -111,6 +113,11 @@ public final class JavaVersion extends MinecraftVersion {
             }
         }
         return super.compareTo(o);
+    }
+
+    @Override
+    public Registries registries() {
+        return JavaRegistries.forVersion(this);
     }
 
     @UtilityClass

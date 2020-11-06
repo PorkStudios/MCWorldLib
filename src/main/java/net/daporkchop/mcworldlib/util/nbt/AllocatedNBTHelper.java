@@ -18,33 +18,47 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.java.decoder.section;
+package net.daporkchop.mcworldlib.util.nbt;
 
 import lombok.NonNull;
-import net.daporkchop.lib.binary.bit.padded.PaddedBitArray;
-import net.daporkchop.lib.common.math.BinMath;
+import lombok.experimental.UtilityClass;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
-import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPaddedFlattenedBlockStorage;
-import net.daporkchop.mcworldlib.util.nbt.AllocatedLongArrayTag;
-import net.daporkchop.mcworldlib.util.palette.state.StatePalette;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
-import net.daporkchop.mcworldlib.world.storage.FlattenedBlockStorage;
+import net.daporkchop.lib.nbt.tag.Tag;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import static net.daporkchop.lib.common.util.PorkUtil.*;
 
 /**
+ * Static helper methods for dealing with NBT tags that contain allocated data.
+ *
  * @author DaPorkchop_
  */
-public class PaddedFlattenedSectionDecoder extends PackedFlattenedSectionDecoder {
-    public static final JavaVersion VERSION = JavaVersion.latest();
+@UtilityClass
+public class AllocatedNBTHelper {
+    public void release(@NonNull Tag<?> tag) {
+        if (tag instanceof CompoundTag) {
+            ((CompoundTag) tag).forEach((name, childTag) -> release(childTag));
+        } else if (tag instanceof ListTag) {
+            ((ListTag<?>) tag).forEach(AllocatedNBTHelper::release);
+        } else if (tag instanceof AllocatedTag) {
+            ((AllocatedTag) tag).release();
+        }
+    }
 
-    @Override
-    protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {
-        ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
-        AllocatedLongArrayTag blockStatesTag = tag.remove("BlockStates");
-
-        int bits = Math.max(BinMath.getNumBitsNeededFor(paletteTag.size()), 4);
-        StatePalette palette = this.parseBlockPalette(bits, paletteTag);
-
-        return new HeapPaddedFlattenedBlockStorage(new PaddedBitArray(bits, 4096, blockStatesTag.value(), blockStatesTag.alloc()), palette);
+    public <T extends Tag> T toNormalAndRelease(@NonNull Tag<?> tag) {
+        if (tag instanceof CompoundTag) {
+            for (Iterator<Map.Entry<String, Tag>> itr = ((CompoundTag) tag).iterator(); itr.hasNext(); ) {
+                Map.Entry<String, Tag> entry = itr.next();
+                entry.setValue(toNormalAndRelease(entry.getValue()));
+            }
+        } else if (tag instanceof ListTag) {
+            ((ListTag<?>) tag).list().replaceAll(AllocatedNBTHelper::toNormalAndRelease);
+        } else if (tag instanceof AllocatedTag) {
+            tag = ((AllocatedTag) tag).toNormalAndRelease();
+        }
+        return uncheckedCast(tag);
     }
 }

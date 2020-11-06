@@ -26,6 +26,7 @@ import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.util.dirty.AbstractReleasableDirtiable;
+import net.daporkchop.mcworldlib.util.nbt.AllocatedNBTHelper;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.World;
@@ -84,7 +85,7 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
                 int x = tileEntity.getInt("x");
                 int y = tileEntity.getInt("y");
                 int z = tileEntity.getInt("z");
-                this.sections[y >> 4].setTileEntity(x & 0xF, y & 0xF, z & 0xF, tileEntity);
+                this.sections[y >> 4].setTileEntity(x & 0xF, y & 0xF, z & 0xF, AllocatedNBTHelper.toNormalAndRelease(tileEntity));
             }
             tileEntities.list().clear();
         }

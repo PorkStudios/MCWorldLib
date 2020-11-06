@@ -23,10 +23,8 @@ package net.daporkchop.mcworldlib.format.java.decoder.section;
 import lombok.NonNull;
 import net.daporkchop.lib.binary.bit.packed.PackedBitArray;
 import net.daporkchop.lib.common.math.BinMath;
-import net.daporkchop.lib.nbt.tag.ByteArrayTag;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
-import net.daporkchop.lib.nbt.tag.LongArrayTag;
 import net.daporkchop.lib.nbt.tag.StringTag;
 import net.daporkchop.lib.nbt.tag.Tag;
 import net.daporkchop.mcworldlib.block.BlockState;
@@ -36,6 +34,8 @@ import net.daporkchop.mcworldlib.format.common.section.flattened.SingleLayerFlat
 import net.daporkchop.mcworldlib.format.common.storage.flattened.HeapPackedFlattenedBlockStorage;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
 import net.daporkchop.mcworldlib.util.Identifier;
+import net.daporkchop.mcworldlib.util.nbt.AllocatedByteArrayTag;
+import net.daporkchop.mcworldlib.util.nbt.AllocatedLongArrayTag;
 import net.daporkchop.mcworldlib.util.palette.state.ArrayStatePalette;
 import net.daporkchop.mcworldlib.util.palette.state.StatePalette;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
@@ -65,16 +65,12 @@ public class PackedFlattenedSectionDecoder implements JavaSectionDecoder {
 
     protected FlattenedBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
-        LongArrayTag blockStatesTag = tag.getTag("BlockStates");
+        AllocatedLongArrayTag blockStatesTag = tag.remove("BlockStates");
 
         int bits = Math.max(BinMath.getNumBitsNeededFor(paletteTag.size()), 4);
         StatePalette palette = this.parseBlockPalette(bits, paletteTag);
 
-        if (blockStatesTag.handle() != null) {
-            return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.handle().retain()), palette);
-        } else {
-            return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.value()), palette);
-        }
+        return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.value(), blockStatesTag.alloc()), palette);
     }
 
     protected StatePalette parseBlockPalette(int bits, @NonNull ListTag<CompoundTag> paletteTag) {
@@ -95,12 +91,7 @@ public class PackedFlattenedSectionDecoder implements JavaSectionDecoder {
     }
 
     protected NibbleArray parseNibbleArray(@NonNull CompoundTag tag, @NonNull String name) {
-        ByteArrayTag data = tag.getTag(name, null);
-        if (data == null) {
-            return null;
-        }
-        return data.handle() != null
-                ? new HeapNibbleArray.YZX(data.handle())
-                : new HeapNibbleArray.YZX(data.value(), 0);
+        AllocatedByteArrayTag data = tag.remove(name, null);
+        return data != null ? new HeapNibbleArray.YZX(data.value(), data.alloc()) : null;
     }
 }

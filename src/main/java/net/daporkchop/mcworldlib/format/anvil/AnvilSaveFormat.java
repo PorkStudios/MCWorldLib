@@ -26,11 +26,11 @@ import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.compression.context.PInflater;
 import net.daporkchop.lib.compression.zlib.Zlib;
 import net.daporkchop.lib.compression.zlib.ZlibMode;
+import net.daporkchop.lib.nbt.NBTFormat;
+import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveFormat;
 import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.lib.nbt.NBTFormat;
-import net.daporkchop.lib.nbt.tag.CompoundTag;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,17 +46,14 @@ public class AnvilSaveFormat implements SaveFormat {
             return null;
         }
 
-        CompoundTag nbt;
+        CompoundTag levelDat;
         try (PInflater inflater = Zlib.PROVIDER.inflater(Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.GZIP));
              DataIn in = inflater.decompressionStream(DataIn.wrapBuffered(levelDatFile))) {
-            nbt = NBTFormat.BIG_ENDIAN.readCompound(in);
+            levelDat = NBTFormat.BIG_ENDIAN.readCompound(in);
         }
-        try (CompoundTag levelDat = nbt) {
-            //System.out.println(levelDat);
-            if (levelDat.contains("Data")) {
-                return new AnvilSave(options, levelDat, root);
-            }
-            return null;
+        if (levelDat.contains("Data")) {
+            return new AnvilSave(options, levelDat, root);
         }
+        return null;
     }
 }

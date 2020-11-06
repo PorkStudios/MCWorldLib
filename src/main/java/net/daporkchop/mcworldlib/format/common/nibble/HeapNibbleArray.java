@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.format.common.nibble;
 import io.netty.buffer.ByteBuf;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
-import net.daporkchop.lib.common.pool.array.ArrayHandle;
+import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.lib.common.pool.handle.Handle;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 
@@ -38,54 +38,35 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  */
 public abstract class HeapNibbleArray extends AbstractRefCounted implements NibbleArray {
     protected final byte[] arr;
-    protected final int offset;
 
-    protected final Handle<byte[]> handle;
-    protected final ByteBuf buf;
+    protected final ArrayAllocator<byte[]> alloc;
 
     public HeapNibbleArray() {
-        this(new byte[PACKED_SIZE], 0);
+        this(new byte[PACKED_SIZE], null);
     }
 
-    public HeapNibbleArray(@NonNull byte[] arr, int offset) {
-        checkRangeLen(arr.length, offset, PACKED_SIZE);
+    public HeapNibbleArray(@NonNull byte[] arr) {
+        this(arr, null);
+    }
+
+    public HeapNibbleArray(@NonNull byte[] arr, ArrayAllocator<byte[]> alloc) {
+        checkRange(arr.length, 0, PACKED_SIZE);
 
         this.arr = arr;
-        this.offset = offset;
-        this.handle = null;
-        this.buf = null;
-    }
-
-    public HeapNibbleArray(@NonNull Handle<byte[]> handle) {
-        checkRange(handle instanceof ArrayHandle ? ((ArrayHandle) handle).length() : handle.get().length, 0, PACKED_SIZE);
-
-        this.arr = handle.retain().get();
-        this.offset = 0;
-        this.handle = handle;
-        this.buf = null;
-    }
-
-    public HeapNibbleArray(@NonNull ByteBuf buf) {
-        checkArg(buf.hasArray(), "buffer doesn't have an array!");
-        checkRangeLen(buf.capacity(), buf.readerIndex(), PACKED_SIZE);
-
-        this.arr = buf.retain().array();
-        this.offset = buf.arrayOffset() + buf.readerIndex();
-        this.handle = null;
-        this.buf = buf;
+        this.alloc = alloc;
     }
 
     @Override
     public int get(int offset) {
         checkIndex(offset >= 0 && offset < MAX_INDEX);
-        return NibbleArray.extractNibble(offset, this.arr[this.offset + (offset >> 1)]);
+        return NibbleArray.extractNibble(offset, this.arr[offset >> 1]);
     }
 
     @Override
     public void set(int offset, int value) {
         checkIndex(offset >= 0 && offset < MAX_INDEX);
         checkArg(value >= 0 && value < 16, "nibble value must be in range 0-15");
-        this.arr[this.offset + (offset >> 1)] = (byte) NibbleArray.insertNibble(offset, this.arr[this.offset + (offset >> 1)], value);
+        this.arr[offset >> 1] = (byte) NibbleArray.insertNibble(offset, this.arr[offset >> 1], value);
     }
 
     @Override
@@ -99,11 +80,8 @@ public abstract class HeapNibbleArray extends AbstractRefCounted implements Nibb
 
     @Override
     protected void doRelease() {
-        if (this.handle != null) {
-            this.handle.release();
-        }
-        if (this.buf != null) {
-            this.buf.release();
+        if (this.alloc != null) {
+            this.alloc.release(this.arr);
         }
     }
 
@@ -117,23 +95,19 @@ public abstract class HeapNibbleArray extends AbstractRefCounted implements Nibb
             super();
         }
 
-        public YZX(@NonNull byte[] arr, int offset) {
-            super(arr, offset);
+        public YZX(@NonNull byte[] arr) {
+            super(arr);
         }
 
-        public YZX(@NonNull Handle<byte[]> handle) {
-            super(handle);
-        }
-
-        public YZX(@NonNull ByteBuf buf) {
-            super(buf);
+        public YZX(@NonNull byte[] arr, ArrayAllocator<byte[]> alloc) {
+            super(arr, alloc);
         }
 
         @Override
         public int get(int x, int y, int z) {
             NibbleArray.checkCoords(x, y, z);
             int offset = (y << 8) | (z << 4) | x;
-            return NibbleArray.extractNibble(offset, this.arr[this.offset + (offset >> 1)]);
+            return NibbleArray.extractNibble(offset, this.arr[offset >> 1]);
         }
 
         @Override
@@ -141,12 +115,18 @@ public abstract class HeapNibbleArray extends AbstractRefCounted implements Nibb
             NibbleArray.checkCoords(x, y, z);
             checkArg(value >= 0 && value < 16, "nibble value must be in range 0-15");
             int offset = (y << 8) | (z << 4) | x;
-            this.arr[this.offset + (offset >> 1)] = (byte) NibbleArray.insertNibble(offset, this.arr[this.offset + (offset >> 1)], value);
+            this.arr[offset >> 1] = (byte) NibbleArray.insertNibble(offset, this.arr[offset >> 1], value);
         }
 
         @Override
         public NibbleArray clone() {
-            return new YZX(Arrays.copyOfRange(this.arr, this.offset, this.offset + PACKED_SIZE), 0);
+            byte[] clonedArray;
+            if (this.alloc != null) {
+                System.arraycopy(this.arr, 0, clonedArray = this.alloc.atLeast(PACKED_SIZE), 0, PACKED_SIZE);
+            } else {
+                clonedArray = this.arr.clone();
+            }
+            return new YZX(clonedArray, this.alloc);
         }
     }
 
@@ -160,23 +140,19 @@ public abstract class HeapNibbleArray extends AbstractRefCounted implements Nibb
             super();
         }
 
-        public XZY(@NonNull byte[] arr, int offset) {
-            super(arr, offset);
+        public XZY(@NonNull byte[] arr) {
+            super(arr);
         }
 
-        public XZY(@NonNull Handle<byte[]> handle) {
-            super(handle);
-        }
-
-        public XZY(@NonNull ByteBuf buf) {
-            super(buf);
+        public XZY(@NonNull byte[] arr, ArrayAllocator<byte[]> alloc) {
+            super(arr, alloc);
         }
 
         @Override
         public int get(int x, int y, int z) {
             NibbleArray.checkCoords(x, y, z);
             int offset = (x << 8) | (z << 4) | y;
-            return NibbleArray.extractNibble(offset, this.arr[this.offset + (offset >> 1)]);
+            return NibbleArray.extractNibble(offset, this.arr[offset >> 1]);
         }
 
         @Override
@@ -184,12 +160,18 @@ public abstract class HeapNibbleArray extends AbstractRefCounted implements Nibb
             NibbleArray.checkCoords(x, y, z);
             checkArg(value >= 0 && value < 16, "nibble value must be in range 0-15");
             int offset = (x << 8) | (z << 4) | y;
-            this.arr[this.offset + (offset >> 1)] = (byte) NibbleArray.insertNibble(offset, this.arr[this.offset + (offset >> 1)], value);
+            this.arr[offset >> 1] = (byte) NibbleArray.insertNibble(offset, this.arr[offset >> 1], value);
         }
 
         @Override
         public NibbleArray clone() {
-            return new XZY(Arrays.copyOfRange(this.arr, this.offset, this.offset + PACKED_SIZE), 0);
+            byte[] clonedArray;
+            if (this.alloc != null) {
+                System.arraycopy(this.arr, 0, clonedArray = this.alloc.atLeast(PACKED_SIZE), 0, PACKED_SIZE);
+            } else {
+                clonedArray = this.arr.clone();
+            }
+            return new XZY(clonedArray, this.alloc);
         }
     }
 }

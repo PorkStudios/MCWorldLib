@@ -24,16 +24,19 @@ import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.common.misc.string.PStrings;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
 import net.daporkchop.lib.common.ref.ReferenceType;
+import net.daporkchop.lib.common.util.PorkUtil;
 import net.daporkchop.lib.math.vector.i.Vec2i;
 import net.daporkchop.lib.math.vector.i.Vec3i;
 import net.daporkchop.lib.unsafe.PUnsafe;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveFormat;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveOptions;
+import net.daporkchop.mcworldlib.registry.Registry;
 import net.daporkchop.mcworldlib.save.Save;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.Identifier;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.world.World;
+import net.daporkchop.mcworldlib.world.section.FlattenedSection;
 import net.daporkchop.mcworldlib.world.section.LegacySection;
 
 import javax.imageio.ImageIO;
@@ -107,18 +110,37 @@ public class Mapper {
                         .peek(section -> {
                             BufferedImage img = sections.computeIfAbsent(new Vec3i(section.x() >> 4, section.y(), section.z() >> 4),
                                     pos -> new BufferedImage(256, 256, BufferedImage.TYPE_INT_RGB));
-                            LegacySection s = (LegacySection) section; //ignore flattened ones for now
-                            for (int x = 0; x < 16; x++) {
-                                for (int z = 0; z < 16; z++) {
-                                    for (int y = 15; y >= 0; y--) {
-                                        int id = s.getBlockLegacyId(x, y, z);
-                                        if (id != 0) {
-                                            int color = 0xFF000000 | mix32(id); //generate random color based on block ID
-                                            img.setRGB(((section.x() & 0xF) << 4) + x, ((section.z() & 0xF) << 4) + z, color);
-                                            break;
+                            if (section instanceof LegacySection) {
+                                LegacySection s = (LegacySection) section;
+                                for (int x = 0; x < 16; x++) {
+                                    for (int z = 0; z < 16; z++) {
+                                        for (int y = 15; y >= 0; y--) {
+                                            int id = s.getBlockLegacyId(x, y, z);
+                                            if (id != 0) {
+                                                int color = 0xFF000000 | mix32(id); //generate random color based on block ID
+                                                img.setRGB(((section.x() & 0xF) << 4) + x, ((section.z() & 0xF) << 4) + z, color);
+                                                break;
+                                            }
                                         }
                                     }
                                 }
+                            } else if (section instanceof FlattenedSection) {
+                                FlattenedSection s = (FlattenedSection) section;
+                                Registry registry = s.version().registries().block();
+                                for (int x = 0; x < 16; x++) {
+                                    for (int z = 0; z < 16; z++) {
+                                        for (int y = 15; y >= 0; y--) {
+                                            int id = registry.get(s.getBlockState(x, y, z).id());
+                                            if (id != 0) {
+                                                int color = 0xFF000000 | mix32(id); //generate random color based on block ID
+                                                img.setRGB(((section.x() & 0xF) << 4) + x, ((section.z() & 0xF) << 4) + z, color);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                throw new IllegalArgumentException(PorkUtil.className(section));
                             }
                         })
                         .count());

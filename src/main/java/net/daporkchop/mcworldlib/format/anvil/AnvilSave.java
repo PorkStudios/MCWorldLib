@@ -25,9 +25,11 @@ import lombok.NonNull;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.lib.nbt.tag.Tag;
 import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.save.SaveOptions;
+import net.daporkchop.mcworldlib.util.nbt.AllocatingNBTObjectParser;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
 
@@ -44,10 +46,7 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
         super(options, root);
 
         this.chunkNBTOptions = NBTOptions.DEFAULT
-                .withByteAlloc(options.get(SaveOptions.BYTE_ALLOC))
-                .withIntAlloc(options.get(SaveOptions.INT_ALLOC))
-                .withLongAlloc(options.get(SaveOptions.LONG_ALLOC));
-        //.withObjectParser(null); //TODO
+                .withObjectParser(new AllocatingNBTObjectParser(Tag.DEFAULT_NBT_PARSER, options));
 
         this.version = this.extractVersion(levelData);
 

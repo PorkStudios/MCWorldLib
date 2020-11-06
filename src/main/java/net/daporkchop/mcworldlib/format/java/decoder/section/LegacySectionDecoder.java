@@ -21,13 +21,13 @@
 package net.daporkchop.mcworldlib.format.java.decoder.section;
 
 import lombok.NonNull;
-import net.daporkchop.lib.nbt.tag.ByteArrayTag;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.mcworldlib.format.common.nibble.HeapNibbleArray;
 import net.daporkchop.mcworldlib.format.common.nibble.NibbleArray;
 import net.daporkchop.mcworldlib.format.common.section.legacy.DefaultLegacySection;
 import net.daporkchop.mcworldlib.format.common.storage.legacy.HeapLegacyBlockStorage;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
+import net.daporkchop.mcworldlib.util.nbt.AllocatedByteArrayTag;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.mcworldlib.world.section.Section;
@@ -50,31 +50,18 @@ public class LegacySectionDecoder implements JavaSectionDecoder {
     }
 
     protected LegacyBlockStorage parseBlockStorage(@NonNull CompoundTag tag) {
-        ByteArrayTag blocksTag = tag.getTag("Blocks");
-        ByteArrayTag dataTag = tag.getTag("Data");
-        ByteArrayTag addTag = tag.getTag("Add", null);
+        AllocatedByteArrayTag blocksTag = tag.remove("Blocks");
+        AllocatedByteArrayTag dataTag = tag.remove("Data");
+        AllocatedByteArrayTag addTag = tag.remove("Add", null);
         if (addTag == null) {
-            if (blocksTag.handle() != null) { //assume that all tags have handles
-                return new HeapLegacyBlockStorage(blocksTag.handle(), dataTag.handle());
-            } else {
-                return new HeapLegacyBlockStorage(blocksTag.value(), 0, dataTag.value(), 0);
-            }
+            return new HeapLegacyBlockStorage(blocksTag.value(), dataTag.value(), blocksTag.alloc(), dataTag.alloc());
         } else {
-            if (blocksTag.handle() != null) { //assume that all tags have handles
-                return new HeapLegacyBlockStorage.Add(blocksTag.handle(), dataTag.handle(), addTag.handle());
-            } else {
-                return new HeapLegacyBlockStorage.Add(blocksTag.value(), 0, dataTag.value(), 0, addTag.value(), 0);
-            }
+            return new HeapLegacyBlockStorage.Add(blocksTag.value(), dataTag.value(), addTag.value(), blocksTag.alloc(), dataTag.alloc(), addTag.alloc());
         }
     }
 
     protected NibbleArray parseNibbleArray(@NonNull CompoundTag tag, @NonNull String name) {
-        ByteArrayTag data = tag.getTag(name, null);
-        if (data == null) {
-            return null;
-        }
-        return data.handle() != null
-                ? new HeapNibbleArray.YZX(data.handle())
-                : new HeapNibbleArray.YZX(data.value(), 0);
+        AllocatedByteArrayTag data = tag.remove(name, null);
+        return data != null ? new HeapNibbleArray.YZX(data.value(), data.alloc()) : null;
     }
 }

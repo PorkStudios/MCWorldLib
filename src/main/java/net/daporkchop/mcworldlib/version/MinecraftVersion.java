@@ -23,7 +23,7 @@ package net.daporkchop.mcworldlib.version;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
+import net.daporkchop.mcworldlib.registry.Registries;
 
 /**
  * Base class for a representation of a Minecraft version.
@@ -41,7 +41,7 @@ public abstract class MinecraftVersion implements Comparable<MinecraftVersion> {
 
     @Override
     public int compareTo(MinecraftVersion o) {
-        if (this.edition != o.edition)  {
+        if (this.edition != o.edition) {
             return this.edition.ordinal() - o.edition.ordinal();
         } else {
             return this.name.compareTo(o.name);
@@ -67,4 +67,9 @@ public abstract class MinecraftVersion implements Comparable<MinecraftVersion> {
 
     @Override
     public abstract String toString();
+
+    /**
+     * @return the registries used by this version
+     */
+    public abstract Registries registries();
 }
