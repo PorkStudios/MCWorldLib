@@ -25,7 +25,7 @@ ext {
     //general things
     javaVersion = "1.8"
     libraryVersion = "0.0.1"
-    minecraftVersion = "1.16.3"
+    minecraftVersion = "1.16.4"
 
     //dependency things
     jacksonVersion = "2.11.2"
@@ -112,9 +112,7 @@ publishing {
             artifactId = "mcworldlib"
             version = project.version
 
-            artifact jar {
-                classifier null
-            }
+            from components.java
 
             artifact sourceJar {
                 classifier "sources"
