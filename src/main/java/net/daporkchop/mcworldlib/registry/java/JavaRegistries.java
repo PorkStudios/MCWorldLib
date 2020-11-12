@@ -64,7 +64,8 @@ public final class JavaRegistries implements Registries {
                 Identifier id = Identifier.fromString(name);
                 DefaultRegistry.Builder builder = DefaultRegistry.builder(id);
                 registry.entries.forEach((entryName, entry) -> builder.register(Identifier.fromString(entryName), entry.protocol_id));
-                registries.put(id, builder.build());
+                Registry r = builder.build();
+                registries.put(id, r);
             });
             return new JavaRegistries(registries);
         });

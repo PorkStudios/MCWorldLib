@@ -42,6 +42,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 public class ForgeVersion extends JavaVersion {
+    private static final Identifier LEGACY_BLOCKS_REGISTRY_ID = Identifier.fromString("minecraft:blocks");
+
     public static JavaVersion extractForgeInformation(@NonNull JavaVersion vanilla, @NonNull CompoundTag levelDat) {
         CompoundTag fmlTag;
         if ((fmlTag = levelDat.getCompound("FML", null)) != null || (fmlTag = levelDat.getCompound("fml", null)) != null) {
@@ -62,6 +64,9 @@ public class ForgeVersion extends JavaVersion {
         Map<Identifier, Registry> registries = new IdentityHashMap<>();
         fmlTag.getCompound("Registries").forEach((name, _registryTag) -> {
             Identifier id = Identifier.fromString(name);
+            if (id == LEGACY_BLOCKS_REGISTRY_ID) { //for some reason pre-1.13 forge worlds store it as minecraft:blocks instead of minecraft:block
+                id = Registries.BLOCK;
+            }
             CompoundTag registryTag = (CompoundTag) _registryTag;
             DefaultRegistry.Builder builder = DefaultRegistry.builder(id);
             registryTag.getList("ids", CompoundTag.class).forEach(entryTag -> builder.register(Identifier.fromStringLenient(entryTag.getString("K")), entryTag.getInt("V")));
