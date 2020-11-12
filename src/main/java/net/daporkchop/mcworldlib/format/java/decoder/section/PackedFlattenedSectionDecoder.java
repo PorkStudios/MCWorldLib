@@ -67,7 +67,7 @@ public class PackedFlattenedSectionDecoder implements JavaSectionDecoder {
         ListTag<CompoundTag> paletteTag = tag.getList("Palette", CompoundTag.class);
         AllocatedLongArrayTag blockStatesTag = tag.remove("BlockStates");
 
-        int bits = Math.max(BinMath.getNumBitsNeededFor(paletteTag.size()), 4);
+        int bits = Math.max(BinMath.getNumBitsNeededFor(Math.max(paletteTag.size() - 1, 0)), 4);
         StatePalette palette = this.parseBlockPalette(bits, paletteTag);
 
         return new HeapPackedFlattenedBlockStorage(new PackedBitArray(bits, 4096, blockStatesTag.value(), blockStatesTag.alloc()), palette);

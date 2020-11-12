@@ -116,6 +116,11 @@ public class LevelDatParserTest {
         this.loadTestWorld("1_12_2");
     }
 
+    @Test
+    public void loadTestWorld1_13_2() throws IOException {
+        this.loadTestWorld("1_13_2");
+    }
+
     private void loadTestWorld(@NonNull String name) throws IOException {
         try (Save save = new AnvilSaveFormat().open(new File(ROOT, name), SaveOptions.DEFAULT.clone()
                 .set(SaveOptions.ACCESS, WriteAccess.READ_ONLY)
