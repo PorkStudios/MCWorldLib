@@ -21,7 +21,6 @@
 package net.daporkchop.mcworldlib.format.anvil.storage;
 
 import io.netty.buffer.ByteBuf;
-import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.binary.stream.DataIn;
 import net.daporkchop.lib.common.math.BinMath;
@@ -44,12 +43,13 @@ import net.daporkchop.lib.primitive.map.concurrent.LongObjConcurrentHashMap;
 import net.daporkchop.lib.unsafe.PUnsafe;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.format.anvil.AnvilSaveOptions;
-import net.daporkchop.mcworldlib.format.anvil.AnvilWorld;
+import net.daporkchop.mcworldlib.format.anvil.world.AbstractAnvilWorld;
 import net.daporkchop.mcworldlib.format.anvil.region.RawChunk;
 import net.daporkchop.mcworldlib.format.anvil.region.RegionConstants;
 import net.daporkchop.mcworldlib.format.anvil.region.RegionFile;
 import net.daporkchop.mcworldlib.format.anvil.region.RegionFileCache;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
+import net.daporkchop.mcworldlib.format.java.storage.AbstractJavaWorldStorage;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.WriteAccess;
 import net.daporkchop.mcworldlib.util.nbt.AllocatedNBTHelper;
@@ -73,19 +73,7 @@ import java.util.function.LongFunction;
  *
  * @author DaPorkchop_
  */
-public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorage {
-    protected static final ZlibInflaterOptions INFLATER_OPTIONS = Zlib.PROVIDER.inflateOptions().withMode(ZlibMode.AUTO);
-    protected static final HandledPool<PInflater> INFLATER_CACHE = HandledPool.threadLocal(() -> Zlib.PROVIDER.inflater(INFLATER_OPTIONS), 1);
-
-    protected static Handle<PInflater> inflater(int version) {
-        switch (version) {
-            case RegionConstants.ID_ZLIB: //by far the more common one
-            case RegionConstants.ID_GZIP:
-                return INFLATER_CACHE.get();
-        }
-        throw new IllegalArgumentException("Unknown compression version: " + version);
-    }
-
+public class AnvilWorldStorage extends AbstractJavaWorldStorage {
     protected final LongObjMap<AnvilCachedChunk> cachedChunks = new LongObjConcurrentHashMap<>();
     protected final LongFunction<AnvilCachedChunk> loadFunction = l -> {
         try {
@@ -97,30 +85,10 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     };
     protected final RegionFile regionCache;
 
-    protected final boolean readOnly;
+    public AnvilWorldStorage(@NonNull File root, @NonNull AbstractAnvilWorld world) {
+        super(root, world);
 
-    protected final SaveOptions options;
-    protected final JavaFixers fixers;
-    protected final NBTOptions nbtOptions;
-    protected final Executor ioExecutor;
-    protected final AnvilWorld world;
-
-    protected final File root;
-
-    public AnvilWorldStorage(@NonNull File root, @NonNull AnvilWorld world, @NonNull NBTOptions nbtOptions) {
-        this.root = PFiles.ensureDirectoryExists(root);
         this.regionCache = new RegionFileCache(world.options(), new File(root, "region"));
-
-        this.options = world.options();
-        this.readOnly = this.options.get(SaveOptions.ACCESS) == WriteAccess.READ_ONLY;
-        this.fixers = this.options.get(AnvilSaveOptions.FIXERS);
-        this.ioExecutor = this.options.get(SaveOptions.IO_EXECUTOR);
-        this.nbtOptions = nbtOptions;
-        this.world = world;
-
-        if (!this.readOnly) {
-            throw new UnsupportedOperationException("Anvil read/write mode is not implemented!");
-        }
     }
 
     @Override
@@ -131,16 +99,6 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     @Override
     public Section loadSection(int x, int y, int z) throws IOException {
         return this.cachedChunks.computeIfAbsent(BinMath.packXY(x, z), this.loadFunction).section(y);
-    }
-
-    @Override
-    public PFuture<Chunk> loadChunkAsync(int x, int z) {
-        return PFutures.computeThrowableAsync(() -> this.loadChunk(x, z), this.ioExecutor);
-    }
-
-    @Override
-    public PFuture<Section> loadSectionAsync(int x, int y, int z) {
-        return PFutures.computeThrowableAsync(() -> this.loadSection(x, y, z), this.ioExecutor);
     }
 
     @Override
@@ -177,12 +135,6 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
     }
 
     @Override
-    public WorldStorage retain() throws AlreadyReleasedException {
-        super.retain();
-        return this;
-    }
-
-    @Override
     protected void doRelease() {
         try {
             this.flush();
@@ -190,7 +142,7 @@ public class AnvilWorldStorage extends AbstractRefCounted implements WorldStorag
             this.cachedChunks.clear();
             this.regionCache.close();
         } catch (IOException e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 

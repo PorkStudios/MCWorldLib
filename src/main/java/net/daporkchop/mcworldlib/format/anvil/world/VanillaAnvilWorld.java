@@ -18,51 +18,33 @@
  *
  */
 
-package net.daporkchop.mcworldlib.format.anvil;
+package net.daporkchop.mcworldlib.format.anvil.world;
 
-import lombok.Getter;
 import lombok.NonNull;
+import net.daporkchop.mcworldlib.format.anvil.AnvilSave;
 import net.daporkchop.mcworldlib.format.anvil.storage.AnvilWorldStorage;
-import net.daporkchop.mcworldlib.format.vanilla.VanillaWorld;
-import net.daporkchop.mcworldlib.save.SaveOptions;
-import net.daporkchop.mcworldlib.util.WriteAccess;
-import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
-import net.daporkchop.mcworldlib.world.World;
-import net.daporkchop.mcworldlib.world.WorldInfo;
+import net.daporkchop.mcworldlib.world.WorldStorage;
 
 import java.io.File;
 
 /**
- * Implementation of {@link World} for the Anvil format.
+ * An Anvil world that doesn't use cubic chunks.
  *
  * @author DaPorkchop_
  */
-public class AnvilWorld extends VanillaWorld<AnvilSave, JavaVersion> implements WorldInfo {
-    @Getter
-    protected final Dimension dimension;
-
-    public AnvilWorld(AnvilSave parent, @NonNull Dimension dimension) {
-        super(parent, dimension.id());
-
-        this.dimension = dimension;
-
-        //anvil is implemented in a way that makes it a real pain to have their dimension be abstracted away from the individual worlds
-        File root = dimension.legacyId() == 0 ? parent.root() : new File(parent.root(), "DIM" + dimension.legacyId());
-        this.storage = new AnvilWorldStorage(root, this, parent.chunkNBTOptions());
-
-        this.version = parent.version();
-
-        this.validateState();
+public class VanillaAnvilWorld extends AbstractAnvilWorld {
+    public VanillaAnvilWorld(AnvilSave parent, @NonNull Dimension dimension) {
+        super(parent, dimension);
     }
 
     @Override
-    public WorldInfo info() {
-        return this;
+    public boolean isCubicChunks() {
+        return false;
     }
 
     @Override
-    public boolean hasSkyLight() {
-        return this.dimension.hasSkyLight();
+    protected WorldStorage createStorage(@NonNull File root) {
+        return new AnvilWorldStorage(root, this);
     }
 }

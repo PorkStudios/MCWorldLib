@@ -57,7 +57,7 @@ import static net.daporkchop.lib.common.math.PMath.*;
  */
 public class Mapper {
     public static final String[] PATHS = {
-            //"/home/daporkchop/mcworlds/cc-test",
+            "/home/daporkchop/mcworlds/cc-test",
             "/home/daporkchop/mcworlds/pepsipack3-testworld",
             "/home/daporkchop/mcworlds/redstone"
     };

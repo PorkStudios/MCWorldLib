@@ -36,7 +36,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 /**
  * @author DaPorkchop_
  */
-public abstract class AbstractHeapFlattenedBlockStorage extends AbstractBlockStorage implements FlattenedBlockStorage {
+public abstract class AbstractHeapFlattenedBlockStorage extends AbstractBlockStorage implements FlattenedBlockStorage, FlattenedBlockStorage.Internal {
     protected static int index(int x, int y, int z) {
         BlockStorage.checkCoords(x, y, z);
         return (y << 8) | (z << 4) | x;
@@ -133,5 +133,20 @@ public abstract class AbstractHeapFlattenedBlockStorage extends AbstractBlockSto
         if (this.array != null) {
             this.array.release();
         }
+    }
+
+    @Override
+    public Internal internal() {
+        return this;
+    }
+
+    @Override
+    public StatePalette palette() {
+        return this.palette;
+    }
+
+    @Override
+    public BitArray data() {
+        return this.array;
     }
 }

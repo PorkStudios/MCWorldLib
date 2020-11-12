@@ -18,26 +18,31 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world;
+package net.daporkchop.mcworldlib.format.cubicchunks;
+
+import lombok.NonNull;
+import net.daporkchop.mcworldlib.format.anvil.AnvilSave;
+import net.daporkchop.mcworldlib.format.anvil.world.AbstractAnvilWorld;
+import net.daporkchop.mcworldlib.world.Dimension;
+import net.daporkchop.mcworldlib.world.WorldStorage;
+
+import java.io.File;
 
 /**
- * Additional information used to describe a {@link World}.
- *
  * @author DaPorkchop_
  */
-public interface WorldInfo {
-    /**
-     * @return the dimension used by the world
-     */
-    Dimension dimension();
+public class CCAnvilWorld extends AbstractAnvilWorld {
+    public CCAnvilWorld(AnvilSave parent, @NonNull Dimension dimension) {
+        super(parent, dimension);
+    }
 
-    /**
-     * @return whether or not this dimension has sky light
-     */
-    boolean hasSkyLight();
+    @Override
+    public boolean isCubicChunks() {
+        return true;
+    }
 
-    /**
-     * @return whether or not this dimension uses cubic chunks
-     */
-    boolean isCubicChunks();
+    @Override
+    protected WorldStorage createStorage(@NonNull File root) {
+        return null; //TODO: this
+    }
 }

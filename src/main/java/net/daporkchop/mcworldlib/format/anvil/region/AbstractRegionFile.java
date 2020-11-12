@@ -48,7 +48,7 @@ import static net.daporkchop.mcworldlib.format.anvil.region.RegionConstants.*;
  * @author DaPorkchop_
  */
 @Getter
-public abstract class AbstractRegionFile implements RegionFile {
+public abstract class AbstractRegionFile extends ReentrantReadWriteLock implements RegionFile {
     protected static final OpenOption[] RO_OPEN_OPTIONS = {StandardOpenOption.READ};
     protected static final OpenOption[] RWC_OPEN_OPTIONS = {
             StandardOpenOption.CREATE,
@@ -57,8 +57,6 @@ public abstract class AbstractRegionFile implements RegionFile {
     };
 
     protected final File file;
-    protected final Lock readLock;
-    protected final Lock writeLock;
     @Getter(AccessLevel.NONE)
     protected final FileChannel channel;
 
@@ -73,10 +71,6 @@ public abstract class AbstractRegionFile implements RegionFile {
             this.channel.close();
             throw new IOException(String.format("Unable to lock file: \"%s\"", file.getAbsolutePath()));
         }
-
-        ReadWriteLock lock = new ReentrantReadWriteLock();
-        this.readLock = lock.readLock();
-        this.writeLock = lock.writeLock();
     }
 
     /**
@@ -86,7 +80,7 @@ public abstract class AbstractRegionFile implements RegionFile {
 
     @Override
     public RawChunk read(int x, int z) throws IOException {
-        this.readLock.lock();
+        this.readLock().lock();
         try {
             this.assertOpen();
 
@@ -99,7 +93,7 @@ public abstract class AbstractRegionFile implements RegionFile {
                 return null;
             }
         } finally {
-            this.readLock.unlock();
+            this.readLock().unlock();
         }
     }
 
@@ -108,7 +102,7 @@ public abstract class AbstractRegionFile implements RegionFile {
     @Override
     public boolean write(int x, int z, @NonNull ByteBuf data, int version, long timestamp, boolean forceOverwrite) throws ReadOnlyException, IOException {
         this.assertWritable();
-        this.writeLock.lock();
+        this.writeLock().lock();
         try {
             this.assertOpen();
 
@@ -132,7 +126,7 @@ public abstract class AbstractRegionFile implements RegionFile {
                 return false;
             }
         } finally {
-            this.writeLock.unlock();
+            this.writeLock().unlock();
         }
     }
 
@@ -141,7 +135,7 @@ public abstract class AbstractRegionFile implements RegionFile {
     @Override
     public boolean delete(int x, int z) throws ReadOnlyException, IOException {
         this.assertWritable();
-        this.writeLock.lock();
+        this.writeLock().lock();
         try {
             this.assertOpen();
 
@@ -154,7 +148,7 @@ public abstract class AbstractRegionFile implements RegionFile {
                 return false;
             }
         } finally {
-            this.writeLock.unlock();
+            this.writeLock().unlock();
         }
     }
 
@@ -167,7 +161,7 @@ public abstract class AbstractRegionFile implements RegionFile {
 
     @Override
     public long timestamp(int x, int z) throws IOException {
-        this.readLock.lock();
+        this.readLock().lock();
         try {
             this.assertOpen();
 
@@ -178,20 +172,20 @@ public abstract class AbstractRegionFile implements RegionFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            this.readLock.unlock();
+            this.readLock().unlock();
         }
     }
 
     @Override
     public void defrag() throws ReadOnlyException, IOException {
         this.assertWritable();
-        this.writeLock.lock();
+        this.writeLock().lock();
         try {
             this.assertOpen();
 
             this.doDefrag();
         } finally {
-            this.writeLock.unlock();
+            this.writeLock().unlock();
         }
     }
 
@@ -200,13 +194,13 @@ public abstract class AbstractRegionFile implements RegionFile {
     @Override
     public void flush() throws IOException {
         if (!this.readOnly) {
-            this.writeLock.lock();
+            this.writeLock().lock();
             try {
                 this.assertOpen();
 
                 this.doFlush();
             } finally {
-                this.writeLock.unlock();
+                this.writeLock().unlock();
             }
         }
     }
@@ -215,7 +209,7 @@ public abstract class AbstractRegionFile implements RegionFile {
 
     @Override
     public void close() {
-        this.writeLock.lock();
+        this.writeLock().lock();
         try {
             this.assertOpen();
 
@@ -224,7 +218,7 @@ public abstract class AbstractRegionFile implements RegionFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            this.writeLock.unlock();
+            this.writeLock().unlock();
         }
     }
 

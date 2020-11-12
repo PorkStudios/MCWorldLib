@@ -20,6 +20,7 @@
 
 package net.daporkchop.mcworldlib.version.java;
 
+import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.pool.handle.Handle;
 import net.daporkchop.lib.common.util.PorkUtil;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 /**
  * @author DaPorkchop_
  */
+@Getter
 public class ForgeVersion extends JavaVersion {
     public static JavaVersion extractForgeInformation(@NonNull JavaVersion vanilla, @NonNull CompoundTag levelDat) {
         CompoundTag fmlTag;
@@ -93,10 +95,5 @@ public class ForgeVersion extends JavaVersion {
 
         this.mods = Collections.unmodifiableMap(mods);
         this.registries = registries;
-    }
-
-    @Override
-    public Registries registries() {
-        return this.registries;
     }
 }

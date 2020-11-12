@@ -26,13 +26,17 @@ import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.nbt.NBTOptions;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
 import net.daporkchop.lib.nbt.tag.Tag;
+import net.daporkchop.mcworldlib.format.cubicchunks.CCAnvilWorld;
+import net.daporkchop.mcworldlib.format.anvil.world.VanillaAnvilWorld;
 import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.nbt.AllocatingNBTObjectParser;
+import net.daporkchop.mcworldlib.version.java.DataVersion;
 import net.daporkchop.mcworldlib.version.java.ForgeVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
+import net.daporkchop.mcworldlib.world.World;
 
 import java.io.File;
 
@@ -64,7 +68,14 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
     }
 
     protected void openWorld(@NonNull Dimension dimension) {
-        this.worlds.put(dimension.id(), new AnvilWorld(this, dimension));
+        //TODO: per-world cubic chunks detection
+        World world;
+        if (this.version.data() <= DataVersion.DATA_1_12_2 && this.version instanceof ForgeVersion && ((ForgeVersion) this.version).mods().containsKey("cubicchunks")) {
+            world = new CCAnvilWorld(this, dimension);
+        } else {
+            world = new VanillaAnvilWorld(this, dimension);
+        }
+        this.worlds.put(dimension.id(), world);
     }
 
     protected JavaVersion extractVersion(@NonNull CompoundTag levelDat) {

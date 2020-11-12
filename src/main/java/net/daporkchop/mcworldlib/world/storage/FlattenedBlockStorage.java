@@ -20,8 +20,10 @@
 
 package net.daporkchop.mcworldlib.world.storage;
 
+import net.daporkchop.lib.binary.bit.BitArray;
 import net.daporkchop.lib.unsafe.util.exception.AlreadyReleasedException;
 import net.daporkchop.mcworldlib.block.access.FlattenedBlockAccess;
+import net.daporkchop.mcworldlib.util.palette.state.StatePalette;
 
 /**
  * A block storage using flattened block IDs.
@@ -33,4 +35,17 @@ public interface FlattenedBlockStorage extends FlattenedBlockAccess, BlockStorag
 
     @Override
     FlattenedBlockStorage retain() throws AlreadyReleasedException;
+
+    Internal internal();
+
+    /**
+     * Unsafe, internal methods for {@link FlattenedBlockStorage}.
+     *
+     * @author DaPorkchop_
+     */
+    interface Internal {
+        StatePalette palette();
+
+        BitArray data();
+    }
 }

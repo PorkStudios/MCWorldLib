@@ -18,26 +18,12 @@
  *
  */
 
-package net.daporkchop.mcworldlib.world;
-
 /**
- * Additional information used to describe a {@link World}.
+ * My super-fast region code from PorkLib:minecraft, which in turn was initially copied from RegionMerger.
+ * <p>
+ * Extended to allow accessing data with arbitrary keys rather than fixed X,Z coordinates in order to support Cubic Chunks, at the cost of one additional
+ * wrapper object allocation (which is probably negligable compared to the overhead of actually reading data from disk).
  *
  * @author DaPorkchop_
  */
-public interface WorldInfo {
-    /**
-     * @return the dimension used by the world
-     */
-    Dimension dimension();
-
-    /**
-     * @return whether or not this dimension has sky light
-     */
-    boolean hasSkyLight();
-
-    /**
-     * @return whether or not this dimension uses cubic chunks
-     */
-    boolean isCubicChunks();
-}
+package net.daporkchop.mcworldlib.format.anvil.region;
