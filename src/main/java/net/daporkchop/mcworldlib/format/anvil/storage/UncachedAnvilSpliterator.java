@@ -72,9 +72,9 @@ public abstract class UncachedAnvilSpliterator<T> implements Spliterator<T> {
         checkState(this.region == null);
         if (this.index < this.fence) {
             File file = this.regions[this.index++];
-            this.region = this.storage.options.get(AnvilSaveOptions.MMAP_REGIONS)
-                          ? new MemoryMappedRegionFile(file, this.storage.options.get(AnvilSaveOptions.PREFETCH_REGIONS))
-                          : new OverclockedRegionFile(file, this.storage.options.get(SaveOptions.NETTY_ALLOC), true);
+            this.region = this.storage.options().get(AnvilSaveOptions.MMAP_REGIONS)
+                          ? new MemoryMappedRegionFile(file, this.storage.options().get(AnvilSaveOptions.PREFETCH_REGIONS))
+                          : new OverclockedRegionFile(file, this.storage.options().get(SaveOptions.NETTY_ALLOC), true);
             this.chunkX = this.chunkZ = 0; //reset chunk positions
             return true;
         } else {

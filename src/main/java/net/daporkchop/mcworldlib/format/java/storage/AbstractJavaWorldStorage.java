@@ -20,6 +20,7 @@
 
 package net.daporkchop.mcworldlib.format.java.storage;
 
+import lombok.Getter;
 import lombok.NonNull;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.common.misc.refcount.AbstractRefCounted;
@@ -63,6 +64,7 @@ public abstract class AbstractJavaWorldStorage extends AbstractRefCounted implem
         throw new IllegalArgumentException("Unknown compression version: " + version);
     }
 
+    @Getter
     protected final SaveOptions options;
     protected final JavaFixers fixers;
     protected final NBTOptions nbtOptions;
