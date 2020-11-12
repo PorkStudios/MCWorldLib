@@ -20,6 +20,8 @@
 
 package map;
 
+import lombok.NonNull;
+import net.daporkchop.lib.common.function.io.IOConsumer;
 import net.daporkchop.lib.common.misc.file.PFiles;
 import net.daporkchop.lib.common.misc.string.PStrings;
 import net.daporkchop.lib.common.pool.array.ArrayAllocator;
@@ -43,6 +45,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -53,50 +56,66 @@ import static net.daporkchop.lib.common.math.PMath.*;
  * @author DaPorkchop_
  */
 public class Mapper {
-    public static final File PATH = new File("/home/daporkchop/mcworlds/redstone");
-    public static final File OUT_DIR2D = new File(PATH, "mapTiles2d");
-    public static final File OUT_DIR3D = new File(PATH, "mapTiles3d");
+    public static final String[] PATHS = {
+            //"/home/daporkchop/mcworlds/cc-test",
+            "/home/daporkchop/mcworlds/pepsipack3-testworld",
+            "/home/daporkchop/mcworlds/redstone"
+    };
 
     public static final boolean DEBUG_ALLOCATIONS = true;
 
+    public static final SaveOptions SAVE_OPTIONS = SaveOptions.builder()
+            .set(SaveOptions.ACCESS, WriteAccess.READ_ONLY)
+            .set(SaveOptions.BYTE_ALLOC, ArrayAllocator.pow2(length -> {
+                if (DEBUG_ALLOCATIONS) {
+                    System.out.printf("Allocating byte[%d]\n", length);
+                }
+                return new byte[length];
+            }, ReferenceType.SOFT, 64))
+            .set(SaveOptions.INT_ALLOC, ArrayAllocator.pow2(length -> {
+                if (DEBUG_ALLOCATIONS) {
+                    System.out.printf("Allocating int[%d]\n", length);
+                }
+                return new int[length];
+            }, ReferenceType.SOFT, 32))
+            .set(SaveOptions.LONG_ALLOC, ArrayAllocator.pow2(length -> {
+                if (DEBUG_ALLOCATIONS) {
+                    System.out.printf("Allocating long[%d]\n", length);
+                }
+                return new long[length];
+            }, ReferenceType.SOFT, 32))
+            .set(AnvilSaveOptions.MMAP_REGIONS, true)
+            .set(AnvilSaveOptions.CHUNK_CACHE_SIZE, 1)
+            .build();
+
     public static void main(String... args) throws IOException {
-        if (PFiles.checkDirectoryExists(OUT_DIR2D)) {
-            PFiles.rmContents(OUT_DIR2D);
+        Arrays.stream(PATHS).map(File::new)
+                .forEach((IOConsumer<File>) Mapper::process);
+    }
+
+    public static void process(@NonNull File path) throws IOException {
+        System.out.printf("processing %s...\n", path);
+
+        File outDir2d = new File(path, "mapTiles2d");
+        File outDir3d = new File(path, "mapTiles3d");
+
+        if (PFiles.checkDirectoryExists(outDir2d)) {
+            PFiles.rmContents(outDir2d);
         } else {
-            PFiles.ensureDirectoryExists(OUT_DIR2D);
+            PFiles.ensureDirectoryExists(outDir2d);
         }
-        if (PFiles.checkDirectoryExists(OUT_DIR3D)) {
-            PFiles.rmContents(OUT_DIR3D);
+        if (PFiles.checkDirectoryExists(outDir3d)) {
+            PFiles.rmContents(outDir3d);
         } else {
-            PFiles.ensureDirectoryExists(OUT_DIR3D);
+            PFiles.ensureDirectoryExists(outDir3d);
         }
 
         Map<Vec2i, BufferedImage> chunks = new HashMap<>();
         Map<Vec3i, BufferedImage> sections = new HashMap<>();
 
-        try (Save save = new AnvilSaveFormat().open(PATH, SaveOptions.builder()
-                .set(SaveOptions.ACCESS, WriteAccess.READ_ONLY)
-                .set(SaveOptions.BYTE_ALLOC, ArrayAllocator.pow2(length -> {
-                    if (DEBUG_ALLOCATIONS) {
-                        System.out.printf("Allocating byte[%d]\n", length);
-                    }
-                    return new byte[length];
-                }, ReferenceType.SOFT, 32))
-                .set(SaveOptions.INT_ALLOC, ArrayAllocator.pow2(length -> {
-                    if (DEBUG_ALLOCATIONS) {
-                        System.out.printf("Allocating int[%d]\n", length);
-                    }
-                    return new int[length];
-                }, ReferenceType.SOFT, 32))
-                .set(SaveOptions.LONG_ALLOC, ArrayAllocator.pow2(length -> {
-                    if (DEBUG_ALLOCATIONS) {
-                        System.out.printf("Allocating long[%d]\n", length);
-                    }
-                    return new long[length];
-                }, ReferenceType.SOFT, 32))
-                .set(AnvilSaveOptions.MMAP_REGIONS, true)
-                .set(AnvilSaveOptions.CHUNK_CACHE_SIZE, 1)
-                .build())) {
+        try (Save save = new AnvilSaveFormat().open(path, SAVE_OPTIONS)) {
+            System.out.printf("save version: %s (w. %d registries)\n", save.version(), save.version().registries().size());
+
             try (World world = save.world(Identifier.fromString("minecraft:overworld"))) {
                 System.out.printf("processed %d chunks\n", StreamSupport.stream(world.storage().allChunks(), false)
                         .peek(chunk -> {
@@ -148,7 +167,7 @@ public class Mapper {
         }
 
         chunks.forEach((pos, img) -> {
-            File file = new File(OUT_DIR2D, PStrings.lightFormat("%s.%s.png", pos.getX(), pos.getY()));
+            File file = new File(outDir2d, PStrings.lightFormat("%s.%s.png", pos.getX(), pos.getY()));
             try {
                 ImageIO.write(img, "png", file);
             } catch (IOException e) {
@@ -156,7 +175,7 @@ public class Mapper {
             }
         });
         sections.forEach((pos, img) -> {
-            File file = new File(OUT_DIR3D, PStrings.lightFormat("%s.%s.%s.png", pos.getX(), pos.getZ(), pos.getY()));
+            File file = new File(outDir3d, PStrings.lightFormat("%s.%s.%s.png", pos.getX(), pos.getZ(), pos.getY()));
             try {
                 ImageIO.write(img, "png", file);
             } catch (IOException e) {

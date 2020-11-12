@@ -30,6 +30,7 @@ import net.daporkchop.mcworldlib.format.common.AbstractSave;
 import net.daporkchop.mcworldlib.format.common.DefaultDimension;
 import net.daporkchop.mcworldlib.save.SaveOptions;
 import net.daporkchop.mcworldlib.util.nbt.AllocatingNBTObjectParser;
+import net.daporkchop.mcworldlib.version.java.ForgeVersion;
 import net.daporkchop.mcworldlib.version.java.JavaVersion;
 import net.daporkchop.mcworldlib.world.Dimension;
 
@@ -66,11 +67,12 @@ public class AnvilSave extends AbstractSave<JavaVersion> {
         this.worlds.put(dimension.id(), new AnvilWorld(this, dimension));
     }
 
-    protected JavaVersion extractVersion(@NonNull CompoundTag levelData) {
-        CompoundTag versionTag = levelData.getCompound("Data").getCompound("Version", null);
-        if (versionTag == null) { //older than 15w32a
-            return JavaVersion.pre15w32a();
-        }
-        return JavaVersion.fromName(versionTag.getString("Name"));
+    protected JavaVersion extractVersion(@NonNull CompoundTag levelDat) {
+        CompoundTag versionTag = levelDat.getCompound("Data").getCompound("Version", null);
+        JavaVersion version = versionTag == null
+                ? JavaVersion.pre15w32a() //older than 15w32a
+                : JavaVersion.fromName(versionTag.getString("Name"));
+        version = ForgeVersion.extractForgeInformation(version, levelDat);
+        return version;
     }
 }

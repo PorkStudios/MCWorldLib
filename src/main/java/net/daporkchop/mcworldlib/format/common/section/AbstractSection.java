@@ -35,6 +35,9 @@ import net.daporkchop.mcworldlib.world.section.Section;
 import net.daporkchop.mcworldlib.world.storage.BlockStorage;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 
 import static net.daporkchop.lib.common.util.PorkUtil.*;
 
@@ -51,6 +54,7 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
     protected final NibbleArray skyLight;
 
     protected final IntObjMap<CompoundTag> tileEntities = new IntObjOpenHashMap<>();
+    protected final Set<CompoundTag> entities = Collections.newSetFromMap(new IdentityHashMap<>());
 
     protected final MinecraftVersion version;
     protected final int x;
@@ -100,6 +104,16 @@ public abstract class AbstractSection extends AbstractRefCounted implements Sect
     @Override
     public Collection<CompoundTag> tileEntities() {
         return this.tileEntities.values();
+    }
+
+    @Override
+    public void addEntity(@NonNull CompoundTag entity) {
+        this.entities.add(entity);
+    }
+
+    @Override
+    public void removeEntity(@NonNull CompoundTag entity) {
+        this.entities.remove(entity);
     }
 
     @Override

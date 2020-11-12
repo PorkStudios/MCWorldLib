@@ -13,6 +13,8 @@ run/
 *.class
 *.log
 
+*.dat
+
 test_out/
 
 /ignore/

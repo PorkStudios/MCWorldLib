@@ -22,7 +22,6 @@ package net.daporkchop.mcworldlib.util;
 
 import lombok.Getter;
 import lombok.NonNull;
-import net.daporkchop.lib.common.math.PMath;
 import net.daporkchop.lib.common.ref.Ref;
 import net.daporkchop.lib.common.ref.ThreadRef;
 
@@ -49,8 +48,8 @@ import static net.daporkchop.lib.common.util.PValidation.*;
 public final class Identifier implements Comparable<Identifier> {
     public static final Identifier EMPTY = new Identifier("", "", ":");
 
-    protected static final Pattern VALIDATION_PATTERN = Pattern.compile("^(?>minecraft:|([a-zA-Z0-9_.]*):)?([a-zA-Z0-9_.]*)$");
-    protected static final Ref<Matcher> MATCHER_CACHE = ThreadRef.regex(VALIDATION_PATTERN);
+    protected static final Ref<Matcher> STRICT_MATCHER = ThreadRef.regex(Pattern.compile("^(?>minecraft:|([a-zA-Z0-9_.]*):)?([a-zA-Z0-9_.]*)$"));
+    protected static final Ref<Matcher> LENIENT_MATCHER = ThreadRef.regex(Pattern.compile("^(?>minecraft:|(.*?):)?(.*?)$"));
 
     private static final Lock READ_LOCK;
     private static final Lock WRITE_LOCK;
@@ -64,28 +63,37 @@ public final class Identifier implements Comparable<Identifier> {
         WRITE_LOCK = lock.writeLock();
     }
 
-    private final String modid;
-    private final String name;
-    private final String fullName;
-
-    private final transient int hashCode;
-
-    private Identifier(String modid, String name, String fullName) {
-        this.modid = modid.intern();
-        this.name = name.intern();
-        this.fullName = fullName.intern();
-
-        //dig my epic hash distribution
-        this.hashCode = mix32(fullName.chars().asLongStream().reduce(0L, (a, b) -> mix64(a + b)));
+    /**
+     * Parses an {@link Identifier} from it's text representation.
+     *
+     * @param identifier the identifier to parse
+     * @return the {@link Identifier}
+     * @throws IllegalArgumentException if the given string is not a valid identifier
+     */
+    public static Identifier fromString(@NonNull String identifier) {
+        return fromString0(identifier, STRICT_MATCHER);
     }
 
-    public static Identifier fromString(@NonNull String identifier) {
+    /**
+     * Parses an {@link Identifier} from it's text representation.
+     * <p>
+     * This method only applies extremely lenient validation to the identifier. Usage of this method is strongly discouraged.
+     *
+     * @param identifier the identifier to parse
+     * @return the {@link Identifier}
+     * @throws IllegalArgumentException if the given string is not a valid identifier
+     */
+    public static Identifier fromStringLenient(@NonNull String identifier) {
+        return fromString0(identifier, LENIENT_MATCHER);
+    }
+
+    private static Identifier fromString0(String identifier, Ref<Matcher> matcherRef) {
         if (identifier.isEmpty()) {
             //check for empty before using matcher
             return EMPTY;
         }
 
-        Matcher matcher = MATCHER_CACHE.get().reset(identifier);
+        Matcher matcher = matcherRef.get().reset(identifier);
         checkArg(matcher.find(), "Invalid identifier: \"%s\"", identifier);
 
         Identifier id;
@@ -107,7 +115,7 @@ public final class Identifier implements Comparable<Identifier> {
             WRITE_LOCK.lock();
             try {
                 //try get again in case identifier was created while obtaining write lock
-                if ((id = VALUES.get(identifier)) == null) {
+                if ((id = VALUES.get(fullName)) == null) {
                     id = new Identifier(namespace, name, fullName);
                     if (defaultNamespace) {
                         //also put it into the map without minecraft: in the key to facilitate faster lookups when the prefix is omitted
@@ -120,6 +128,20 @@ public final class Identifier implements Comparable<Identifier> {
             }
         }
         return id;
+    }
+
+    private final String modid;
+    private final String name;
+    private final String fullName;
+    private final transient int hashCode;
+
+    private Identifier(String modid, String name, String fullName) {
+        this.modid = modid.intern();
+        this.name = name.intern();
+        this.fullName = fullName.intern();
+
+        //dig my epic hash distribution
+        this.hashCode = mix32(fullName.chars().asLongStream().reduce(0L, (a, b) -> mix64(a + b)));
     }
 
     @Override

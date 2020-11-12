@@ -22,6 +22,7 @@ package net.daporkchop.mcworldlib.format.anvil.storage;
 
 import lombok.NonNull;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
+import net.daporkchop.lib.nbt.tag.DoubleTag;
 import net.daporkchop.lib.nbt.tag.ListTag;
 import net.daporkchop.mcworldlib.format.java.JavaFixers;
 import net.daporkchop.mcworldlib.format.java.decoder.JavaSectionDecoder;
@@ -32,6 +33,7 @@ import net.daporkchop.mcworldlib.world.Chunk;
 import net.daporkchop.mcworldlib.world.World;
 import net.daporkchop.mcworldlib.world.section.Section;
 
+import static net.daporkchop.lib.common.math.PMath.*;
 import static net.daporkchop.lib.common.util.PValidation.*;
 
 /**
@@ -88,6 +90,16 @@ public abstract class AnvilCachedChunk extends AbstractReleasableDirtiable {
                 this.sections[y >> 4].setTileEntity(x & 0xF, y & 0xF, z & 0xF, AllocatedNBTHelper.toNormalAndRelease(tileEntity));
             }
             tileEntities.list().clear();
+
+            //TODO: i should probably make entities be their own thing, because 1.17 stores them separately
+            ListTag<CompoundTag> entities = levelTag.getList("Entities", CompoundTag.class);
+            for (CompoundTag entity : entities) {
+                ListTag<DoubleTag> pos = entity.getList("Pos", DoubleTag.class);
+                double y = pos.list().get(1).doubleValue();
+                //TODO: entities might be in an empty chunk section
+                this.sections[clamp(floorI(y) >> 4, 0, 15)].addEntity(AllocatedNBTHelper.toNormalAndRelease(entity));
+            }
+            entities.list().clear();
         }
 
         @Override

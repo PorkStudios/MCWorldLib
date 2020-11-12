@@ -20,6 +20,7 @@
 
 package net.daporkchop.mcworldlib.world.section;
 
+import lombok.NonNull;
 import net.daporkchop.lib.common.misc.refcount.RefCounted;
 import net.daporkchop.lib.math.access.IntHolderXYZ;
 import net.daporkchop.lib.nbt.tag.CompoundTag;
@@ -96,6 +97,25 @@ public interface Section extends LightAccess, IntHolderXYZ, RefCounted {
      * @return a view of the tile entities in this section
      */
     Collection<CompoundTag> tileEntities();
+
+    /**
+     * Adds the given entity to this section.
+     *
+     * @param entity the entity to add
+     */
+    void addEntity(@NonNull CompoundTag entity);
+
+    /**
+     * Removes the given entity from this section.
+     *
+     * @param entity the entity to remove
+     */
+    void removeEntity(@NonNull CompoundTag entity);
+
+    /**
+     * @return a view of the entities in this section
+     */
+    Collection<CompoundTag> entities();
 
     @Override
     Section retain() throws AlreadyReleasedException;

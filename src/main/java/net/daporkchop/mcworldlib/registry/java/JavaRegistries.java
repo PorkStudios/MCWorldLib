@@ -23,9 +23,6 @@ package net.daporkchop.mcworldlib.registry.java;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.gson.annotations.SerializedName;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.daporkchop.lib.common.function.io.IOFunction;
@@ -51,7 +48,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  *
  * @author DaPorkchop_
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public final class JavaRegistries implements Registries {
     private static final Map<String, Registries> CACHE = new ObjObjConcurrentHashMap<>(); //this has a faster computeIfAbsent implementation
 

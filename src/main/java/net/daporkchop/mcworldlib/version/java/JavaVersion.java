@@ -44,7 +44,7 @@ import static net.daporkchop.lib.common.util.PValidation.*;
  * @author DaPorkchop_
  */
 @Getter
-public final class JavaVersion extends MinecraftVersion {
+public class JavaVersion extends MinecraftVersion {
     private static final Map<String, JavaVersion> NAME_CACHE = new HashMap<>();
     private static final IntObjMap<JavaVersion> DATA_VERSION_CACHE = new IntObjOpenHashMap<>();
 
@@ -82,26 +82,19 @@ public final class JavaVersion extends MinecraftVersion {
         return OldVersion.OLD;
     }
 
-    protected final int protocol;
     protected final int data;
     protected final String toString;
 
     @JsonCreator
     protected JavaVersion(@JsonProperty("name") String name, @JsonProperty("protocol") int protocol, @JsonProperty("data") int data) {
+        this(name, data, "Java Edition " + name);
+    }
+
+    protected JavaVersion(@NonNull String name, int data, @NonNull String toString) {
         super(MinecraftEdition.JAVA, name);
 
-        this.protocol = protocol;
         this.data = data;
-
-        if (name != null) {
-            this.toString = "Java Edition " + name;
-        } else if (data > 0) {
-            this.toString = "Java Edition [unknown] (data version " + data + ')';
-        } else if (protocol > 0) {
-            this.toString = "Java Edition [unknown] (protocol " + data + ')';
-        } else {
-            this.toString = "Java Edition [unknown]";
-        }
+        this.toString = toString;
     }
 
     @Override
